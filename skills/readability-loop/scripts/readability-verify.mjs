@@ -5,6 +5,7 @@
  *
  * 用法（在项目根目录执行）：
  *   node <技能目录>/scripts/readability-verify.mjs --name <类名> --round <N> [选项] -- <范围文件或目录...>
+ *   node <技能目录>/scripts/readability-verify.mjs --name <类名> --round <N> --batch <K> --compile-only -- <范围文件或目录...>
  *   node <技能目录>/scripts/readability-verify.mjs --name <类名> --stale-check -- <范围文件或目录...>
  *
  * 选项：
@@ -16,6 +17,9 @@
  *   --guard "<命令>"     追加一个项目守卫命令，可重复；项目规则要求的守卫由调度者传入
  *   --skip-guard         不运行 --guard 指定的守卫（本轮不涉及守卫所保护的对象）
  *   --stale-check        不运行任何命令，只判断最近一次摘要是否晚于范围文件的最后修改时间
+ *   --compile-only       批内编译检查：只编译，不跑单测、check-readability 和守卫；必须同时给 --batch，
+ *                        结果写 r<N>-b<K>-compile.txt，不是校验摘要，不能代替本轮完整验证
+ *   --batch <K>          分批编号，与 --compile-only 一起使用
  *
  * 构建系统按项目根目录标志文件自动识别（Gradle / Maven / Node / Cargo / Go / dotnet / Python，见 project-detect.mjs）；
  * 识别不到且未传 --build 时记为“未识别、已跳过”，不算失败。
@@ -31,7 +35,7 @@ const ROOT = findProjectRoot();
 const SUMMARY_PREFIX = 'verify-summary';
 
 function parseArgs(argv) {
-  const opts = { tasks: [], guards: [], scope: [], skipTest: false, skipGuard: false, staleCheck: false };
+  const opts = { tasks: [], guards: [], scope: [], skipTest: false, skipGuard: false, staleCheck: false, compileOnly: false };
   const sep = argv.indexOf('--');
   const head = sep >= 0 ? argv.slice(0, sep) : argv;
   opts.scope = sep >= 0 ? argv.slice(sep + 1) : [];
@@ -47,11 +51,14 @@ function parseArgs(argv) {
     else if (a === '--skip-test') opts.skipTest = true;
     else if (a === '--skip-guard') opts.skipGuard = true;
     else if (a === '--stale-check') opts.staleCheck = true;
+    else if (a === '--compile-only') opts.compileOnly = true;
+    else if (a === '--batch') opts.batch = head[++i];
   }
-  if (!opts.name || !opts.scope.length || (!opts.staleCheck && !opts.round)) {
-    console.error('用法：node <技能目录>/scripts/readability-verify.mjs --name <类名> --round <N> [选项] -- <范围文件或目录...>');
+  if (!opts.name || !opts.scope.length || (!opts.staleCheck && !opts.round) || (opts.compileOnly && !opts.batch)) {
+    console.error('用法：node <技能目录>/scripts/readability-verify.mjs --name <类名> --round <N> [--batch <K> --compile-only] [选项] -- <范围文件或目录...>');
     process.exit(2);
   }
+  if (opts.compileOnly) opts.skipTest = true;
   return opts;
 }
 
@@ -146,7 +153,9 @@ function runBuildAndTest(opts, outDir, prefix, lines) {
   }
 
   // 步骤2：单测（merged 已在构建中执行；识别不到单测命令时记为跳过）
-  if (opts.skipTest) {
+  if (opts.compileOnly) {
+    lines.push('单测：批内编译检查不跑单测');
+  } else if (opts.skipTest) {
     lines.push('单测：已跳过（--skip-test，仅限只改注释/文档注释/日志文案的轮次）');
   } else if (!merged) {
     const testCommand = opts.test ?? (detected?.test ? [...detected.test, ...(opts.tests ? detected.filterArgs(opts.tests) : [])] : null);
@@ -164,6 +173,21 @@ function runBuildAndTest(opts, outDir, prefix, lines) {
   return ok;
 }
 
+/**
+ * 批内编译检查：结构批次结束时只确认能编译，避免多批改动的编译错误叠加到最后一批才暴露。
+ * 结果文件名不含 verify-summary，stale-check 与调度者的阶段判断都不会把它当成校验摘要。
+ */
+function compileCheck(opts, outDir, sourceCount) {
+  const prefix = `r${opts.round}-b${opts.batch}-`;
+  const lines = [`第 ${opts.round} 轮第 ${opts.batch} 批编译检查：${opts.name}（范围 ${sourceCount} 个源码文件）`];
+  const ok = runBuildAndTest(opts, outDir, prefix, lines);
+  lines.push(`完成：${fmt(Date.now())}；日志 ${path.relative(ROOT, outDir).replace(/\\/g, '/')}/${prefix}build.txt`);
+  lines.push(ok ? '结果：编译通过' : '结果：编译失败（看 build 日志）');
+  fs.writeFileSync(path.join(outDir, `${prefix}compile.txt`), lines.join('\n') + '\n');
+  console.log(lines.join('\n'));
+  process.exit(ok ? 0 : 1);
+}
+
 function main() {
   const opts = parseArgs(process.argv.slice(2));
   const outDir = path.join(loopDir(ROOT), opts.name);
@@ -171,6 +195,8 @@ function main() {
   const sources = collectSources(opts.scope);
   const latest = latestSource(sources);
   if (opts.staleCheck) return staleCheck(outDir, latest);
+
+  if (opts.compileOnly) return compileCheck(opts, outDir, sources.length);
 
   const prefix = `r${opts.round}-`;
   const lines = [`第 ${opts.round} 轮验证：${opts.name}（范围 ${sources.length} 个源码文件）`];
