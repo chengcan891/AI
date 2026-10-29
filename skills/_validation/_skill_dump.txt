@@ -1,0 +1,1179 @@
+===== D:\WorkSpace\AI\skills\feature-add-loop\SKILL.md =====
+---
+name: feature-add-loop
+description: 加功能循环的调度者；用户要在现有项目中新增功能时使用（/feature-add-loop 或明确要求「加功能并验收」）。串联讨论定稿 → 实现 → 验收，实现与验收循环直到验收通过。项目差异读 project-conventions-* 与仓库 AGENTS.md，勿把模块名写死进本技能。
+disable-model-invocation: true
+---
+
+# 加功能循环：调度者
+
+你是调度者。驱动「讨论定稿 → 实现 ? 验收」直到 PASS。**禁止**自己改业务代码或自己写验收结论；只维护断点、指派**当前步骤所需的一个**同级技能。
+
+## 路径约定
+
+- `<循环技能目录>`：本文件所在目录。同级：`feature-discuss/`、`feature-implement/`、`feature-review/`。
+- 约定：`project-conventions-*`（缺失则先问用户或提炼草案）。
+- 规则：仓库 `AGENTS.md`（宿主已加载则调度者只扫与编译/加密相关的段落，勿整本重读给子代理贴全文）。
+- `<断点目录>`：有 `build/` → `build/feature-add-loop/<短名>/`，否则 `.feature-add-loop/<短名>/`；首次写入并确保被 gitignore。
+- **无强制脚本**；编译遵循 AGENTS（默认不强制）。
+
+## 断点文件
+
+| 文件 | 谁写 | 用途 |
+|---|---|---|
+| `loop-state.md` | 调度者 | 阶段、下一跳、轮次、约定路径、**约定阅读切片** |
+| `feature-spec.md` | 讨论方 | 定稿说明（含冻结的「影响文件清单」） |
+| `issues.md` | 调度者 | 不通过项：编号 / 改法 / 未关闭|已关闭 |
+| `round-<N>-implement.md` | 实现方 | 改动报告 |
+| `round-<N>-review.md` | 验收方 | PASS/FAIL |
+
+```text
+# 加功能循环断点：<短名>
+阶段：<前置/讨论/实现/验收/判定/完成/中止>
+下一跳：<一句话>
+用户确认定稿：是/否
+累计实现轮次：<N>    上限：<6>
+约定技能：<绝对路径>
+约定阅读切片：<如「按类型速查·A + 基类 + 范例1」；由讨论方写入 spec 后抄到此处>
+范围文件：<来自 spec「影响文件清单」，定稿后填>
+本轮：round-<N>-implement.md / round-<N>-review.md
+```
+
+| 阶段 | 条件 | 动作 |
+|---|---|---|
+| 前置 | 无断点 | 建目录；记约定路径；**本步只读约定目录+AGENTS 加密/编译相关**；阶段→讨论 |
+| 讨论 | 未定稿 | **只指派 discuss**（不要同时加载 implement/review） |
+| 实现 | 已定稿且需写码 | **只指派 implement** |
+| 验收 | 有本轮 implement、无 review | **只指派 review** |
+| 判定 | 有 review | §1.4 |
+| 完成 | PASS | §2 |
+
+## 角色边界
+
+- 未获用户确认定稿 → 禁止实现。
+- FAIL → 追加 `issues.md` → 再实现；PASS → 完成。
+- 子代理**新开**会话，禁止 resume；上下文靠断点。
+- **每步只加载一个同级 SKILL.md**，不要把三份技能都塞进同一子代理。
+
+## Token / 耗时纪律
+
+- 一次会话一个功能短名。
+- 指派提示词：只给绝对路径、轮次、issues 编号；**禁止**粘贴 conventions 全文或大段源码。
+- 第 2 轮起实现提示词须含：`只读 feature-spec 的影响文件清单 + issues 未关闭项；勿通读 conventions；对照范例仅打开 spec 写明的那一个路径。`
+- 第 2 轮起验收提示词须含：`只核对未关闭 issues + 影响文件清单上的 diff；通过项一行合并。`
+- 调度者自己：续跑只 Read `loop-state.md`；需要时再按需打开 spec/issues，勿每次重读全部技能。
+- 并行 Read/Grep；能不用 Shell 就不用。
+- 不要为了「省一次指派」在调度会话里自己实现或验收。
+
+## 0. 续跑
+
+1. 有 `loop-state.md` → 按阶段跳转；已确认讨论勿重做。
+2. 无 → 前置后进入讨论。
+3. 轮次触顶 → 列出未关闭 issues，请用户：加轮 / 接受 / 改定稿后重开。
+
+## 1. 循环
+
+### 1.1 讨论
+
+```text
+你是讨论方；禁止改业务代码。仓库：<根>
+只读并执行：<feature-discuss>/SKILL.md
+约定：<conventions 路径>（按该技能「阅读切片」打开，勿通读无关章节）
+断点：<断点目录>    诉求：<摘要>
+写出 <断点>/feature-spec.md（≤80 行，清单体）；回复：草案已写否 + 待确认要点（≤8 条）
+```
+
+展示要点给用户。确认前阶段保持「讨论」。确认后：`用户确认定稿：是`，抄写 spec 的「约定阅读切片」与「影响文件清单」到 loop-state，阶段→实现，轮次=1。
+
+### 1.2 实现
+
+```text
+你是实现方；禁止自行验收。仓库：<根>
+只读并执行：<feature-implement>/SKILL.md
+约定：<路径>  断点：<路径>  spec：feature-spec.md
+轮次：<N>  issues：<未关闭编号 | 第1轮写「无，按说明全量」>
+第2轮+：只读影响文件清单与未关闭 issues，勿通读约定。
+写 round-<N>-implement.md（A/B/C 有 layout 必须含「UI 绑定表」）；回复：改动文件列表 + 报告路径 + 未决项
+```
+
+### 1.3 验收
+
+```text
+你是验收方；只读禁改码。仓库：<根>
+只读并执行：<feature-review>/SKILL.md
+约定：<路径>  断点：<路径>  spec：feature-spec.md
+轮次：<N>  实现报告：round-<N>-implement.md  issues：issues.md
+第2轮+：只核对未关闭 issues + 清单内 diff。
+写 round-<N>-review.md；回复：PASS/FAIL + 不通过编号
+```
+
+### 1.4 判定
+
+| 结果 | 动作 |
+|---|---|
+| PASS | → §2 |
+| FAIL | 不通过项→issues.md；轮次+1；→§1.2 |
+| 同会话 2 轮实现后同一 issue 仍未关闭 | → §3 |
+
+## 2. 完成
+
+汇报：文件列表、说明要点、各轮 FAIL 与修法（一句一条）、验收摘录。阶段=完成。
+
+## 3. 中止
+
+更新下一跳；告知断点路径与未关闭 issues；下次 `/feature-add-loop` 只读 loop-state 续跑。
+
+## 指派讨论时的约定切片提醒
+A/C/D：**勿开**路由章。B/E：读路由+SafeNet；PageRoute/Loader 可能密文，提示词勿索要明文。
+
+## 复合功能与外部文档（编排纪律）
+
+- 诉求同时含 UI + 协议/HUB + 算法 + 地图时：在 `loop-state` 记「复合 / 建议分期」；Task 提示**不要**罗列「请深挖 Manager+协议+地图」全栈清单，只传：短名、断点目录、约定路径、诉求摘要（或 md 路径）、用户是否要求先交流。
+- 设计稿目录：编排方**最多预读 `.md`**；勿批量 Read 全部 jpg/pdf。图片读取规则交给 discuss 技能。
+- 用户「先交流」：讨论子任务返回后若仅有澄清问题/草稿，**停在讨论阶段**，把问题展示给用户，**禁止**自动进入实现。
+- discuss 子代理若长时间无 `feature-spec.md`：催促其按探索预算落盘草稿；勿重复派同一超长 Task（identical 重复浪费）。
+
+## Task 提示词瘦身
+
+指派 discuss/implement/review 时，提示词只含：
+
+1. 角色一句 + 禁止项  
+2. 仓库根 + 断点目录  
+3. 技能路径 + 约定路径（提醒阅读切片，勿通读）  
+4. 本轮目标一句 + 用户诉求摘要（≤15 行，可引自 loop-state）  
+5. 设计文档**路径**（若有），写「按 discuss 外部文档规则读取」
+
+禁止：在提示词中复述约定全文、粘贴多张图 OCR、展开全模块探索清单。
+
+
+
+===== D:\WorkSpace\AI\skills\feature-discuss\SKILL.md =====
+---
+name: feature-discuss
+description: 加功能的讨论方。只澄清需求并产出「功能说明」短文档，不改业务代码。由 feature-add-loop 调度者指派，或用户明确要求「先讨论定稿、先不要改代码」时使用。换项目时配合 project-conventions-*。
+disable-model-invocation: true
+---
+
+# 加功能：讨论方
+
+## 角色边界
+
+- **禁止**改业务源码 / 资源 / 路由。
+- 可 Read 约定与仓库范例；定稿后由调度者等用户确认再实现。
+- 产出 ≤80 行清单体 `feature-spec.md`；禁止长文散文。
+
+## 阅读切片（省 token）
+
+按顺序打开，**到齐即停**，勿通读约定全文：
+
+1. 约定「按类型速查」→ 选定类型字母 A/B/C/D  
+2. 约定「域→模块映射」→ 填 UI/Domain 模块  
+3. 约定对应「五类范例」**仅一条**路径作对照  
+4. 若类型含路由：再读约定「路由」+ SafeNet 段  
+5. `AGENTS.md`：仅当需要确认编译/加密编辑方式时扫相关段（宿主已加载可跳过全文）
+
+**不要**预读 implement/review 技能；**不要**打开无关范例。
+
+## 决策树
+
+```
+有无界面？
+├─ 无 → D service（通常无 Route、无 layout）
+└─ 有 → 对话框？
+         ├─ 是 → C ui-dialog（先问：现有 Dialog 工具能否覆盖？）
+         └─ 否 → 需要全局/跨模块入口？
+                  ├─ 否 → A ui-nested（同模块容器内打开）
+                  └─ 是 → B ui-page + route-wire
+```
+
+标签：`ui-nested` | `ui-page` | `ui-dialog` | `service` | `route-wire`（B 常 = page+route-wire；纯 E 少见，优先并入 B）。
+
+### 易混分类（批量真实功能高频）
+- 路径含 `/impl/` 或落在 `*Container*` 下 → 默认 **A**，不要挂 Route。  
+- 已被某 `*PageLoader` 引用或需跨模块打开 → **B**。  
+- `*Dialog*` / 确认框 → **C**（先 Utils）。  
+- `core/*/…*Manager*` → **D**（必须写调用方）。  
+- 文案文件按域：`string-setting.xml` / `string-work.xml` / …，菜单才用 `strings-menu.xml`。
+
+## 类型必问（缺一不可）
+
+| 类型 | 额外必问 |
+|---|---|
+| A 嵌套页 | 父容器/入口 Fragment？谁 replace/add？**是否 Container 本身**（Container=壳，叶页面另计）？ |
+| B 可路由页 | Path 名？哪个 `*PageLoader`？要否 `strings-menu.xml`？SafeNet？**先搜 Loader 是否已引用同名 Fragment** |
+| C 对话框 | Utils/Notice 能否覆盖？输入框？调用方？**禁止**为 Dialog 加 PageRoute |
+| D 无界面 | 哪个 `core-*`？**调用方类路径**（无调用方则停）？禁 UI/Route |
+| E 接线 | 与 B 成对：Path + Loader +（可选）菜单；单独 E 必须写明配对页面已存在或同单交付 |
+
+
+## 复合功能与分期（省 token / 防跑偏）
+
+当需求同时含「界面 + 协议/HUB + 算法 + 地图」等多层时：
+
+1. **主类型**：按决策树只选一个主字母（通常 A 嵌套页或 B 可路由页）；附属写 `附属：D（Manager/协议模拟）` 等，勿假装单一纯类型。
+2. **建议分期**：在 spec 写「本期 / 下期」。默认本期 = 宿主 UI + 参数绑定 + 模拟调用桩；协议真机、曲线算法库、AGMap 绘制可标下期，除非用户明确要求一次交付。
+3. **首轮探索范围**：只定位宿主 Fragment/layout + 对照一条范例；**禁止**同轮深挖 HubCmd / 算法中心 / 地图绘制实现细节。这些写入「待澄清」即可。
+
+## 外部设计文档（md / 图片 / pdf）
+
+1. **先读 `.md` 全文**（通常很短），把场景、参数、入口摘要进 spec。
+2. **图片**：最多读 **2～3 张**代表性图（入口/主界面/关键示意）；其余按 md 文字理解，勿逐张扫完。
+3. **禁止**整本读入 `.pdf`（体积大、无增量信息时跳过）；需要时只记「存在 pdf，与 md 同内容」。
+4. 视频/外链：只记 URL，不拉取。
+5. 编排方若已在 loop-state 写了诉求摘要，讨论方**不要**再整套重读全部图片。
+
+## 先交流 / 澄清优先
+
+用户说「有问题先交流」「清楚后再做」时：
+
+1. 先列出 ≤8 条澄清问题（分期边界、模拟 vs 真协议、宿主是否已确认等）。
+2. 可写 **草稿** `feature-spec.md`（标题注明「草稿·待澄清」），含开放问题清单。
+3. **立即结束本轮**，把问题交回编排方/用户；**禁止**在未回复前继续 Grep 协议/算法/地图。
+
+## 探索预算（硬限制）
+
+- 找文件用 **Glob**，禁止 `Grep` 空 `pattern`（空 pattern 浪费且易重复）。
+- 宿主 Fragment + 对应 layout 定位后：累计工具调用建议 **≤12** 即落盘草稿/定稿；超时强制写入开放问题并停。
+- 同文件不要重复 Read；布局控件用一次定向 Grep/`android:id` 即可填 UI 绑定表。
+- 有 UI：spec 必须含 **UI 绑定表**（控件 → ViewBinding/字段 → 参数含义）；缺表视为未完成。
+
+## 执行步骤
+
+1. 按阅读切片取约定 → 定**主类型**；若复合则写附属类型 + 建议分期（见上节）。  
+2. 外部文档：先 md，图片 ≤3 张；用户要求先交流则先列澄清问题（见上节）。  
+3. 问清类型必问表 + 一句话目标 + 数据依赖。信息不够先提问并落盘草稿，**不要臆造模块**，**不要**为填表深挖全栈。  
+4. 写 `feature-spec.md`（模板下）；「影响文件清单」具体到相对路径草案；有 UI 必填 **UI 绑定表**；实现与验收共用此表，定稿后冻结。  
+5. 回复：路径 + ≤8 条待确认要点 +「请确认后再实现」（有开放问题则明确「请先答复澄清」）。
+
+## feature-spec.md 模板（删掉与类型无关的节）
+
+```text
+# 功能说明：<短名>
+类型：<标签>    速查：<A|B|C|D>
+一句话目标：<…>
+约定阅读切片：<复制你实际打开的章节名，供 loop-state>
+
+## 模块
+- UI：<或「无」>
+- Domain：<或「无」>
+- 父容器/调用方：<A/C/D 必填>
+
+## 影响文件清单（冻结；实现+验收共用）
+- 新建：…
+- 修改：…
+- 禁止改动：<如 A/C/D 写「PageRoute/*PageLoader」等>
+
+## 复用（有 UI 的 A/B/C 必填具体名，禁止只写「按约定」）
+- 基类：…
+- SharedControl / Dialog（类名）：如 CommonStatueBar / CommonDialogUtils / …
+- SharedStyle（style 名列表）：如 page_container, text_title, edit_text, …
+- 文案文件：string-*.xml / strings-menu.xml
+- 对照范例（仅一条）：<约定中的相对路径>
+
+## Route/菜单（仅 B 或说明要求时保留）
+- Path：…
+- Loader：…
+- 菜单 string：是/否
+- SafeNet/IDE-only：是/否/<未知则写「实现前 IDE 确认」>
+
+## 验收标准（可勾选，≤8 条）
+- [ ] …
+- [ ] 无平行自造通用控件/样式；layout 控件均可追溯到约定 SharedStyle/View
+- [ ] （有 UI）文案在共享 strings；（A/B）顶栏优先 CommonStatueBar
+- [ ] （A/C/D）未新增全局 Route
+- [ ] （B）Path + Loader 已接线；（SafeNet 时）IDE 已改或未决已声明
+- [ ] （D）已有调用方引用 Manager
+- [ ] （C）优先工具则无新类，或新类继承约定 Dialog 基类
+
+
+## UI 绑定表（有界面的 A/B/C 必填；缺则未完成）
+| 控件/区域 | layout id 或新建 | 绑定字段/参数 | 说明 |
+|---|---|---|---|
+| … | … | … | … |
+
+## 复合/分期（若适用）
+- 主类型：…    附属：…
+- 本期范围：…
+- 下期/模拟桩：…
+- 待澄清：…
+
+## 约束
+- 编译：默认不强制（AGENTS）
+- 其他：…
+```
+
+## 禁止
+
+- 禁止 Grep 空 pattern（找文件用 Glob）。
+- 禁止为填协议/算法细节而超过探索预算。
+
+
+- 不改业务文件；不把项目模块名写进本 SKILL（只写进本次 spec，且来自约定）。
+
+> ag6.0：`PageRoute` 与全部 `*PageLoader` 常为 SafeNet。B/E 讨论只写 Path **名草案**，勿要求贴明文；实现方 IDE 追加。
+
+
+===== D:\WorkSpace\AI\skills\feature-implement\SKILL.md =====
+---
+name: feature-implement
+description: 加功能的实现方。按已定稿功能说明与 project-conventions-* 实现（有界面页、对话框、无界面业务、路由/菜单接线），只改说明范围内的代码并写改动报告，不自行判定是否通过。由 feature-add-loop 调度者指派，或用户给出已确认的功能说明要求实现时使用。
+disable-model-invocation: true
+---
+
+# 加功能：实现方
+
+## 角色边界
+
+- 只改代码 + 写 `round-<N>-implement.md`；**禁止自行验收/宣布通过**。
+- **唯一范围**：spec「影响文件清单」+ 本轮 `issues.md` 未关闭项。要扩范围 → 写入「未决项」并停止扩改。
+- 类名/路径只来自 spec + 约定。
+
+## 阅读切片（省 token）
+
+**第 1 轮**
+
+1. `feature-spec.md`（全文，短）  
+2. 约定：仅打开 spec「约定阅读切片」列出的章节 + 对照范例**那一个文件**  
+3. 仓库规范 skill：仅当约定「必须遵守」且本轮新建模块入口时读；否则跳过  
+4. 有 issues 则读未关闭项  
+
+**第 2 轮及以后**
+
+1. `issues.md` 未关闭项 + 上轮 review 的不通过行  
+2. spec 的「影响文件清单」与「验收标准」（勿重读决策树/散文）  
+3. **禁止**通读约定；需要基类名时从 spec「复用」节抄  
+
+不要加载 discuss/review/loop 技能全文。
+
+## 按类型：必做 / 禁止
+
+| 类型 | 必做 | 禁止 |
+|---|---|---|
+| A ui-nested | Fragment+VM(+Adapter)+layout；挂到**叶页的父容器**（勿把 Container 当叶实现丢子页）；UI 绑定表；strings 用**域内** `string-*.xml` | PageRoute/Loader/菜单；业务新建通用 style；硬编码字号色 |
+| B ui-page+route-wire | 同上 + Path + 对应域 Loader；菜单仅当入口在菜单；列表优先 `BaseVBAdapter`/`CommonRv*` | Shell 盲改 SafeNet；错域 Loader；平行控件 |
+| C ui-dialog | **先** `CommonDialogUtils`；否则 Dialog 基类+layout（`card_view_container`/`edit_text`/`text_*`） | 新类却 Utils 已覆盖；全局 Route |
+| D service | core Manager；**调用方必改** | 任何 UI/Route/layout/样式 |
+| E route-wire | Path + Loader（+可选 menu）；与页面同单或页面已存在 | 只改 Loader 不改 Path（或相反）；Shell 改密文 |
+
+### SafeNet / IDE-only（B/E）
+
+含 **`PageRoute.kt`** 与全部可能加密的 `*PageLoader`/`RouteModuleConfig`。
+
+1. 编辑前用 IDE/AGENTS 允许的方式确认文件可读。  
+2. 不可读 → **停止改该文件**，未决项写明路径与「需用户 IDE 追加」；其余可读文件可继续。  
+3. 可读 → 对照现有条目追加，勿整文件重写。
+
+## 执行步骤
+
+1. 确认 spec 已定稿；否则停。  
+2. 有未关闭 issues → **只修这些问题**；否则按清单全量。  
+3. 打开对照范例文件（一条）对齐写法后改清单内文件。  
+4. 默认不编译；若编译，记入报告。  
+5. 写实现报告；「实际改动文件」须可被验收方当核对表（与清单对齐，差异写入「与草案差异」）。
+
+## 改动报告模板（≤60 行）
+
+```text
+# 第 N 轮实现：<短名>
+issues：<编号|无>
+## 实际改动文件
+- 新建：…
+- 修改：…
+- 未改（清单内但本轮跳过）：… + 原因
+## 与清单差异
+- …
+## 复用核对
+- 基类/Style/Control：…（一行）
+## UI 绑定表（A/B/C 有 layout 时必填；D 写「无」）
+| 控件/区域 | 使用的 View 或 @style | 约定出处 |
+|---|---|---|
+| … | CommonStatueBar / @style/page_container / … | SharedControl 或 styles.xml |
+## SafeNet/未决
+- …
+## 构建
+- 未执行 | <命令→结果>
+```
+
+
+## 分期与复合
+
+- 只改 `feature-spec`「本期范围」与冻结影响清单内文件；下期/模拟桩按 spec 落空实现或 TODO 接口，勿擅自做真协议/真算法。
+- 复合单：UI 与 Domain 都在本期时仍遵守类型门禁（A 不改 Route；D 调用方必须存在）。
+
+## 禁止
+
+- 禁止改验收标准「让自己好过」。  
+- 禁止平行复制共享控件/样式；禁止 layout 写死颜色/字号绕开 SharedStyle（除非约定 attrs）。  
+- 禁止为 D/A/C 顺手加 Route。  
+- 有 layout 的报告若缺「UI 绑定表」视为未完成，须补表后再交验收。
+
+
+===== D:\WorkSpace\AI\skills\feature-review\SKILL.md =====
+---
+name: feature-review
+description: 加功能的验收方，只读不改代码。对照已定稿功能说明与 project-conventions-* 判定实现是否达标，输出 PASS/FAIL 与带改法的问题清单。由 feature-add-loop 调度者指派，或用户要求「按功能说明验收」时使用。
+disable-model-invocation: true
+---
+
+# 加功能：验收方
+
+## 角色边界
+
+- **只读**；唯一可写：`round-<N>-review.md`。  
+- 不采信实现报告「已满足」自述；对照清单与源码抽查。  
+- 拿不准 → 不通过 + 写明要补的证据。  
+- 说明外的新需求 → 「遗留建议」，**不计入 FAIL**。
+
+## 阅读切片（省 token）
+
+**第 1 轮**
+
+1. spec：验收标准 + 影响文件清单 + 类型（其它节跳过）  
+2. `round-<N>-implement.md`  
+3. `issues.md`（若有）  
+4. 约定：仅当怀疑合规时打开「基类 / SharedStyle / 路由」相关短节——**优先信 spec 复用节**  
+
+**第 2 轮+**
+
+1. 未关闭 issues + 本轮 implement 报告  
+2. 仅对涉及文件做 diff/抽查  
+3. 禁止通读约定与范例大文件  
+
+不要加载 discuss/implement 技能全文。
+
+## 类型门禁（PASS 必须满足）
+
+| 类型 | 额外门禁 |
+|---|---|
+| A | UI 挂到父容器；**未**新增 Route/Loader；**UI 绑定表**控件均可在约定 SharedStyle/View 找到 |
+| B | Path+Loader；菜单若需；SafeNet 已改或未决已声明（阻塞未声明→FAIL）；UI 绑定表合规 |
+| C | Utils 调用正确，或新类继承约定 Dialog 基类且 layout style 合规；无全局 Route |
+| D | Manager 在 Domain；调用方有引用；**无**新 UI/Route/layout |
+| E | Path+Loader(+菜单若声明)成对；SafeNet 文件未用 Shell 盲改；无孤立接线 |
+
+通用门禁：验收标准勾选；**Only project-defined View/Style**（对照 implement「UI 绑定表」与约定；缺表或出现业务模块自造通用 style/自定义 StatusBar → FAIL）；有 UI 则 strings 在共享 res；改动与冻结清单一致。；**string 域文件正确**（setting→string-setting，work→string-work，菜单→strings-menu）；A 须指出父容器；列表优先 BaseVBAdapter/CommonRv*。
+
+## 执行步骤
+
+1. 按阅读切片加载。  
+2. 以「影响文件清单」为表头逐项：存在？关键符号？  
+3. 跑类型门禁 + 验收标准。  
+4. 写报告；**末行必须** `结论：PASS` 或 `结论：FAIL（不通过：…）`。
+
+## 报告模板（≤80 行）
+
+```text
+# 第 N 轮验收：<短名>
+类型：<A/B/C/D>
+
+## 标准核对
+通过：<合并列出>
+| ID | 结果 | 位置 | 问题 | 怎么改 |
+| S1 | 不通过 | path:行 | … | 具体改法 |
+
+## issues 复核
+| 编号 | 已修复？ | 说明 |
+
+## 门禁
+- A/B/C/D：通过/不通过（一句）
+- Only project-defined View/Style：通过/不通过（一句；D 写 N/A）
+- 影响清单冻结未越界：通过/不通过
+
+## 遗留建议（不计分）
+- …
+
+结论：PASS
+```
+
+## 纪律
+
+- 「怎么改」必须可照做（文件+改法）；禁止空话。  
+- 不提 spec/约定外的新口径。  
+- 同一问题多处出现时一行列全位置。
+
+## 仓库事实（ag6.0）
+`PageRoute.kt` 与全部 `*PageLoader.kt` 经文件头检测为 **SafeNet 锁定**。验收不得要求 Shell 出示 Path 明文；认可 IDE 改动声明或 implement「未决/阻塞」项。
+
+## 分期与复合
+
+- 验收以 spec「本期范围」为准；下期项未做不记 FAIL（记「下期未验收」即可）。
+- 复合单：分别核对主类型门禁 + 附属类型门禁；缺 UI 绑定表 → FAIL。
+
+
+
+===== D:\WorkSpace\AI\skills\project-conventions-ag60\SKILL.md =====
+---
+name: project-conventions-ag60
+description: 在 ag6.0（Android Kotlin 多模块 MVVM）上执行 feature-add-loop（或 discuss/implement/review）前加载；只提供路径、基类、共享 Style/控件、路由注册与范例，不含通用流程。换项目时复制本技能并替换路径表。
+---
+
+# project-conventions-ag60
+
+ag6.0 项目约定清单（路径与范例）。**实现流程见** [feature-add-loop](../feature-add-loop/SKILL.md)（调度；同级还有 feature-discuss / feature-implement / feature-review）。换项目时复制本文件为 `project-conventions-<slug>` 并替换下表。
+
+## 项目根与栈
+
+| 项 | 值 |
+|---|---|
+| 绝对根 | `D:\WorkSpace\git\ag6.0` |
+| 相对路径 | 下文均相对仓库根 |
+| 栈 | Android Kotlin，Gradle 多模块，MVVM，ViewBinding，Fragment |
+
+## 分层与模块
+
+| 层 | 目录 / 模块 | 职责 |
+|---|---|---|
+| App | `app/` | 应用入口、组装 |
+| UI | `component/component-common`, `component-device`, `component-home`, `component-isobus`, `component-setting`, `component-work` | 界面（Fragment / VM / layout） |
+| Domain | `core/core-app`, `core-work`, `core-map`, `core-device`, `core-gnss`, … | Manager / 业务，无界面 |
+| Route | `core/page-route` | `PageRoute`、Loader 接口、模块路由配置 |
+| Shared | `common/base-component`, `common-res`, `common-view`, … | 基类、Style/字符串、共享控件与 Dialog |
+
+## 基类（必用）
+
+相对路径均在 `common/base-component/src/main/java/com/sino/common/base/component/`：
+
+| 用途 | 文件 |
+|---|---|
+| Activity | `BaseViewBindingActivity.kt` |
+| Fragment ҳ | `fragment/BaseViewBindingFragment.kt` |
+| 卡片对话框 | `BaseVBCardDialogFragment.kt` |
+| 带输入卡片对话框 | `BaseVBCardInputDialogFragment.kt` |
+
+新页面继承 `BaseViewBindingFragment`（或约定的 Activity 基类）；自定义对话框优先上述 Dialog 基类。
+
+## SharedStyle / 资源（common-res）
+
+目录：`common/common-res/src/main/res/values/`
+
+| 文件 | 用途 |
+|---|---|
+| `styles.xml` | 文本与容器样式 |
+| `theme-styles.xml` / `theme-attrs.xml` | 主题与属性 |
+| `dimens.xml` / `colors.xml` | 尺寸与颜色 |
+| `string-*.xml` / `strings*.xml` | 按域拆分的文案（如 `string-setting.xml`, `string-work.xml`, `strings-menu.xml`） |
+
+常用 style 名（`styles.xml`）：`text_1`…`text_5`（及 `_label` / `_content` / `_paragraph` 变体）、`text_title` / `text_subtitle` / `text_button` / `text_content`、`page_container`、`card_view_container`、`edit_text`（及 degree/dms 变体）、`image_button_default` / `image_button_small` / `image_button_large` / `image_button_large_x`。
+
+布局与控件**必须**引用上述 style（及 theme-attrs）；禁止在业务模块平行复制通用样式，禁止用硬编码字号/色替代 SharedStyle（除非走约定 attr）。实现报告须有「UI 绑定表」。
+
+## SharedControl / Dialog（common-view）
+
+包根：`common/common-view/src/main/java/com/sinognss/ag/common/view/`
+
+| 类型 | 代表 |
+|---|---|
+| 状态/按钮 | `CommonStatueBar`, `CommonIconButton`, `CommonLoadingIconButton` |
+| 筛选/下拉 | `ViewCommonFilterBar`, `ViewCommonDropSelectView` |
+| Tab / 列表 | `layout/CommonTabLayout`, `rv/CommonRvItemRightCheckAdapter`, `rv/BaseVBAdapter` |
+| Dialog 工具 | `dialog/CommonDialogUtils.kt` |
+| 现成对话框 | `dialog/impl/CommonNoticeDialog`, `CommonLocalNoticeDialog`, `CommonDataLoadingDialog`, `CommonProgressLoadingDialog` |
+
+新 UI 优先组合上述控件；确认/提示/加载优先 `CommonDialogUtils`。
+
+## 路由
+
+| 角色 | 路径 |
+|---|---|
+| Path 常量 | `core/page-route/src/main/java/com/sino/page/route/PageRoute.kt` |
+| 模块配置 | `core/page-route/.../RouteModuleConfig.kt`（**SafeNet 加密可能**） |
+| 接口 | `IPageLoader.kt`, `IHomePageLoader.kt`, `ICommonPageRouter.kt` |
+| Loader | 各 UI 模块 `.../route/*PageLoader.kt`： |
+| | `component-common/.../CommonPageLoader.kt` |
+| | `component-device/.../DevicePageLoader.kt` |
+| | `component-home/.../HomePageLoader.kt` |
+| | `component-isobus/.../IsobusPageLoader.kt` |
+| | `component-setting/.../SettingPageLoader.kt` |
+| | `component-work/.../WorkPageLoader.kt` |
+
+**SafeNet / IDE-only**：`RouteModuleConfig` 与部分 `*PageLoader` 可能加密。用 IDE 打开、对照现有 Path/注册条目追加；勿假设 shell 可读明文。编辑方式遵循仓库 `AGENTS.md`。
+
+## 域 → 模块映射（示例）
+
+| 业务域 | UI 模块 | Domain 模块 |
+|---|---|---|
+| setting / 系统设置 | `component-setting` | `core-app`（如语言） |
+| work / 作业、地块标记 | `component-work` | `core-work` |
+| device | `component-device` | `core-device` |
+| home | `component-home` | （按功能再定 core） |
+| isobus | `component-isobus` | （按功能再定） |
+| 跨域公共页 | `component-common` | — |
+| 仅服务无界面 | — | 对应 `core-*` |
+
+不确定时打开对应 `component-*` / `core-*` 现有包结构，对齐邻近功能，不要新建平行顶层模块。
+
+## 按类型速查（影响面）
+
+讨论方先选字母，写入 spec「速查」；实现/验收按「必碰 / 禁碰」执行。
+
+| 字母 | 类型 | 必碰（典型） | 禁碰（除非 spec 明示） | 对照范例节 |
+|---|---|---|---|---|
+| A | ui-nested 嵌套页 | Fragment+VM+layout+strings；父容器导航；**顶栏 CommonStatueBar**；layout 只用 SharedStyle（page_container/text_*/edit_text/…） | `PageRoute`、`*PageLoader`、菜单；业务内新建通用 style | §五类范例·1 |
+| B | ui-page + route-wire | 同上 + Path + `*PageLoader`；可选 `strings-menu.xml`；同样强制 SharedStyle/View | Shell 盲改 SafeNet；平行控件/样式 | §五类范例·2 + ·5 |
+| C | ui-dialog | 优先 `CommonDialogUtils`；自定义则 Dialog 基类 + `card_view_container`/`edit_text`/`text_*` | 全局 Route；无必要新类；业务平行 style | §五类范例·4 |
+| D | service 无界面 | `core-*` Manager；**现有**调用方引用 | 任何新 UI / Route / layout / 样式 | §五类范例·3 |
+
+### 阅读切片（给子代理）
+
+- 讨论：本表 → 域映射 → **一条**范例 →（仅 B）路由+SafeNet  
+- 实现第 1 轮：spec 切片 + 一条范例文件 +（B）路由段  
+- 实现第 2 轮+ / 验收：以 spec 清单与 issues 为准，不回读本表全文  
+
+## 五类范例（对照用）
+
+### 1. 有界面设置页（语言）— 速查 A 主范例
+
+- `component/component-setting/src/main/java/com/sinognss/component/setting/system/language/SettingLanguageFragment.kt`
+- `.../SettingLanguageViewModel.kt`
+- `.../SettingLanguageAdapter.kt`
+- 布局：模块内 `fragment_setting_language` 等（ViewBinding）
+- 模式：Fragment + VM + Adapter；基类 `BaseViewBindingFragment`；文案走 `common-res` setting/language 字符串。
+
+### 2. 复杂作业页（Marker）— 速查 B 的页内结构参考（接线另见 ·5）
+
+- 容器：`component/component-work/.../marker/create/WorkMarkersFragment.kt` + `WorkMarkersViewModel.kt`
+- 子页：`.../marker/create/impl/WorkPointMarkerFragment.kt`、`WorkLineMarkerFragment.kt`、`WorkAreaMarkerFragment.kt` 等
+- 编辑/设置/仓库：`marker/edit/`、`marker/setting/`、`marker/store/`
+- 模式：同模块嵌套 Tab/子 Fragment；共享 `CommonTabLayout` 等。
+
+### 3. 无界面 DomainService — 速查 D
+
+- `core/core-app/src/main/java/com/sinognss/ag/core/app/language/LanguageManager.kt`
+- 模式：core 层 Manager，由 Setting 的 ViewModel 调用；不挂 Route。
+
+### 4. 对话框 — 速查 C
+
+- 优先：`common/common-view/.../dialog/CommonDialogUtils.kt` + `dialog/impl/CommonNoticeDialog` 等
+- 自定义卡片：继承 `BaseVBCardDialogFragment` / `BaseVBCardInputDialogFragment`
+
+### 5. Route 接线 — 速查 B 必读
+
+- 常量：`PageRoute.kt` 追加 Path
+- 注册：对应域 `*PageLoader.kt`（及必要时 `RouteModuleConfig.kt`）
+- 菜单文案：`common-res/.../strings-menu.xml`（若入口在菜单）
+- 加密文件用 IDE 对照现有条目修改
+
+## 仓库规范（按轮次读，省 token）
+
+| 谁 | 何时读 |
+|---|---|
+| 调度者前置 | `AGENTS.md` 中与编译/加密编辑相关的段落 |
+| 讨论方 | 一般不读规范 skill；类型不清时再读 |
+| 实现方第 1 轮 | 若新建非常规入口：`.coding-standards/skills/common-project-skill/SKILL.md` + `general-ruler.mdc`；否则可跳过 |
+| 实现方第 2 轮+ / 验收方 | **默认不读**；只在 issues 点名规范条款时打开对应段 |
+
+路径：`.coding-standards/skills/common-project-skill/SKILL.md`、`AGENTS.md`、`.coding-standards/rulers/general-ruler.mdc`（另见 `.cursor/rules/ruler.mdc`）。
+
+## 换项目
+
+复制本技能目录为 `project-conventions-<新项目>`，替换：根路径、模块表、基类、SharedStyle/Control、Route、域映射、范例路径。通用流程仍用 [feature-add-loop](../feature-add-loop/SKILL.md) 及同级讨论/实现/验收技能。
+
+
+## 复合功能提示（供讨论方阅读切片）
+
+- UI 嵌套页 + Manager/协议模拟：主类型 A（或 B），附属 D；约定阅读仍按主类型切片，Domain 章仅在本期含 Manager 时打开。
+- 地图/算法库：无现成「类型字母」时写入附属说明与分期，勿为此通读全部约定。
+
+## 分类启发式（全库扫描）
+| 信号 | 倾向 |
+|---|---|
+| `/impl/` 或 `*Container*Fragment` 子树 | A |
+| 模块内偏顶层、需跨模块打开 | B（附 E；PageRoute/Loader 常 SafeNet） |
+| `*Dialog*` / 确认提示 | C（先 Utils） |
+| `core/*/…*Manager.kt` | D（写调用方） |
+| 只动 Path/Loader/菜单 | E（最好并入 B） |
+
+文案：`string-<域>.xml`；菜单：`strings-menu.xml`。
+
+**SafeNet 事实**：`PageRoute.kt` 与各 `*PageLoader.kt` 均为 SafeNet 锁定（勿 shell 读明文；用 IDE/AGENTS）。
+
+
+===== D:\WorkSpace\AI\skills\_validation\live-watch-group-line.md =====
+# Live watch: group-line (2026-10-29 Asia/Shanghai)
+
+## Session
+- Loop dir: D:\\WorkSpace\\git\\ag6.0\\build\\feature-add-loop\\group-line\\
+- Feature: 分组线 / group-line
+- Stage at watch: 讨论 (user confirm=否, round=0); only loop-state.md, no feature-spec yet
+- Orchestrator conv: 5081faaa… (~10:58–11:03) cumEst~582k steps27 subagents1
+- Discuss child: f016ba1a… (~11:01–11:06+) cumEst~640k+ steps39+ 
+
+## Observed waste
+1. Composite A+D+HUB+curve+AGMap explored in one discuss without phasing
+2. Parent re-read design jpgs x2 each; pdf 1.7MB present (risk)
+3. Empty-pattern Grep used as Glob substitute
+4. Task prompt listed full-stack exploration; identical Task count=2
+5. User asked clarify-first but discuss kept grepping Hub/algorithm
+6. No feature-spec after ~5+ min / 39 tool calls
+
+## Skill patches applied (ag6.0 untouched)
+- feature-discuss: 复合/分期, 外部文档, 先交流, 探索预算, UI绑定表模板, 禁空Grep
+- feature-add-loop: 编排纪律 + Task提示词瘦身
+- feature-implement / feature-review: 分期与复合
+- project-conventions-ag60: 复合功能提示
+
+
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
+Add-Content : 流不可读。
+所在位置 C:\Users\admin\AppData\Local\Temp\ps-script-e0a2d76a-e436-4ab5-b9e3-9b0fdce58e67.ps1:524 字符: 9
++         Add-Content -Path $OutputFile -Value $Content -Encoding UTF8
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (C:\Users\admin\...2b778425a10.txt:String) [Add-Content]，ArgumentExcept
+    ion
+    + FullyQualifiedErrorId : GetContentWriterArgumentError,Microsoft.PowerShell.Commands.AddContentCommand
+ 
