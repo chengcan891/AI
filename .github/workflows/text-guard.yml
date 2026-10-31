@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # 每天 01:00 UTC（北京时间 09:00）全量扫一次。
+  # 这层不依赖任何人的自觉：不用你在网页点提交，不用本地装钩子，也不管内容是
+  # 走 git 还是走 API 写进来的。只要仓库里出现密文，第二天就会被发现。
+  # 注意：GitHub 在仓库连续 60 天无提交活动后会自动停用定时任务，届时需手动启用。
+  schedule:
+    - cron: '0 1 * * *'
 
 jobs:
   check:
@@ -15,9 +21,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: 检查本次推送是否混入密文
+      - name: 检查是否混入密文
         env:
-          BEFORE: ${{ github.event.before }}
+          # 定时任务与手动触发时没有 github.event.before，退化为全 0 即全量扫描
+          BEFORE: ${{ github.event.before || '0000000000000000000000000000000000000000' }}
           AFTER: ${{ github.sha }}
         run: |
           cat > /tmp/check.cjs <<'GUARD'
