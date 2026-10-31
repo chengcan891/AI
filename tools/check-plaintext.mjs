@@ -10,11 +10,22 @@ const KNOWN_HEADERS = [
 ];
 
 const args = process.argv.slice(2);
+const flagValue = (name) => {
+  const i = args.indexOf(name);
+  return i >= 0 ? args[i + 1] : null;
+};
+const skipIdx = new Set();
+for (const n of ['--dir', '--since']) {
+  const i = args.indexOf(n);
+  if (i >= 0) skipIdx.add(i + 1);
+}
+
 const wantFingerprint = args.includes('--fingerprint');
 const wantAll = args.includes('--all');
-const dirIdx = args.indexOf('--dir');
-const dirArg = dirIdx >= 0 ? args[dirIdx + 1] : null;
-const explicit = args.filter((a, i) => !a.startsWith('--') && !(dirIdx >= 0 && i === dirIdx + 1));
+const wantChanged = args.includes('--changed');
+const dirArg = flagValue('--dir');
+const sinceArg = flagValue('--since');
+const explicit = args.filter((a, i) => !a.startsWith('--') && !skipIdx.has(i));
 
 function git(argv, opts = {}) {
   const r = spawnSync('git', argv, { maxBuffer: 1 << 28, ...opts });
@@ -30,6 +41,21 @@ function isRepo() {
   return r.status === 0;
 }
 
+const nullSha = (s) => !s || /^0+$/.test(s.trim());
+
+function stateFile() {
+  const gd = git(['rev-parse', '--git-dir'], { encoding: 'utf8' }).trim();
+  return path.isAbsolute(gd) ? path.join(gd, 'text-guard-state') : path.resolve(gd, 'text-guard-state');
+}
+
+function readState() {
+  try { return fs.readFileSync(stateFile(), 'utf8').trim(); } catch { return ''; }
+}
+
+function writeState(sha) {
+  try { fs.writeFileSync(stateFile(), sha + '\n'); } catch {}
+}
+
 function listStaged() {
   return git(['diff', '--cached', '--name-only', '--diff-filter=ACMR', '-z'], { encoding: 'utf8' })
     .split('\0').filter(Boolean);
@@ -37,6 +63,19 @@ function listStaged() {
 
 function listAll() {
   return git(['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
+}
+
+function listSince(ref) {
+  return git(['diff', '--name-only', '--diff-filter=ACMR', ref, '-z'], { encoding: 'utf8' })
+    .split('\0').filter(Boolean);
+}
+
+function headSha() {
+  return git(['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+}
+
+function refOk(ref) {
+  return spawnSync('git', ['cat-file', '-e', ref + '^{commit}'], { maxBuffer: 1 << 20 }).status === 0;
 }
 
 function showStaged(p) {
@@ -88,8 +127,7 @@ function firstBadUtf8(buf) {
 function analyse(buf, name) {
   if (buf.length === 0) return { skip: true, reasons: [], fingerprint: null };
   const reasons = [];
-  const head32 = buf.subarray(0, 32);
-  const headHex = head32.toString('hex');
+  const headHex = buf.subarray(0, 32).toString('hex');
   let fingerprint = null;
 
   for (const k of KNOWN_HEADERS) {
@@ -125,11 +163,11 @@ function analyse(buf, name) {
 function main() {
   let items = [];
   let source = '';
+  let advanceState = false;
 
   if (dirArg) {
     source = '目录 ' + dirArg;
-    const files = walk(dirArg).filter(f => TEXT_EXT.test(f));
-    items = files.map(f => ({ path: f, buf: fs.readFileSync(f) }));
+    items = walk(dirArg).filter(f => TEXT_EXT.test(f)).map(f => ({ path: f, buf: fs.readFileSync(f) }));
   } else if (explicit.length) {
     source = '指定文件';
     items = explicit.map(p => ({ path: p, buf: fs.readFileSync(p) }));
@@ -138,7 +176,28 @@ function main() {
       console.error('当前目录不是 git 仓库。要么在仓库里跑，要么用 --dir <目录> 指定要扫的目录。');
       process.exit(2);
     }
-    if (wantAll) {
+
+    let ref = null;
+    if (sinceArg !== null) {
+      ref = nullSha(sinceArg) ? null : sinceArg;
+      if (ref && !refOk(ref)) {
+        console.log('提示：找不到提交 ' + ref.slice(0, 8) + '（可能是首次推送或强推），改为全量。');
+        ref = null;
+      }
+    } else if (wantChanged) {
+      const st = readState();
+      ref = st && !nullSha(st) && refOk(st) ? st : null;
+      if (!st) console.log('提示：还没有扫描记录，这一次按全量扫，扫完记下当前提交。');
+    }
+
+    advanceState = wantChanged || sinceArg !== null;
+
+    if (ref) {
+      source = '自 ' + ref.slice(0, 8) + ' 起的改动';
+      items = listSince(ref).filter(p => {
+        try { fs.accessSync(p); return true; } catch { return false; }
+      }).map(p => ({ path: p, buf: fs.readFileSync(p) }));
+    } else if (wantAll || wantChanged || sinceArg !== null) {
       source = '全部已跟踪文件';
       items = listAll().map(p => ({ path: p, buf: showStaged(p) }));
     } else {
@@ -158,13 +217,16 @@ function main() {
     if (a.skip) continue;
     if (!a.reasons.length) continue;
     if (a.fingerprint) fingerprinted++;
-    failed.push({ path: it.path, reasons: a.reasons, head: a.headHex, size: it.buf.length });
+    failed.push({ path: it.path, reasons: a.reasons, head: a.headHex });
     console.log('  失败  ' + it.path);
     for (const r of a.reasons) console.log('        · ' + r);
     if (wantFingerprint || a.fingerprint) console.log('        头 32 字节：' + a.headHex);
   }
 
   if (!failed.length) {
+    if (advanceState) {
+      try { writeState(headSha()); } catch {}
+    }
     console.log('  全部通过，都是可读文本。\n');
     process.exit(0);
   }

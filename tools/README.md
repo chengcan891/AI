@@ -7,18 +7,32 @@
 ## 怎么跑
 
 ```bash
-node tools/check-plaintext.mjs                  # 检查暂存区，默认
-node tools/check-plaintext.mjs --all            # 检查全部已跟踪文件
-node tools/check-plaintext.mjs a.md b.md        # 检查指定文件
-node tools/check-plaintext.mjs --dir 某个目录    # 递归扫一个目录，不受 git 限制
+node tools/check-plaintext.mjs                  # 检查暂存区，提交时用这个
+node tools/check-plaintext.mjs --changed        # 增量：只扫上次扫过之后改动过的文件
+node tools/check-plaintext.mjs --since <提交>    # 增量：只扫某个提交之后的改动
+node tools/check-plaintext.mjs --all            # 全量
+node tools/check-plaintext.mjs --dir 某个目录    # 递归扫目录，不要求是 git 仓库
 node tools/check-plaintext.mjs --fingerprint    # 额外打印可疑文件的头 32 字节
 ```
 
 通过退出码 0，不通过退出码 1。
 
-`--dir` 的用法很实用：从微信、QQ、邮件收到的工程目录，先扫一遍再决定要不要往仓库里拷。
+## 四种扫描范围，怎么选
 
-## 为什么检查"暂存区"而不是"磁盘上的文件"
+| 模式 | 扫什么 | 用在哪 |
+|---|---|---|
+| 默认（无参数） | 暂存区 | 提交时，钩子调的就是它 |
+| `--changed` | 上次扫过之后有改动的文件 | 日常巡检，快 |
+| `--since <提交>` | 某个提交之后有改动的文件 | CI、换机器后补扫 |
+| `--all` | 全部已跟踪文件 | 第一次建库、怀疑有问题时 |
+
+**增量是怎么记的**：`--changed` 把上次扫完时的 HEAD 提交号写进 `.git/text-guard-state`，下次用 `git diff <那个提交>` 算出改动过的文件，只扫这些。扫完通过才更新记录；**没通过就不更新**，下次还会重扫同一批，不会漏。
+
+`.git/` 不进版本库，所以这个记录只在本机有效。每台机器第一次跑会自动退化成全量扫一次，之后走增量。
+
+`--since` 是给 CI 用的：GitHub 在 push 事件里会给一个 `before` 提交号，直接传给脚本，扫的自然就是这次推送的改动。如果 `before` 全是 0（新分支首次推送，或者强推），脚本会自动退化成全量。
+
+## 为什么提交时检查"暂存区"而不是"磁盘上的文件"
 
 这是整个工具最关键的一点。
 
@@ -27,6 +41,8 @@ node tools/check-plaintext.mjs --fingerprint    # 额外打印可疑文件的头
 暂存区（git 索引里那份）才是**真正会被推上 GitHub 的字节**。检查它，等于检查了答案本身，不用去猜哪个进程被授权了。
 
 `git commit` 之前，`git show :路径` 拿到的就是这一份。
+
+增量模式（`--changed` / `--since`）读的是工作区文件，因为那种场景下工作区和已提交内容是一致的。两种模式的取样对象不同，这是有意的。
 
 ## 装上钩子，自动拦
 
@@ -43,7 +59,7 @@ git config core.hooksPath .githooks
 
 ## 云端兜底
 
-`.github/workflows/text-guard.yml` 在每次推送到 main 后跑一遍全量检查。它的作用是**事后提醒**——如果本地钩子没装或跳过了，密文已经进了仓库，这次 CI 会变红，GitHub 会发邮件。
+`.github/workflows/text-guard.yml` 在每次推送到 main 后跑一遍，扫的是**这次推送的改动**（用 `github.event.before`）。作用是**事后提醒**——如果本地钩子没装或跳过了，密文已经进了仓库，这次 CI 会变红，GitHub 会发邮件。
 
 它拦不住提交，只能告诉你有事。真正拦住的是本地钩子。
 
@@ -66,7 +82,7 @@ git config core.hooksPath .githooks
 - **整份都是密文**，用 strings 搜不到 `package` / `import` / `class` / `fun` 中的任何一个，没有残留明文。除授权终端外无法还原，用别的工具也救不回来。
 - 文件比原文大，多出来的是头部和分块填充。
 
-样本文件的大小分别是 3020、11081、5646 字节，全部命中。
+样本文件的大小分别是 3020、11081、5646 字节，全部命中；同一目录下 19 个 `.kt` 无一旁免。
 
 ## 判据清单
 

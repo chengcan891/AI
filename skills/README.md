@@ -33,10 +33,11 @@ For Codex-only legacy paths, junction individual skill folders into ~/.codex/ski
 
     git config core.hooksPath .githooks
 
-手动跑也行：
+手动跑：
 
-    node tools/check-plaintext.mjs                  # 检查暂存区
+    node tools/check-plaintext.mjs                  # 检查暂存区（提交时用这个）
+    node tools/check-plaintext.mjs --changed        # 增量，只扫上次之后改动过的文件
     node tools/check-plaintext.mjs --all            # 全量
-    node tools/check-plaintext.mjs --dir 某个目录    # 扫目录，从微信收到的工程先扫一遍
+    node tools/check-plaintext.mjs --dir 某个目录    # 扫目录，微信收到的工程先扫一遍
 
-亿赛通的文件头已经取到真样本（偏移 0 魔数 `62142365` + 偏移 12 的 `E-SafeNet`），判据见 tools/README.md。云端还有 text-guard 工作流兜底，推送后若发现密文会变红提醒。
+亿赛通的文件头已经取到真样本（偏移 0 魔数 `62142365` + 偏移 12 的 `E-SafeNet`）。增量记录写在 `.git/text-guard-state`，没通过就不推进，下次重扫同一批。云端 text-guard 工作流扫的是每次推送的改动。细节见 tools/README.md。

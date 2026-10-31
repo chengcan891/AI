@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - name: 检查是否混入密文或非文本
-        run: node tools/check-plaintext.mjs --all
+        run: node tools/check-plaintext.mjs --since "${{ github.event.before }}"
