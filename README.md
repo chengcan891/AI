@@ -10,13 +10,13 @@ README.md                        本文件
 
 ## 明文检查
 
-这个仓库可能从一台做了磁盘透明加密（亿赛通）的机器上提交。在未被授权的进程里，文件内容是密文；那样推上去的 Markdown 在 GitHub 上是乱码，AI 读不了，人也读不了。
+这个仓库可能从一台做了磁盘透明加密（亿赛通）的机器上提交。未被授权的进程读到的是密文，那样推上去的 Markdown 在 GitHub 上是乱码，AI 读不了，人也读不了。
 
-所以提交前有一道检查。
+所以提交前有一道检查。**它不在这个仓库里，这是故意的。**
 
-### 为什么它不在这个仓库里
+### 为什么不能放在仓库里
 
-第一版把它放在 `tools/check-plaintext.mjs`，钩子调这个脚本。实测下来这个设计是错的：把脚本自己换成密文再提交，钩子确实拒绝了提交（fail-closed，方向没错），但打印的是——
+第一版放在 `tools/check-plaintext.mjs`，钩子调这个脚本。实测下来是错的：把脚本自己换成密文再提交，钩子确实拒绝了提交（fail-closed，方向没错），但打印的是——
 
 ```
 提交已取消：暂存区里有不是可读文本的文件
@@ -24,45 +24,68 @@ README.md                        本文件
 
 **坏掉的是检测器，它却在指控你的文件。** 你会去翻文件、查不出问题，最后 `git commit --no-verify` 绕过。一次误诊就足以让人不再信任这个钩子。
 
-检测器不能住在被检测的区域里。所以它搬到 `~/.git-hooks/`，在仓库外面：
+检测器不能住在被检测的区域里。所以它搬到 `~/.git-hooks/`：
 
 - 不会被 `git pull`、`git checkout` 覆盖
-- 不会随仓库内容更新而漂移
-- 仓库目录被加密时，它不受牵连
+- 不随仓库内容更新而漂移
+- 仓库目录被加密时，不受牵连
+
+### 脚本放在哪：三处，各管一段
+
+| 位置 | 谁在跑 | 管什么 | 会怎么失效 |
+|---|---|---|---|
+| `~/.git-hooks/pre-commit` | 本机每次 `git commit` | 你手动提交 | `--no-verify`、配置丢失、钩子被加密 |
+| `.github/workflows/text-guard.yml` | GitHub 的机器，每次 push | 所有人，包括绕过钩子的 | 关掉 workflow |
+| 随时敲 `--all` / `--dir` | 本机 | 补检查 | 忘了敲 |
+
+**三层不能互相替代。** 本地那层快，能当场拦住；云端那层是底线。
+
+有一个事实要说清楚：**通过 API 直接提交（不经过 `git commit`）时，本地钩子完全不参与**。工具替你写仓库走的就是这条路，它绕得过钩子，绕不过云端。所以云端不是"备份"，是唯一能管住所有提交方式的那一层。
 
 ### 装法
 
-本文件末尾有完整源码，一个文件、无外部依赖、逻辑全部内联。
-
 ```bash
 mkdir -p ~/.git-hooks
-# 把末尾的源码存成 ~/.git-hooks/pre-commit
+# 把本文件末尾的源码存成 ~/.git-hooks/pre-commit
 chmod +x ~/.git-hooks/pre-commit
 git config --global core.hooksPath ~/.git-hooks
 ```
 
-`--global` 意味着这台机器上所有仓库都受检查，不只是这个。
+`core.hooksPath` 要写绝对路径或由 shell 展开的 `~`，**别在引号里写 `~`**——git 不展开它，配了等于没配。
 
-### 装完必须验证一次
+### 装完必须自查
 
 ```bash
-sh ~/.git-hooks/pre-commit --all
+~/.git-hooks/pre-commit --doctor
 ```
 
-- 静默、退出码 0 → 装好了
-- 报 shell 语法错误、`SyntaxError`、`bad option` → **钩子本身是密文或被改坏了**，重装
+正常输出：
 
-这一步不能省。钩子坏掉之后不会主动告诉你，它只会给出错误的诊断。
+```
+钩子文件    明文  6617B  C:\Users\你\.git-hooks\pre-commit
+全局配置    C:/Users/你/.git-hooks
+当前仓库    C:/某仓库
+结论        已接上，每次提交都会自动检查
+```
 
-### 三种用法
+对照着看：
+
+- 退出码 0、结论「已接上」→ 好了
+- 「未设置」「指向别处」→ 按它给出的命令重配
+- 报 `cannot execute binary file`、`Exec format error`、`SyntaxError` → **钩子自己是密文**，重装
+
+第三种不影响安全，git 会拒绝提交。但你要知道是钩子坏了，不是文件坏了——这正是当初把它移出仓库的理由。
+
+### 四种用法
 
 ```bash
 ~/.git-hooks/pre-commit               # 检查暂存区（提交时自动跑）
+~/.git-hooks/pre-commit --doctor      # 自查钩子有没有真的接上
 ~/.git-hooks/pre-commit --all         # 检查仓库所有文件
 ~/.git-hooks/pre-commit --dir 某目录   # 检查任意目录
 ```
 
-最后一条最实用：微信、QQ 传来的 `.kt`、`.md` 基本就是密文，往仓库里拷之前先扫一遍，别等提交时才发现。
+`--dir` 最实用：微信、QQ 传来的 `.kt`、`.md` 基本就是密文，往仓库里拷之前先扫一遍，别等提交时才发现。
 
 ### 判据
 
@@ -80,7 +103,7 @@ sh ~/.git-hooks/pre-commit --all
 
 ### 兜底：云端复查
 
-本地钩子可能失效——被加密、被误删、`core.hooksPath` 没配上、或者直接 `--no-verify` 绕过。所以 `.github/workflows/text-guard.yml` 在推送后再查一遍，逻辑内联在 workflow 里，跑在 GitHub 的机器上，不受本地加密影响。
+本地钩子可能失效——被加密、被误删、`core.hooksPath` 没配上、或者直接 `--no-verify` 绕过。所以 workflow 在推送后再查一遍，逻辑内联在 yml 里，跑在 GitHub 的机器上，不引用仓库内任何脚本，也就不受本地加密影响。
 
 两层分工：本地拦是为了当场知道，云端拦是为了保证最终结果。
 
@@ -101,6 +124,7 @@ sh ~/.git-hooks/pre-commit --all
 #
 # 用法：
 #   提交时自动跑          检查暂存区里新增和修改的文件
+#   pre-commit --doctor   自查：钩子有没有真的被 git 接上
 #   pre-commit --all      检查仓库里所有文件
 #   pre-commit --dir 路径  检查某个目录（比如刚从微信收到的代码，拷进来之前先扫）
 #
@@ -157,6 +181,84 @@ const arg = process.argv[2];
 const bad = [];
 let checked = 0;
 
+if (mode === "--doctor") {
+  const selfArg = process.argv[3] || "";
+  const out = [];
+  let ok = true;
+
+  let selfPath = "";
+  let selfSize = 0;
+  let selfPlain = false;
+  try {
+    selfPath = fs.realpathSync(selfArg);
+    const buf = fs.readFileSync(selfPath);
+    selfSize = buf.length;
+    selfPlain = judge(buf) === null;
+  } catch (e) {
+    selfPath = selfArg || "(未知)";
+  }
+  if (selfPlain) {
+    out.push("钩子文件    明文  " + selfSize + "B  " + selfPath);
+  } else {
+    out.push("钩子文件    读不到或不是明文  " + selfPath);
+    ok = false;
+  }
+
+  let hp = "";
+  try {
+    hp = execFileSync("git", ["config", "--get", "core.hooksPath"], {
+      encoding: "utf8", stdio: ["ignore", "pipe", "ignore"]
+    }).trim();
+  } catch (e) {
+    hp = "";
+  }
+
+  let root = "";
+  try {
+    root = execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf8", stdio: ["ignore", "pipe", "ignore"]
+    }).trim();
+  } catch (e) {
+    root = "";
+  }
+
+  const norm = function (p) {
+    return path.resolve(p).replace(/\\/g, "/").toLowerCase();
+  };
+
+  let connected = false;
+  if (!hp) {
+    out.push("全局配置    (未设置)  ← git 不会执行这个钩子");
+    ok = false;
+  } else if (hp.indexOf("~") >= 0) {
+    out.push("全局配置    含 ~ 号，git 不会展开它  " + hp);
+    ok = false;
+  } else {
+    const dir = path.resolve(root || process.cwd(), hp);
+    const expected = path.join(dir, "pre-commit");
+    connected = norm(expected) === norm(selfPath);
+    out.push("全局配置    " + hp + (connected ? "" : "  ← 指向别处，没接上"));
+    if (!connected) ok = false;
+  }
+
+  out.push("当前仓库    " + (root || "(不在 git 仓库里)"));
+
+  if (ok) {
+    out.push("结论        已接上，每次提交都会自动检查");
+  } else if (!selfPlain) {
+    out.push("结论        钩子自身坏了。重新装一份明文。");
+  } else if (!hp) {
+    out.push("结论        没接上。执行：");
+    out.push("            git config --global core.hooksPath " + path.dirname(selfPath).replace(/\\/g, "/"));
+  } else {
+    out.push("结论        没接上。执行：");
+    out.push("            git config --global core.hooksPath " + path.dirname(selfPath).replace(/\\/g, "/"));
+  }
+
+  out.forEach(function (l) { console.log(l); });
+  process.exit(ok ? 0 : 1);
+}
+
 if (mode === "--dir") {
   if (!arg) {
     console.error("用法：pre-commit --dir <目录>");
@@ -210,5 +312,6 @@ if (bad.length) {
   }
   process.exit(1);
 }
-' -- "$MODE" "$ARG"
+' -- "$MODE" "$ARG" "$0"
 ```
+
