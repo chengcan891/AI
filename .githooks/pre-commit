@@ -1,0 +1,14 @@
+#!/bin/sh
+ROOT=$(git rev-parse --show-toplevel) || exit 1
+cd "$ROOT" || exit 1
+
+node tools/check-plaintext.mjs --staged
+STATUS=$?
+
+if [ "$STATUS" -ne 0 ]; then
+  echo "提交已取消：暂存区里有不是可读文本的文件。"
+  echo "确认是误报才跳过：git commit --no-verify"
+  exit 1
+fi
+
+exit 0

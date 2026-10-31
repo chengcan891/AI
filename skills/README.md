@@ -24,3 +24,18 @@ Skills:
 
 Do not replace %USERPROFILE%\.codex\skills wholesale (it has .system).
 For Codex-only legacy paths, junction individual skill folders into ~/.codex/skills when needed.
+
+## 提交前检查（防密文）
+
+工作电脑的磁盘用亿赛通透明加密，非授权进程读到的是密文。密文提交上去就是乱码，人和 AI 都读不了，而且看不出来——文件在、能打开、就是内容不对。
+
+装一次钩子，之后每次提交自动检查：
+
+    git config core.hooksPath .githooks
+
+手动跑也行：
+
+    node tools/check-plaintext.mjs          # 检查暂存区
+    node tools/check-plaintext.mjs --all    # 全量
+
+原理、判据、怎么补亿赛通指纹，都在 tools/README.md。云端还有 text-guard 工作流兜底，推送后若发现密文会变红提醒。
