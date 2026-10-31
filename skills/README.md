@@ -35,7 +35,8 @@ For Codex-only legacy paths, junction individual skill folders into ~/.codex/ski
 
 手动跑也行：
 
-    node tools/check-plaintext.mjs          # 检查暂存区
-    node tools/check-plaintext.mjs --all    # 全量
+    node tools/check-plaintext.mjs                  # 检查暂存区
+    node tools/check-plaintext.mjs --all            # 全量
+    node tools/check-plaintext.mjs --dir 某个目录    # 扫目录，从微信收到的工程先扫一遍
 
-原理、判据、怎么补亿赛通指纹，都在 tools/README.md。云端还有 text-guard 工作流兜底，推送后若发现密文会变红提醒。
+亿赛通的文件头已经取到真样本（偏移 0 魔数 `62142365` + 偏移 12 的 `E-SafeNet`），判据见 tools/README.md。云端还有 text-guard 工作流兜底，推送后若发现密文会变红提醒。

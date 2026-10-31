@@ -7,13 +7,16 @@
 ## 怎么跑
 
 ```bash
-node tools/check-plaintext.mjs             # 检查暂存区，默认
-node tools/check-plaintext.mjs --all       # 检查全部已跟踪文件
-node tools/check-plaintext.mjs a.md b.md   # 检查指定文件
-node tools/check-plaintext.mjs --fingerprint  # 额外打印头 32 字节，用来补指纹
+node tools/check-plaintext.mjs                  # 检查暂存区，默认
+node tools/check-plaintext.mjs --all            # 检查全部已跟踪文件
+node tools/check-plaintext.mjs a.md b.md        # 检查指定文件
+node tools/check-plaintext.mjs --dir 某个目录    # 递归扫一个目录，不受 git 限制
+node tools/check-plaintext.mjs --fingerprint    # 额外打印可疑文件的头 32 字节
 ```
 
 通过退出码 0，不通过退出码 1。
+
+`--dir` 的用法很实用：从微信、QQ、邮件收到的工程目录，先扫一遍再决定要不要往仓库里拷。
 
 ## 为什么检查"暂存区"而不是"磁盘上的文件"
 
@@ -44,11 +47,32 @@ git config core.hooksPath .githooks
 
 它拦不住提交，只能告诉你有事。真正拦住的是本地钩子。
 
-## 判据
+## 亿赛通的文件头（已取到真样本）
+
+从 `com.sinognss/ag` 下三个确认加密的 `.kt` 文件取到的固定头，三份完全一致：
+
+```
+偏移 0   62 14 23 65        ← 4 字节魔数，固定
+偏移 4   ?? ?? ?? ??        ← 每文件不同（像是大小或密钥槽）
+偏移 8   00 00 00 01        ← 固定
+偏移 12  "E-SafeNet"        ← 明文字面量，9 字节
+偏移 24  "LOCK"             ← 明文字面量，4 字节
+```
+
+判据：**偏移 0 是 `62142365`，并且前 64 字节里出现 ASCII `E-SafeNet`**。两条同时满足才判亿赛通，比单看熵准得多。
+
+另外两个实测事实：
+
+- **整份都是密文**，用 strings 搜不到 `package` / `import` / `class` / `fun` 中的任何一个，没有残留明文。除授权终端外无法还原，用别的工具也救不回来。
+- 文件比原文大，多出来的是头部和分块填充。
+
+样本文件的大小分别是 3020、11081、5646 字节，全部命中。
+
+## 判据清单
 
 按顺序，命中任意一条就判失败：
 
-1. 命中已知加密指纹（目前为空，见下）
+1. 命中已知加密指纹（亿赛通：魔数 + `E-SafeNet`）
 2. 含 `0x00` 空字节
 3. 整份不是合法 UTF-8
 4. 控制字符占比超过 1%
@@ -57,27 +81,20 @@ git config core.hooksPath .githooks
 
 只检查文本类扩展名（md、json、yaml、js、py、kt、java 等），图片二进制一律跳过。
 
-## 指纹还没补
+## 换成别的加密软件怎么补
 
-亿赛通的加密文件头是固定字节，命中它是最干脆的判据——比熵和 UTF-8 都准。但我手上没有一份确认的密文样本，所以指纹表 `KNOWN_HEADERS` 现在是空的，全靠上面第 2~6 条兜着。
-
-补齐的办法：在**会产生密文的那台电脑**上，拿一个已知会被加密的文件，跑
-
-```bash
-node tools/check-plaintext.mjs --fingerprint 那个文件
-```
-
-把它打印出来的头 32 字节，加进脚本里的 `KNOWN_HEADERS`：
+指纹表在脚本顶部的 `KNOWN_HEADERS`：
 
 ```js
 const KNOWN_HEADERS = [
-  { hex: '把这里换成实际的头字节', note: '亿赛通' }
+  { hex: '62142365', needle: 'E-SafeNet', note: '亿赛通（E-SafeNet）' }
 ];
 ```
 
-补上之后，误报率和漏报率都会明显下降。
+拿一个确认加密的文件跑 `--fingerprint`，看它打印的头 32 字节，把固定的那几位填进 `hex`，把里面像产品名的 ASCII 填进 `needle`。`needle` 可以留空，只靠 `hex` 也行。
 
 ## 这个工具管不了的
 
 - **内容敏感不敏感**。它只判断"是不是可读文本"，读得懂的公司代码照样能通过。这一层得靠人工和 AGENTS.md 里的规则。
 - **已经在历史里的密文**。它只看当前这次提交。要清历史得重写 commit，那是另一件事。
+- **被加密软件授权后正常解密的文件**。那种文件在 git 眼里就是明文，本来就该通过。
