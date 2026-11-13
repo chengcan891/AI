@@ -1,0 +1,88 @@
+name: text-guard
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # 每天 01:00 UTC（北京时间 09:00）全量扫一次。
+  # 这层不依赖任何人的自觉：不用你在网页点提交，不用本地装钩子，也不管内容是
+  # 走 git 还是走 API 写进来的。只要仓库里出现密文，第二天就会被发现。
+  # 注意：GitHub 在仓库连续 60 天无提交活动后会自动停用定时任务，届时需手动启用。
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 检查是否混入密文
+        env:
+          # 定时任务与手动触发时没有 github.event.before，退化为全 0 即全量扫描
+          BEFORE: ${{ github.event.before || '0000000000000000000000000000000000000000' }}
+          AFTER: ${{ github.sha }}
+        run: |
+          cat > /tmp/check.cjs <<'GUARD'
+          const { execFileSync } = require("node:child_process");
+
+          const BEFORE = process.env.BEFORE || "";
+          const AFTER = process.env.AFTER || "HEAD";
+          const dec = new TextDecoder("utf-8", { fatal: true });
+          const BINARY = /\.(png|jpe?g|gif|webp|ico|bmp|zip|gz|7z|rar|pdf|apk|jar|aar|so|dll|exe|ttf|otf|woff2?|mp[34]|wav|webm|db|sqlite)$/i;
+
+          function gitOut(args) {
+            return execFileSync("git", args, { maxBuffer: 1 << 28, stdio: ["ignore", "pipe", "ignore"] });
+          }
+
+          const allFiles = () =>
+            gitOut(["ls-files"]).toString("utf8").split("\n").filter(Boolean);
+
+          let files;
+          if (!BEFORE || /^0+$/.test(BEFORE)) {
+            console.log("首次推送或新分支，退化为全量检查");
+            files = allFiles();
+          } else {
+            try {
+              files = gitOut(["diff", "--name-only", BEFORE, AFTER])
+                .toString("utf8").split("\n").filter(Boolean);
+            } catch (e) {
+              console.log("找不到对比提交，退化为全量检查");
+              files = allFiles();
+            }
+          }
+
+          const bad = [];
+          let checked = 0;
+          for (const f of files) {
+            if (BINARY.test(f)) continue;
+            let buf;
+            try { buf = gitOut(["show", AFTER + ":" + f]); } catch (e) { continue; }
+            if (buf.length === 0) continue;
+            checked++;
+            const hex = buf.subarray(0, 4).toString("hex");
+            const head = buf.subarray(0, 64).toString("latin1");
+            let why = null;
+            if (hex === "62142365" || head.indexOf("E-SafeNet") >= 0) why = "亿赛通密文";
+            else if (buf.indexOf(0) >= 0) why = "含空字节";
+            else if (buf.length > 8) {
+              try { dec.decode(buf); } catch (e) { why = "非合法 UTF-8"; }
+            }
+            if (why) bad.push(f + "  —  " + why);
+          }
+
+          if (bad.length) {
+            console.error("");
+            console.error("本次推送里 " + bad.length + " / " + checked + " 个文件不是可读明文：");
+            bad.forEach((l) => console.error("  " + l));
+            console.error("");
+            console.error("这些文件在 GitHub 上是乱码，检查提交那台机器的磁盘加密。");
+            process.exit(1);
+          }
+          console.log("明文检查通过：" + checked + " 个文件");
+          GUARD
+          node /tmp/check.cjs

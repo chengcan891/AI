@@ -26,3 +26,20 @@ Do not replace %USERPROFILE%\.codex\skills wholesale (it has .system).
 For Codex-only legacy paths, junction individual skill folders into ~/.codex/skills when needed.
 
 - scaffold-ag60-android  脚手架：生成 AG6.0 同构 Android 多模块工程（自包含模板/SharedStyle/控件骨架；运行时勿再读 ag6.0）
+
+## 提交前检查（防密文）
+
+工作电脑的磁盘用亿赛通透明加密，非授权进程读到的是密文。密文提交上去就是乱码，人和 AI 都读不了，而且看不出来——文件在、能打开、就是内容不对。
+
+装一次钩子，之后每次提交自动检查：
+
+    git config core.hooksPath .githooks
+
+手动跑：
+
+    node tools/check-plaintext.mjs                  # 检查暂存区（提交时用这个）
+    node tools/check-plaintext.mjs --changed        # 增量，只扫上次之后改动过的文件
+    node tools/check-plaintext.mjs --all            # 全量
+    node tools/check-plaintext.mjs --dir 某个目录    # 扫目录，微信收到的工程先扫一遍
+
+亿赛通的文件头已经取到真样本（偏移 0 魔数 `62142365` + 偏移 12 的 `E-SafeNet`）。增量记录写在 `.git/text-guard-state`，没通过就不推进，下次重扫同一批。云端 text-guard 工作流扫的是每次推送的改动。细节见 tools/README.md。
