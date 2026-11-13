@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="red">#FF0000</color>
+    <color name="red_20">#33FF0000</color>
+    <color name="red_10">#1AFF0000</color>
+    <color name="green">#22C55e</color>
+    <color name="green_30">#4D22C55e</color>
+    <color name="green_10">#1A22C55e</color>
+    <color name="green_5">#0D22C55e</color>
+    <color name="green_light">#E6F7F1</color>
+    <color name="green_dark">#293B38</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="yellow_50">#80FFEB3B</color>
+    <color name="orange">#F49C0B</color>
+    <color name="orange_2">#F87316</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="white_90">#E6ffffff</color>
+    <color name="white_80">#CCffffff</color>
+    <color name="white_70">#B3ffffff</color>
+    <color name="white_60">#99ffffff</color>
+    <color name="white_50">#80ffffff</color>
+    <color name="white_40">#66FFFFFF</color>
+    <color name="white_30">#4DFFFFFF</color>
+    <color name="white_20">#33FFFFFF</color>
+    <color name="white_10">#1AFFFFFF</color>
+
+    <color name="black">#FF000000</color>
+    <color name="black_50">#9f000000</color>
+    <color name="black_40">#66000000</color>
+    <color name="black_30">#4D000000</color>
+    <color name="black_20">#33000000</color>
+    <color name="black_10">#1A000000</color>
+
+    <color name="dark_text_1">#FFFFFF</color>
+    <color name="dark_text_2">#F1F5F9</color>
+    <color name="dark_text_3">#CBD5E1</color>
+
+    <color name="light_text_1">#202124</color>
+    <color name="light_text_2">#5F6368</color>
+    <color name="light_text_3">#9AA0A6</color>
+
+    <color name="light_bg_1">#FFFFFFFF</color>
+    <color name="light_bg_1_50">#80FFFFFF</color>
+    <color name="light_bg_2">#F5F5F5</color>
+    <color name="light_bg_3">#E0E0E0</color>
+    <color name="light_bg_3_60">#99E0E0E0</color>
+    <color name="light_bg_2_80">#CCF5F5F5</color>
+    <color name="light_bg_2_90">#E6F5F5F5</color>
+    <color name="light_bg_2_50">#80F5F5F5</color>
+    <color name="light_bg_active_btn_home">#F7FAFF</color>
+
+    <color name="dark_bg_1">#212224</color>
+    <color name="dark_bg_1_50">#80212224</color>
+    <color name="dark_bg_2">#141517</color>
+    <color name="dark_bg_3">#2E3033</color>
+    <color name="dark_bg_3_60">#992E3033</color>
+    <color name="dark_bg_2_80">#CC141517</color>
+    <color name="dark_bg_2_90">#E6141517</color>
+    <color name="dark_bg_2_50">#80141517</color>
+    <color name="dark_bg_active_btn_home">#2E3033</color>
+
+    <color name="light_divider">#33BECBE8</color>
+    <color name="dark_divider">#260D3438</color>
+
+    <color name="gray_1">#FDFDFD</color>
+    <color name="gray_2">#CFCFCF</color>
+    <color name="gray_3">#797A7B</color>
+
+    <color name="new_main_color">#2562E9</color>
+    <color name="new_main_color_80">#CC2562E9</color>
+    <color name="new_main_color_half">#802562E9</color>
+    <color name="new_main_color_30">#4D2562E9</color>
+    <color name="new_main_color_10">#1A2562E9</color>
+    <color name="new_main_color_5">#0D2562E9</color>
+
+    <color name="new_main_color_bright">#4ED1F1</color>
+
+    <color name="new_second_color">#608EF5</color>
+    <color name="new_second_color_light">#5FA4F8</color>
+    <color name="new_second_color_darker">#1A4BB8</color>
+    <color name="beginner_guide_activity_bar_end">#4338CA</color>
+    <color name="color_orange">#FD5633</color>
+    <color name="color_error">#F44336</color>
+    <color name="color_error_10">#1AF44336</color>
+    <color name="color_working">#22C35D</color>
+    <color name="color_working_80">#CC22C35D</color>
+    <color name="color_working_half">#8022C35D</color>
+    <color name="color_working_50">#8022C35D</color>
+    <color name="color_working_30">#4D22C35D</color>
+    <color name="color_working_10">#1A22C35D</color>
+    <color name="color_dealer">#7C5CFC</color>
+    <color name="color_dealer_10">#1A7C5CFC</color>
+    <!-- 作业地图轨迹透明效果预览底色 -->
+    <color name="work_map_track_preview_background_professional_day">#7E6D60</color>
+    <color name="work_map_track_preview_background_night">#2F3843</color>
+    <!-- 专业模式作业工具栏默认图标色 -->
+    <color name="professional_work_toolbar_icon_color">#CFCFCF</color>
+    <color name="color_warning">#F5BC27</color>
+    <color name="color_warning_10">#1AF5BC27</color>
+    <color name="color_warning_50">#80F5BC27</color>
+
+    <!-- 车辆管理-标定卡片 -->
+    <color name="vehicle_calibration_ready_bg">#F5FEFA</color>
+    <color name="vehicle_calibration_ready_border">#D1FAE5</color>
+    <color name="vehicle_calibration_ready_icon_bg">#C7F1E2</color>
+    <color name="vehicle_calibration_ready_accent">#5CD0A9</color>
+    <color name="vehicle_calibration_waited_bg">#FFFDF5</color>
+    <color name="vehicle_calibration_waited_border">#FEF3C7</color>
+    <color name="vehicle_calibration_waited_icon_bg">#FDEBC6</color>
+    <color name="vehicle_calibration_waited_accent">#F9C468</color>
+
+    <color name="color_blue_1">#1a759f</color>
+
+    <color name="color_minibar_turn_bg_light">#E5F2F9</color>
+
+    <color name="launch_text_secondary">#99FFFFFF</color>
+
+    <!-- 经典模式菜单/状态栏颜色（对齐设计图：状态栏深色白字，横偏激活绿，侧栏半透明） -->
+    <color name="classic_navigation_icon_color">#121110</color>
+    <color name="classic_status_blue">#2563EB</color>
+    <color name="classic_status_blue_light">#DBEAFE</color>
+    <color name="classic_status_bar_bg">#2E3033</color>
+    <color name="classic_float_panel_bg_light">#0D141517</color>
+    <color name="classic_float_panel_bg_dark">#0DFFFFFF</color>
+    <color name="classic_turn_bg">#33000000</color>
+    <color name="classic_turn_block_normal">#C6D4E1</color>
+    <color name="classic_turn_block_normal_dark">#4B5563</color>
+    <color name="classic_turn_block_active">#22C35D</color>
+    <color name="classic_menu_user_bg">#F2B512</color>
+    <color name="classic_menu_help_bg">#3F9148</color>
+    <color name="classic_menu_farm_tool_bg">#987363</color>
+    <color name="classic_menu_setting_bg">#607D87</color>
+    <color name="classic_menu_app_bg">#8E24AA</color>
+    <color name="classic_toolbar_ab_line_bg">#2F7FC8</color>
+    <color name="classic_toolbar_ab_offset_bg">#F2B512</color>
+    <color name="classic_toolbar_param_bg">#D63D3F</color>
+    <color name="classic_drive_button_normal">#22C35D</color>
+    <color name="classic_drive_button_active_start">#22C35D</color>
+    <color name="classic_drive_button_active_end">#22C35D</color>
+    <color name="classic_drive_button_disable">#94A3B8</color>
+    <color name="classic_drive_button_assist">#2554D6</color>
+    <color name="classic_drive_button_error">#EF4444</color>
+
+</resources>

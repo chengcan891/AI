@@ -1,0 +1,248 @@
+﻿package com.sinognss.ag.common.view.dialog
+
+import android.content.Context
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import com.sinognss.ag.common.view.dialog.impl.CommonDataLoadingDialog
+import com.sinognss.ag.common.view.dialog.impl.CommonNoticeDialog
+
+/**
+ * 通用弹窗工具，统一封装全屏和局部 loading、notice 弹窗能力。
+ *
+ * @Author      ZhangHongYu
+ * @Date        2026/01/04
+ * @Description
+ */
+object CommonDialogUtils {
+
+    fun showDataLoadingDialog(context: Context, message: String = "") {
+        val fragmentManager = when (context) {
+            is AppCompatActivity -> context.supportFragmentManager
+            is FragmentActivity -> context.supportFragmentManager
+            else -> null
+        } ?: return
+
+        CommonDataLoadingDialog.show(fragmentManager, message)
+    }
+
+    fun showDataLoadingDialog(fragment: Fragment, message: String = "") {
+        CommonDataLoadingDialog.show(fragment, message)
+    }
+
+    fun showDataLoadingDialogInFragment(
+        fragment: Fragment,
+        message: String = "",
+        cornerRadius: Float? = null,
+    ) {
+        CommonDataLoadingDialog.showInFragment(fragment, message, cornerRadius)
+    }
+
+    fun showDataLoadingDialog(targetView: View, message: String = "") {
+        CommonDataLoadingDialog.show(targetView, message)
+    }
+
+    fun showDataLoadingDialogNoCancel(context: Context, message: String = "") {
+        val fragmentManager = when (context) {
+            is AppCompatActivity -> context.supportFragmentManager
+            is FragmentActivity -> context.supportFragmentManager
+            else -> null
+        } ?: return
+
+        CommonDataLoadingDialog.show(fragmentManager, message, false)
+    }
+
+    fun isDataLoadingDialogShow(): Boolean {
+        return CommonDataLoadingDialog.isShowing()
+    }
+
+    fun isDataLoadingDialogShow(fragment: Fragment): Boolean {
+        return CommonDataLoadingDialog.isShowing(fragment)
+    }
+
+    fun isDataLoadingDialogShowInFragment(fragment: Fragment): Boolean {
+        return CommonDataLoadingDialog.isShowingInFragment(fragment)
+    }
+
+    fun isDataLoadingDialogShow(targetView: View): Boolean {
+        return CommonDataLoadingDialog.isShowing(targetView)
+    }
+
+    fun dismissDataLoadingDialog() {
+        CommonDataLoadingDialog.dismiss()
+    }
+
+    fun dismissDataLoadingDialog(fragment: Fragment) {
+        CommonDataLoadingDialog.dismiss(fragment)
+    }
+
+    fun dismissDataLoadingDialogInFragment(fragment: Fragment) {
+        CommonDataLoadingDialog.dismissInFragment(fragment)
+    }
+
+    fun dismissDataLoadingDialog(targetView: View) {
+        CommonDataLoadingDialog.dismiss(targetView)
+    }
+
+    fun updateDataLoadingDialogMessage(message: String) {
+        CommonDataLoadingDialog.updateMessage(message)
+    }
+
+    fun updateDataLoadingDialogMessage(fragment: Fragment, message: String) {
+        CommonDataLoadingDialog.updateMessage(fragment, message)
+    }
+
+    fun updateDataLoadingDialogMessageInFragment(fragment: Fragment, message: String) {
+        CommonDataLoadingDialog.updateMessageInFragment(fragment, message)
+    }
+
+    fun updateDataLoadingDialogMessage(targetView: View, message: String) {
+        CommonDataLoadingDialog.updateMessage(targetView, message)
+    }
+
+    fun showNoticeDialog(
+        context: Context,
+        title: String = "",
+        content: String = "",
+        supportPositiveButton: Boolean = true,
+        supportNegativeButton: Boolean = false,
+        supportNeutralButton: Boolean = false,
+        outClickDismiss: Boolean = false,
+        iconRes: Int? = null,
+        eventListener: ((CommonNoticeDialog.ClickEvent) -> Unit)? = null,
+    ): CommonNoticeDialog? {
+        val positiveText =
+            if (supportPositiveButton) context.getString(com.sinognss.common.res.R.string.confirm) else ""
+        val negativeText =
+            if (supportNegativeButton) context.getString(com.sinognss.common.res.R.string.cancel) else null
+        val neutralText = if (supportNeutralButton) "Neutral" else null
+        return showNoticeDialog(
+            context,
+            title,
+            content,
+            positiveText,
+            negativeText,
+            neutralText,
+            outClickDismiss,
+            iconRes,
+            eventListener
+        )
+    }
+
+    fun showDefaultNoticeDialog(
+        context: Context,
+        title: String,
+        content: String,
+        ackListener: (() -> Unit)
+    ): CommonNoticeDialog? {
+        return showNoticeDialog(
+            context,
+            title,
+            content,
+            supportPositiveButton = true,
+            supportNegativeButton = true
+        ) {
+            if (it == CommonNoticeDialog.ClickEvent.POSITIVE) {
+                ackListener.invoke()
+            }
+        }
+    }
+
+    fun showOnlyNoticeDialog(
+        context: Context,
+        title: String,
+        content: String,
+        ackListener: (() -> Unit)
+    ): CommonNoticeDialog? {
+        return showNoticeDialog(
+            context,
+            title,
+            content,
+            supportPositiveButton = true,
+            supportNegativeButton = false
+        ) {
+            if (it == CommonNoticeDialog.ClickEvent.POSITIVE) {
+                ackListener.invoke()
+            }
+        }
+    }
+
+    fun showNoticeDialog(
+        context: Context,
+        title: String = "",
+        content: String = "",
+        positiveButtonText: String? = null,
+        negativeButtonText: String? = null,
+        neutralButtonText: String? = null,
+        outClickDismiss: Boolean = false,
+        iconRes: Int? = null,
+        eventListener: ((CommonNoticeDialog.ClickEvent) -> Unit)? = null,
+    ): CommonNoticeDialog? {
+        val fragmentManager = when (context) {
+            is AppCompatActivity -> context.supportFragmentManager
+            is FragmentActivity -> context.supportFragmentManager
+            else -> null
+        } ?: return null
+        val dialog = CommonNoticeDialog(
+            title,
+            content,
+            positiveButtonText,
+            negativeButtonText,
+            neutralButtonText,
+            outClickDismiss,
+            iconRes,
+            eventListener
+        )
+        dialog.show(fragmentManager, CommonNoticeDialog::class.java.name)
+        return dialog
+    }
+
+    fun showDeleteNoticeDialog(
+        context: Context,
+        itemName: String = "",
+        confirmListener: () -> Unit,
+    ): CommonNoticeDialog? {
+        val title = context.getString(com.sinognss.common.res.R.string.hint)
+        val content =
+            context.getString(com.sinognss.common.res.R.string.delete_prompt_content, itemName)
+
+        val dialog = showNoticeDialog(
+            context,
+            title,
+            content,
+            supportNegativeButton = true,
+        ) {
+            when (it) {
+                CommonNoticeDialog.ClickEvent.POSITIVE -> {
+                    confirmListener.invoke()
+                }
+
+                CommonNoticeDialog.ClickEvent.NEGATIVE -> {}
+                CommonNoticeDialog.ClickEvent.NEUTRAL -> {}
+            }
+        }
+
+        return dialog
+    }
+
+    /**
+     * 关闭当前正在展示的错误/提示 notice 弹窗。
+     *
+     * @param context 上下文，需为 [FragmentActivity]
+     * @return 是否成功关闭了一个弹窗
+     */
+    fun dismissNoticeDialogIfShowing(context: Context): Boolean {
+        val fragmentManager = when (context) {
+            is FragmentActivity -> context.supportFragmentManager
+            else -> null
+        } ?: return false
+        val dialog = fragmentManager.findFragmentByTag(CommonNoticeDialog::class.java.name) as? CommonNoticeDialog
+            ?: return false
+        if (!dialog.isAdded) {
+            return false
+        }
+        dialog.dismissAllowingStateLoss()
+        return true
+    }
+}

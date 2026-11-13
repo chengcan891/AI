@@ -1,0 +1,51 @@
+package com.sinognss.ag.core.global.data
+
+import com.sinognss.ag.core.global.data.work.AppGlobalWorkManager
+import com.sinognss.ag.core.global.data.setting.AppGlobalSettingsManager
+import java.io.File
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/01/06
+ * @Description
+ */
+class AppGlobalDataManager {
+
+    companion object {
+        val instance: AppGlobalDataManager by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) { AppGlobalDataManager() }
+    }
+
+    private var rootDir: File? = null
+
+
+    private var _appGlobalSettingsManager: AppGlobalSettingsManager? = null
+    val appGlobalSettingsManager: AppGlobalSettingsManager
+        get() = _appGlobalSettingsManager ?: throw Exception("AppPersistentDataManager is not init!")
+
+
+    private var _appGlobalWorkManager: AppGlobalWorkManager? = null
+    val appGlobalWorkManager: AppGlobalWorkManager
+        get() = _appGlobalWorkManager ?: throw Exception("AppPersistentDataManager is not init!")
+
+
+    fun init(rootDir: File) {
+        this.rootDir = rootDir
+        _appGlobalSettingsManager = AppGlobalSettingsManager()
+        _appGlobalSettingsManager!!.init(rootDir)
+
+        _appGlobalWorkManager = AppGlobalWorkManager()
+        _appGlobalWorkManager!!.init(rootDir)
+
+    }
+
+    /**
+     * 释放当前 Manager 引用及内存缓存。
+     */
+    fun release() {
+        _appGlobalSettingsManager?.release()
+        _appGlobalWorkManager?.release()
+        _appGlobalSettingsManager = null
+        _appGlobalWorkManager = null
+    }
+
+}

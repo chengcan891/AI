@@ -1,0 +1,195 @@
+package com.sinognss.ag.common.view.layout
+
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import androidx.core.view.children
+import com.sinognss.ag.common.view.R
+import com.sinognss.common.res.R as CommonResR
+
+class CommonTabLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+) : LinearLayout(context, attrs, defStyleAttr) {
+
+    var distributeEvenly: Boolean = false
+
+    @ColorInt
+    private var selectedBackgroundColor: Int = ContextCompat.getColor(context, CommonResR.color.new_main_color)
+
+    @ColorInt
+    private var unselectedBackgroundColor: Int = Color.TRANSPARENT
+
+    @ColorInt
+    private var selectedTextColor: Int = ContextCompat.getColor(context, CommonResR.color.white)
+
+    @ColorInt
+    private var unselectedTextColor: Int = ContextCompat.getColor(context, CommonResR.color.gray_3)
+
+    private val tabCornerRadius: Float
+        get() = resources.getDimension(CommonResR.dimen.button_radius)
+
+    data class TabItem(
+        val title: String,
+        @DrawableRes val iconRes: Int? = null,
+    )
+
+    private var tabs: List<TabItem> = emptyList()
+    private var selectedIndex: Int = 0
+    private var onTabSelectedListener: ((index: Int, item: TabItem) -> Unit)? = null
+    private var onTabClickWithoutSelectListener: ((index: Int, item: TabItem) -> Unit)? = null
+
+    init {
+        context.obtainStyledAttributes(attrs, R.styleable.CommonTabLayout, defStyleAttr, 0).apply {
+            selectedBackgroundColor = getColor(
+                R.styleable.CommonTabLayout_ctl_selectedBackgroundColor,
+                selectedBackgroundColor
+            )
+            unselectedBackgroundColor = getColor(
+                R.styleable.CommonTabLayout_ctl_unselectedBackgroundColor,
+                unselectedBackgroundColor
+            )
+            recycle()
+        }
+        orientation = HORIZONTAL
+    }
+
+    fun setTabs(items: List<TabItem>, defaultSelectedIndex: Int = 0) {
+        tabs = items
+        removeAllViews()
+
+        items.forEachIndexed { index, item ->
+            addView(createItemView(index, item))
+        }
+
+        if (items.isNotEmpty()) {
+            select(defaultSelectedIndex.coerceIn(items.indices), notify = false)
+        }
+    }
+
+    fun setOnTabSelectedListener(listener: (index: Int, item: TabItem) -> Unit) {
+        onTabSelectedListener = listener
+    }
+
+    fun setOnTabClickWithoutSelectListener(listener: ((index: Int, item: TabItem) -> Unit)?) {
+        onTabClickWithoutSelectListener = listener
+    }
+
+    fun setTabBackgroundColors(
+        @ColorInt selectedColor: Int,
+        @ColorInt unselectedColor: Int = Color.TRANSPARENT,
+    ) {
+        selectedBackgroundColor = selectedColor
+        unselectedBackgroundColor = unselectedColor
+        children.forEach { child ->
+            child.background = createTabBackground()
+        }
+    }
+
+    fun setTabTextColors(
+        @ColorInt selectedColor: Int,
+        @ColorInt unselectedColor: Int,
+    ) {
+        selectedTextColor = selectedColor
+        unselectedTextColor = unselectedColor
+        applyTabTextColors()
+    }
+
+    fun select(index: Int, notify: Boolean = true) {
+        if (index !in tabs.indices) {
+            return
+        }
+
+        selectedIndex = index
+        children.forEachIndexed { childIndex, child ->
+            child.isSelected = childIndex == index
+            child.findViewById<ImageView>(R.id.iv_icon)?.isSelected = childIndex == index
+            child.findViewById<TextView>(R.id.tv_title)?.isSelected = childIndex == index
+        }
+
+        if (notify) {
+            onTabSelectedListener?.invoke(index, tabs[index])
+        }
+    }
+
+    private fun createItemView(index: Int, item: TabItem) = LayoutInflater.from(context)
+        .inflate(R.layout.view_common_tab_item, this, false).apply {
+            val iconView = findViewById<ImageView>(R.id.iv_icon)
+            val titleView = findViewById<TextView>(R.id.tv_title)
+
+            if (item.iconRes != null) {
+                iconView.setImageResource(item.iconRes)
+                iconView.visibility = VISIBLE
+            } else {
+                iconView.visibility = GONE
+                titleView.layoutParams = (titleView.layoutParams as MarginLayoutParams).apply {
+                    marginStart = 0
+                }
+            }
+
+            titleView.text = item.title
+            titleView.setTextColor(createTabTextColorStateList())
+            iconView.imageTintList = createTabTextColorStateList()
+            background = createTabBackground()
+
+            layoutParams = LayoutParams(
+                if (distributeEvenly) 0 else LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT,
+                if (distributeEvenly) 1f else 0f
+            ).apply {
+                if (index > 0) {
+                    marginStart = resources.getDimensionPixelSize(CommonResR.dimen.view_margin_ms)
+                }
+            }
+
+            setOnClickListener {
+                val itemClickListener = onTabClickWithoutSelectListener
+                if (itemClickListener != null) {
+                    itemClickListener.invoke(index, item)
+                } else {
+                    select(index)
+                }
+            }
+        }
+
+    private fun createTabBackground(): StateListDrawable {
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_selected), createTabShape(selectedBackgroundColor))
+            addState(intArrayOf(), createTabShape(unselectedBackgroundColor))
+        }
+    }
+
+    private fun createTabShape(@ColorInt color: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = tabCornerRadius
+            setColor(color)
+        }
+    }
+
+    private fun createTabTextColorStateList(): ColorStateList {
+        return ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_selected), intArrayOf()),
+            intArrayOf(selectedTextColor, unselectedTextColor),
+        )
+    }
+
+    private fun applyTabTextColors() {
+        val colorStateList = createTabTextColorStateList()
+        children.forEach { child ->
+            child.findViewById<TextView>(R.id.tv_title)?.setTextColor(colorStateList)
+            child.findViewById<ImageView>(R.id.iv_icon)?.imageTintList = colorStateList
+        }
+    }
+}

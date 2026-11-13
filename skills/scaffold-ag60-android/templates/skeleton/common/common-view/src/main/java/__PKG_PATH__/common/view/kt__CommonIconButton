@@ -1,0 +1,544 @@
+package com.sinognss.ag.common.view
+
+import android.content.Context
+import android.content.res.ColorStateList
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.core.view.setPadding
+import com.blankj.utilcode.util.ConvertUtils
+import com.google.android.material.color.MaterialColors
+import com.sinognss.ag.common.view.databinding.ViewMainIconButtonBinding
+import android.view.Gravity
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2025/12/30
+ * @Description
+ */
+class CommonIconButton @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+) : LinearLayout(context, attrs, defStyleAttr) {
+
+    companion object {
+        const val EMPTY_ICON_RES = -1
+    }
+
+
+    private val binding: ViewMainIconButtonBinding =
+        ViewMainIconButtonBinding.inflate(LayoutInflater.from(context), this, true)
+
+    private var title: String = ""
+    private var iconRes: Int = EMPTY_ICON_RES
+
+    private var colorStyle: ColorStyle = ColorStyle.MAIN
+    private var sizeStyle: SizeStyle = SizeStyle.NORMAL
+
+    private var buttonIconSize = 0
+    private var buttonIconTitleSpacing = -1
+
+    private var iconRotation: Float = 0f
+
+    private var iconPosition = IconPosition.LEFT
+
+    private enum class IconPosition(val id: Int) {
+        LEFT(0),
+        RIGHT(1);
+
+        companion object {
+
+            fun getById(id: Int): IconPosition {
+
+                return IconPosition.values().firstOrNull {
+                    it.id == id
+                } ?: LEFT
+            }
+        }
+
+    }
+
+    private var contentOrientation = ContentOrientation.HORIZONTAL
+
+    private enum class ContentOrientation(val id: Int) {
+        HORIZONTAL(0),
+        VERTICAL(1);
+
+        companion object {
+            fun getById(id: Int): ContentOrientation {
+                return ContentOrientation.entries.firstOrNull { it.id == id } ?: HORIZONTAL
+            }
+        }
+    }
+
+    enum class ColorStyle(val id: Int) {
+        MAIN(0),
+        NORMAL(1),
+        GREEN(2),
+        RED(3),
+        BLACK(4),
+        DARK_BLUE(5),
+        ORANGE(6),
+        MAIN_TRANS(7),
+        DISABLE(8),
+        RED_TRANS(9),
+        TRANS(10),
+        MAIN_TRANS_CARD(11),
+        YELLOW(12),
+        TRANS_NORMAL_TEXT(13),
+        BLACK_TRANS(14),
+
+        GREEN_TRANS_CARD(15);
+
+        companion object {
+
+            fun getById(id: Int): ColorStyle {
+
+                return ColorStyle.values().firstOrNull {
+                    it.id == id
+                } ?: MAIN
+            }
+        }
+    }
+
+    private enum class SizeStyle(val id: Int) {
+        NORMAL(0),
+        SMALL(1),
+        LARGE(2);
+
+        companion object {
+
+            fun getById(id: Int): SizeStyle {
+
+                return SizeStyle.values().firstOrNull {
+                    it.id == id
+                } ?: NORMAL
+
+
+            }
+        }
+    }
+
+    init {
+        val ta = context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.CommonIconButton,
+            defStyleAttr,
+            0
+        )
+        try {
+            val count = ta.indexCount
+            for (i in 0 until count) {
+                val attr = ta.getIndex(i)
+
+                when (attr) {
+                    R.styleable.CommonIconButton_button_title -> {
+                        val textResId = ta.getResourceId(attr, 0)
+                        title = if (textResId != 0) {
+                            context.getString(textResId)
+                        } else {
+                            ta.getString(attr) ?: ""
+                        }
+                    }
+
+                    R.styleable.CommonIconButton_icon_res -> {
+                        iconRes = ta.getResourceId(attr, EMPTY_ICON_RES)
+                    }
+
+                    R.styleable.CommonIconButton_button_color_style -> {
+
+                        val id = ta.getInt(R.styleable.CommonIconButton_button_color_style, 0)
+                        colorStyle = ColorStyle.getById(id)
+                    }
+
+                    R.styleable.CommonIconButton_button_size_style -> {
+                        val id = ta.getInt(R.styleable.CommonIconButton_button_size_style, 0)
+                        sizeStyle = SizeStyle.getById(id)
+                    }
+
+                    R.styleable.CommonIconButton_icon_button_icon_rotation -> {
+                        iconRotation = ta.getFloat(attr, 0f)
+                    }
+
+                    R.styleable.CommonIconButton_icon_button_icon_position -> {
+                        val id = ta.getInt(attr, 0)
+                        iconPosition = IconPosition.getById(id)
+                    }
+
+                    R.styleable.CommonIconButton_android_enabled -> {
+                        val isEnabled = ta.getBoolean(attr, true)
+                        setEnabled(isEnabled)
+                    }
+
+                    R.styleable.CommonIconButton_button_content_orientation -> {
+                        val id = ta.getInt(attr, 0)
+                        contentOrientation = ContentOrientation.getById(id)
+                    }
+
+                    R.styleable.CommonIconButton_button_icon_size -> {
+                        buttonIconSize = ta.getDimensionPixelSize(attr, 0)
+                    }
+
+                    R.styleable.CommonIconButton_button_icon_title_spacing -> {
+                        buttonIconTitleSpacing = ta.getDimensionPixelSize(attr, -1)
+                    }
+
+                    else -> {}
+                }
+            }
+        } catch (e: Exception) {
+
+        } finally {
+            ta.recycle()
+        }
+
+        initView()
+
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        binding.layoutRoot.isEnabled = enabled
+    }
+
+    private fun initView() {
+
+
+        when (sizeStyle) {
+            SizeStyle.NORMAL -> {
+                binding.tvTitle.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    resources.getDimension(com.sinognss.common.res.R.dimen.text_size_m)
+                )
+                updateIconSize(getButtonIconSize(resources.getDimensionPixelSize(com.sinognss.common.res.R.dimen.icon_size_default)))
+            }
+
+            SizeStyle.SMALL -> {
+                binding.tvTitle.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    resources.getDimension(com.sinognss.common.res.R.dimen.text_size_s)
+                )
+                updateIconSize(getButtonIconSize(resources.getDimensionPixelSize(com.sinognss.common.res.R.dimen.icon_size_ms)))
+                binding.layoutContainer.setPadding(ConvertUtils.dp2px(6f))
+            }
+
+            SizeStyle.LARGE -> {
+                binding.tvTitle.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    resources.getDimension(com.sinognss.common.res.R.dimen.text_size_l)
+                )
+                updateIconSize(getButtonIconSize(resources.getDimensionPixelSize(com.sinognss.common.res.R.dimen.icon_size_l)))
+            }
+        }
+
+        if (iconRes != 0) {
+            updateIconRes()
+        }
+
+        if (title.isNotEmpty()) {
+            binding.tvTitle.isVisible = true
+            binding.tvTitle.text = title
+        } else {
+            binding.tvTitle.isVisible = false
+        }
+
+        updateViewByColorStyle()
+
+        updateContentOrientation()
+    }
+
+    fun setButtonTitle(title: String) {
+        this.title = title
+        binding.tvTitle.text = title
+        binding.tvTitle.isVisible = title.isNotEmpty()
+    }
+
+    fun setButtonTitle(res: Int) {
+        this.title = context.getString(res)
+        binding.tvTitle.text = title
+        binding.tvTitle.isVisible = title.isNotEmpty()
+    }
+
+    /**
+     * 设置按钮标题颜色。
+     *
+     * @param color 标题颜色。
+     */
+    fun setButtonTitleColor(@ColorInt color: Int) {
+        binding.tvTitle.setTextColor(color)
+    }
+
+    /**
+     * 设置按钮背景资源。
+     *
+     * @param backgroundRes 背景 Drawable 资源。
+     */
+    fun setButtonBackgroundResource(@DrawableRes backgroundRes: Int) {
+        binding.layoutRoot.setBackgroundResource(backgroundRes)
+    }
+
+    fun setButtonIconRes(res: Int) {
+        this.iconRes = res
+        updateIconRes()
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        super.setOnClickListener(l)
+        binding.root.setOnClickListener(l)
+    }
+
+    fun setButtonClickable(clickable: Boolean) {
+        isClickable = clickable
+        binding.root.isClickable = clickable
+    }
+
+    fun getIconLeft(): ImageView {
+        return binding.ivIconLeft
+    }
+
+    private fun updateIconSize(size: Int) {
+        binding.ivIconLeft.layoutParams = binding.ivIconLeft.layoutParams.apply {
+            width = size
+            height = size
+        }
+        binding.ivIconRight.layoutParams = binding.ivIconRight.layoutParams.apply {
+            width = size
+            height = size
+        }
+    }
+
+    private fun updateIconRes() {
+        if (iconRes == EMPTY_ICON_RES) {
+            binding.ivIconLeft.isVisible = false
+            binding.ivIconRight.isVisible = false
+            binding.ivIconLeft.setImageDrawable(null)
+            binding.ivIconRight.setImageDrawable(null)
+            return
+        }
+
+        val visibleIcon: ImageView
+        val hiddenIcon: ImageView
+        when (iconPosition) {
+            IconPosition.LEFT -> {
+                visibleIcon = binding.ivIconLeft
+                hiddenIcon = binding.ivIconRight
+            }
+
+            IconPosition.RIGHT -> {
+                visibleIcon = binding.ivIconRight
+                hiddenIcon = binding.ivIconLeft
+            }
+        }
+
+        hiddenIcon.isVisible = false
+        hiddenIcon.setImageDrawable(null)
+        visibleIcon.isVisible = true
+        visibleIcon.rotation = iconRotation
+        visibleIcon.setImageResource(iconRes)
+    }
+
+    fun updateColorStyle(colorStyle: ColorStyle) {
+        this.colorStyle = colorStyle
+        updateViewByColorStyle()
+    }
+
+    private fun updateViewByColorStyle() {
+        when (colorStyle) {
+            ColorStyle.MAIN -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_main)
+
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.MAIN_TRANS -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_main_trans)
+
+                val color =
+                    ContextCompat.getColor(context, com.sinognss.common.res.R.color.new_main_color)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.MAIN_TRANS_CARD -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_main_trans_card)
+
+                val color =
+                    ContextCompat.getColor(context, com.sinognss.common.res.R.color.new_main_color)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.NORMAL -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_normal)
+
+                val color = MaterialColors.getColor(this, com.sinognss.common.res.R.attr.text_color_2)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.GREEN -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_green)
+
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.RED -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_red)
+
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.RED_TRANS -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_red_trans)
+
+                val color =
+                    ContextCompat.getColor(context, com.sinognss.common.res.R.color.color_error)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.BLACK -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_black)
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.DARK_BLUE -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_dark_blue)
+
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.ORANGE -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_orange)
+
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.YELLOW -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_yellow)
+
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.DISABLE -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_disable)
+
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.gray_3)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.TRANS -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_trans)
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.new_main_color)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.TRANS_NORMAL_TEXT -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_trans)
+                val color = MaterialColors.getColor(this, com.sinognss.common.res.R.attr.text_color_2)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.BLACK_TRANS -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_black_tans)
+                val color = ContextCompat.getColor(context, com.sinognss.common.res.R.color.white)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+
+                binding.tvTitle.setTextColor(color)
+            }
+
+            ColorStyle.GREEN_TRANS_CARD -> {
+                binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_green_trans_card)
+
+                val color =
+                    ContextCompat.getColor(context, com.sinognss.common.res.R.color.color_working)
+                binding.ivIconLeft.imageTintList = ColorStateList.valueOf(color)
+                binding.ivIconRight.imageTintList = ColorStateList.valueOf(color)
+                binding.tvTitle.setTextColor(color)
+            }
+        }
+    }
+
+    private fun updateContentOrientation() {
+        val spacing = if (buttonIconTitleSpacing >= 0) {
+            buttonIconTitleSpacing
+        } else {
+            resources.getDimensionPixelSize(com.sinognss.common.res.R.dimen.view_margin_small)
+        }
+
+        binding.layoutContainer.gravity = Gravity.CENTER
+        binding.layoutContainer.orientation = when (contentOrientation) {
+            ContentOrientation.HORIZONTAL -> LinearLayout.HORIZONTAL
+            ContentOrientation.VERTICAL -> LinearLayout.VERTICAL
+        }
+
+        if (contentOrientation == ContentOrientation.VERTICAL) {
+            binding.layoutContainer.setPadding(
+                resources.getDimensionPixelSize(com.sinognss.common.res.R.dimen.view_margin_small)
+            )
+        }
+
+        val titleParams = binding.tvTitle.layoutParams as LinearLayout.LayoutParams
+        when (contentOrientation) {
+            ContentOrientation.HORIZONTAL -> {
+                titleParams.marginStart = spacing
+                titleParams.marginEnd = spacing
+                titleParams.topMargin = 0
+                titleParams.bottomMargin = 0
+            }
+
+            ContentOrientation.VERTICAL -> {
+                titleParams.marginStart = 0
+                titleParams.marginEnd = 0
+                titleParams.topMargin = spacing
+                titleParams.bottomMargin = 0
+            }
+        }
+        binding.tvTitle.layoutParams = titleParams
+    }
+
+    private fun getButtonIconSize(defaultSize: Int): Int {
+        return if (buttonIconSize > 0) buttonIconSize else defaultSize
+    }
+
+}

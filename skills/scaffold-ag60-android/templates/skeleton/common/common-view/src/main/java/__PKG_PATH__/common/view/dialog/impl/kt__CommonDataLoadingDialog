@@ -1,0 +1,465 @@
+﻿package com.sinognss.ag.common.view.dialog.impl
+
+import android.content.DialogInterface
+import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
+import android.widget.ScrollView
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.sino.common.base.component.BaseVBCardDialogFragment
+import com.sinognss.ag.common.view.databinding.DialogCommonDataLoadingBinding
+import java.util.WeakHashMap
+import androidx.core.graphics.toColorInt
+import com.blankj.utilcode.util.ConvertUtils
+
+/**
+ * 通用数据加载弹窗，支持页面级 Dialog 和局部 View 容器展示。
+ *
+ * @author ZhangHongYu
+ * @date 2025/6/27
+ */
+class CommonDataLoadingDialog(
+    private var message: String? = "",
+    supportCancel: Boolean = true,
+) : BaseVBCardDialogFragment<DialogCommonDataLoadingBinding>(DialogCommonDataLoadingBinding::inflate) {
+
+    override val canCancel: Boolean = supportCancel
+    override val cancelOutside: Boolean = supportCancel
+
+    companion object {
+        private var currentDialog: CommonDataLoadingDialog? = null
+        private val currentLocalLoadingMap = WeakHashMap<ViewGroup, LocalLoadingHolder>()
+
+        fun show(
+            fragmentManager: FragmentManager,
+            message: String = "",
+            canCancel: Boolean = true,
+        ): CommonDataLoadingDialog {
+            if (currentDialog == null) {
+                currentDialog = CommonDataLoadingDialog(message, canCancel)
+                currentDialog!!.show(fragmentManager, CommonDataLoadingDialog::class.java.name)
+            } else {
+                currentDialog!!.updateMessage(message)
+            }
+            return currentDialog!!
+        }
+
+        fun show(fragment: Fragment, message: String = ""): View? {
+            val container = findFragmentLoadingContainer(fragment) ?: return null
+            return showLocalLoading(
+                container,
+                message,
+                LocalDisplayMode.FULL_CONTENT,
+                LocalAttachMode.CHILD
+            )
+        }
+
+        fun showInFragment(
+            fragment: Fragment,
+            message: String = "",
+            cornerRadius: Float? = null,
+        ): View? {
+            val container = fragment.view as? ViewGroup ?: return null
+            return showLocalLoading(
+                container,
+                message,
+                LocalDisplayMode.FULL_CONTENT,
+                LocalAttachMode.OVERLAY,
+                cornerRadius
+            )
+        }
+
+        fun show(targetView: View, message: String = ""): View? {
+            val container = findTargetViewLoadingContainer(targetView) ?: return null
+            return showLocalLoading(
+                container,
+                message,
+                LocalDisplayMode.PROGRESS_ONLY,
+                LocalAttachMode.CHILD
+            )
+        }
+
+        private fun showLocalLoading(
+            container: ViewGroup,
+            message: String,
+            displayMode: LocalDisplayMode,
+            attachMode: LocalAttachMode,
+            cornerRadius: Float? = null,
+        ): View {
+            val holder = currentLocalLoadingMap[container]
+            return if (holder == null || holder.attachMode != attachMode) {
+                holder?.dismiss()
+                LocalLoadingHolder(container, attachMode).also {
+                    currentLocalLoadingMap[container] = it
+                }.show(message, displayMode, cornerRadius)
+            } else {
+                holder.show(message, displayMode, cornerRadius)
+            }
+        }
+
+        fun dismiss() {
+            currentLocalLoadingMap.values.forEach { it.dismiss() }
+            currentLocalLoadingMap.clear()
+            val dialog = currentDialog ?: return
+            currentDialog = null
+            dialog.dismissAllowingStateLoss()
+        }
+
+        fun dismiss(fragment: Fragment) {
+            val container = findFragmentLoadingContainer(fragment) ?: return
+            dismiss(container)
+        }
+
+        fun dismissInFragment(fragment: Fragment) {
+            val container = fragment.view as? ViewGroup ?: return
+            dismiss(container)
+        }
+
+        fun dismiss(targetView: View) {
+            val container = findTargetViewLoadingContainer(targetView) ?: return
+            dismiss(container)
+        }
+
+        fun updateMessage(message: String) {
+            currentDialog?.updateMessage(message)
+        }
+
+        fun updateMessage(fragment: Fragment, message: String) {
+            val container = findFragmentLoadingContainer(fragment) ?: return
+            updateMessage(container, message)
+        }
+
+        fun updateMessageInFragment(fragment: Fragment, message: String) {
+            val container = fragment.view as? ViewGroup ?: return
+            updateMessage(container, message)
+        }
+
+        fun updateMessage(targetView: View, message: String) {
+            val container = findTargetViewLoadingContainer(targetView) ?: return
+            updateMessage(container, message)
+        }
+
+        fun isShowing(): Boolean {
+            return currentDialog != null
+        }
+
+        fun isShowing(fragment: Fragment): Boolean {
+            val container = findFragmentLoadingContainer(fragment) ?: return false
+            return isShowing(container)
+        }
+
+        fun isShowingInFragment(fragment: Fragment): Boolean {
+            val container = fragment.view as? ViewGroup ?: return false
+            return isShowing(container)
+        }
+
+        fun isShowing(targetView: View): Boolean {
+            val container = findTargetViewLoadingContainer(targetView) ?: return false
+            return isShowing(container)
+        }
+
+        private fun findTargetViewLoadingContainer(targetView: View): ViewGroup? {
+            return targetView as? ViewGroup
+        }
+
+        private fun dismiss(container: ViewGroup) {
+            currentLocalLoadingMap.remove(container)?.dismiss()
+        }
+
+        private fun updateMessage(container: ViewGroup, message: String) {
+            currentLocalLoadingMap[container]?.updateMessage(message)
+        }
+
+        private fun isShowing(container: ViewGroup): Boolean {
+            return currentLocalLoadingMap[container]?.isShowing == true
+        }
+
+        private fun findLoadingContainer(targetView: View): ViewGroup? {
+            var currentView: View? = targetView
+            var fallbackContainer: ViewGroup? = null
+            while (currentView != null) {
+                val parent = currentView.parent as? ViewGroup ?: break
+                if (isUnsupportedHostContainer(parent)) {
+                    currentView = parent
+                    continue
+                }
+                if (parent is FrameLayout) {
+                    return parent
+                }
+                fallbackContainer = parent
+                currentView = parent
+            }
+            if (fallbackContainer != null) {
+                return fallbackContainer
+            }
+            return if (targetView is ViewGroup && !isUnsupportedHostContainer(targetView)) {
+                targetView
+            } else {
+                null
+            }
+        }
+
+        private fun findFragmentLoadingContainer(fragment: Fragment): ViewGroup? {
+            val targetView = fragment.view ?: return null
+            return findLoadingContainer(targetView)
+                ?: (targetView as? ViewGroup)?.takeIf { !isUnsupportedHostContainer(it) }
+        }
+
+        private fun isUnsupportedHostContainer(container: ViewGroup): Boolean {
+            return container is NestedScrollView
+                    || container is ScrollView
+                    || container is HorizontalScrollView
+                    || container is FragmentContainerView
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        currentDialog = null
+    }
+
+    override fun initData() {}
+
+    override fun initView() {
+        binding.tvMessage.isVisible = !message.isNullOrEmpty()
+        binding.tvMessage.text = message
+    }
+
+    fun updateMessage(message: String) {
+        if (!isInitialized) return
+        this.message = message
+        binding.tvMessage.isVisible = message.isNotEmpty()
+        binding.tvMessage.text = message
+    }
+
+    private enum class LocalDisplayMode {
+        FULL_CONTENT,
+        PROGRESS_ONLY,
+    }
+
+    private enum class LocalAttachMode {
+        CHILD,
+        OVERLAY,
+    }
+
+    private class LocalLoadingHolder(
+        private val container: ViewGroup,
+        val attachMode: LocalAttachMode,
+    ) {
+
+        private var currentMode: LocalDisplayMode = LocalDisplayMode.FULL_CONTENT
+
+        private val contentBinding by lazy(LazyThreadSafetyMode.NONE) {
+            DialogCommonDataLoadingBinding.inflate(LayoutInflater.from(container.context))
+        }
+
+        private val compactProgressBar by lazy(LazyThreadSafetyMode.NONE) {
+            CircularProgressIndicator(container.context).apply {
+                isIndeterminate = true
+                setIndicatorColor(
+                    ContextCompat.getColor(
+                        context,
+                        com.sinognss.common.res.R.color.new_main_color
+                    )
+                )
+                trackColor = ContextCompat.getColor(context, android.R.color.transparent)
+                trackCornerRadius = ConvertUtils.dp2px(3f)
+            }
+        }
+
+        private val maskLayout by lazy(LazyThreadSafetyMode.NONE) {
+            FrameLayout(container.context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                )
+                isClickable = true
+                isFocusable = true
+            }
+        }
+
+        private var isActive = false
+        private var isAddedToOverlay = false
+        private var overlayCornerRadius: Float? = null
+
+        private val attachStateListener = object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) = Unit
+
+            override fun onViewDetachedFromWindow(v: View) {
+                dismiss()
+            }
+        }
+
+        val isShowing: Boolean
+            get() = when (attachMode) {
+                LocalAttachMode.CHILD -> maskLayout.parent === container
+                LocalAttachMode.OVERLAY -> isAddedToOverlay
+            }
+
+        fun show(message: String, mode: LocalDisplayMode, cornerRadius: Float? = null): View {
+            currentMode = mode
+            overlayCornerRadius = cornerRadius
+            isActive = true
+            ensureAttached()
+            updateMessage(message)
+            return maskLayout
+        }
+
+        fun dismiss() {
+            isActive = false
+            when (attachMode) {
+                LocalAttachMode.CHILD -> {
+                    if (maskLayout.parent === container) {
+                        container.removeView(maskLayout)
+                    }
+                }
+
+                LocalAttachMode.OVERLAY -> {
+                    if (isAddedToOverlay) {
+                        container.overlay.remove(maskLayout)
+                        isAddedToOverlay = false
+                    }
+                }
+            }
+            container.removeOnAttachStateChangeListener(attachStateListener)
+        }
+
+        fun updateMessage(message: String) {
+            when (currentMode) {
+                LocalDisplayMode.FULL_CONTENT -> {
+                    if (attachMode == LocalAttachMode.OVERLAY) {
+                        maskLayout.background = createOverlayBackground()
+                    } else {
+                        maskLayout.background = null
+                    }
+                    contentBinding.tvMessage.isVisible = message.isNotEmpty()
+                    contentBinding.tvMessage.text = message
+                }
+
+                LocalDisplayMode.PROGRESS_ONLY -> {
+                    maskLayout.setBackgroundResource(com.sinognss.common.res.R.drawable.drawable_card)
+                    maskLayout.backgroundTintList = ColorStateList.valueOf(resolveBgColor1())
+                }
+            }
+        }
+
+        private fun ensureAttached() {
+            if (!isActive) return
+            attachContentByMode()
+            if (!container.isAttachedToWindow) {
+                return
+            }
+            if (container.width <= 0 || container.height <= 0) {
+                container.post {
+                    if (isActive && container.isAttachedToWindow) {
+                        ensureAttached()
+                    }
+                }
+                return
+            }
+            when (attachMode) {
+                LocalAttachMode.CHILD -> attachAsChild()
+                LocalAttachMode.OVERLAY -> attachAsOverlay()
+            }
+        }
+
+        private fun attachAsChild() {
+            if (maskLayout.parent === container) {
+                maskLayout.bringToFront()
+                maskLayout.translationZ = findTopTranslationZ()
+                return
+            }
+            maskLayout.translationZ = findTopTranslationZ()
+            container.addView(maskLayout)
+            maskLayout.bringToFront()
+        }
+
+        private fun attachAsOverlay() {
+            layoutMaskToContainer()
+            if (isAddedToOverlay) {
+                container.invalidate()
+                return
+            }
+            container.addOnAttachStateChangeListener(attachStateListener)
+            container.overlay.add(maskLayout)
+            isAddedToOverlay = true
+        }
+
+        private fun layoutMaskToContainer() {
+            val widthSpec =
+                View.MeasureSpec.makeMeasureSpec(container.width, View.MeasureSpec.EXACTLY)
+            val heightSpec =
+                View.MeasureSpec.makeMeasureSpec(container.height, View.MeasureSpec.EXACTLY)
+            maskLayout.measure(widthSpec, heightSpec)
+            maskLayout.layout(0, 0, container.width, container.height)
+        }
+
+        private fun attachContentByMode() {
+            maskLayout.removeAllViews()
+            when (currentMode) {
+                LocalDisplayMode.FULL_CONTENT -> {
+                    if (contentBinding.root.parent is ViewGroup) {
+                        (contentBinding.root.parent as ViewGroup).removeView(contentBinding.root)
+                    }
+                    maskLayout.addView(
+                        contentBinding.root,
+                        FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                        ),
+                    )
+                }
+
+                LocalDisplayMode.PROGRESS_ONLY -> {
+                    if (compactProgressBar.parent is ViewGroup) {
+                        (compactProgressBar.parent as ViewGroup).removeView(compactProgressBar)
+                    }
+                    maskLayout.addView(
+                        compactProgressBar,
+                        FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                        ).apply {
+                            gravity = Gravity.CENTER
+                        },
+                    )
+                }
+            }
+        }
+
+        private fun createOverlayBackground(): GradientDrawable {
+            return GradientDrawable().apply {
+                setColor(LOCAL_DIM_COLOR)
+                overlayCornerRadius?.let { cornerRadius = it }
+            }
+        }
+
+        private fun findTopTranslationZ(): Float {
+            var maxElevation = 0f
+            for (index in 0 until container.childCount) {
+                maxElevation = maxOf(maxElevation, container.getChildAt(index).elevation)
+                maxElevation = maxOf(maxElevation, container.getChildAt(index).translationZ)
+            }
+            return maxElevation + 1f
+        }
+
+        private fun resolveBgColor1(): Int {
+            return "#80FFFFFF".toColorInt()
+        }
+
+        private companion object {
+            val LOCAL_DIM_COLOR = "#66000000".toColorInt()
+        }
+    }
+}

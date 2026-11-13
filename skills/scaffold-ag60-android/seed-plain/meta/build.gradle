@@ -1,0 +1,82 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+
+    repositories {
+
+        maven { url "https://maven.aliyun.com/repository/public/" }
+        maven { url "https://maven.aliyun.com/repository/google" }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        //maven {url"https://jitpack.io"}
+        //maven{ url'https://maven.aliyun.com/repository/public'}
+        maven { url 'https://bj.speedata.cn:8443/repository/maven-releases/' }//思必拓
+    }
+    dependencies {
+        classpath libs.android.gradle
+        classpath libs.kotlin.gradle
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+
+//        classpath("com.tencent.matrix:matrix-gradle-plugin:${MATRIX_VERSION}") {
+//            changing = true
+//            exclude group: "com.android.tools.build", module: "gradle"
+//        }
+    }
+}
+
+plugins {
+alias(libs.plugins.kotlin.jvm) apply false
+alias(libs.plugins.ksp) apply false
+}
+
+
+allprojects {
+    apply plugin: 'maven-publish'
+    RepoUtilsKt.addSmRepos(repositories)
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/public/" }
+        maven { url "https://maven.aliyun.com/repository/google" }
+        maven { url "https://jitpack.io" }
+        maven {
+            allowInsecureProtocol = true
+            url 'http://raw.github.com/saki4510t/libcommon/master/repository/'
+        }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        //maven{ url'https://maven.aliyun.com/repository/public'}
+        maven { url 'https://bj.speedata.cn:8443/repository/maven-releases/' }//思必拓
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+// 对所有子项目应用版本强制
+subprojects { subproject ->
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = BuildConfig.JVM_TARGET
+        }
+    }
+
+    configurations.all {
+
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.google.errorprone' &&
+                    details.requested.name == 'error_prone_annotations') {
+                // 强制使用 2.11.0 版本，这个版本对旧版 Dex 工具更友好
+                details.useVersion '2.11.0'
+            }
+        }
+
+//        resolutionStrategy {
+//
+////            force "androidx.startup:startup-runtime:$startup_version"
+//
+//        }
+    }
+}

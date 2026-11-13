@@ -1,0 +1,143 @@
+package com.sino.page.route
+
+/**
+ * @author ZhangHongYu
+ * @date 2025/6/18
+ */
+class RouteModuleConfig {
+
+    enum class ModuleTag {
+        COMPONENT_COMMON,
+        COMPONENT_HOME,
+        COMPONENT_SETTING,
+        COMPONENT_WORK,
+        COMPONENT_ISOBUS,
+        COMPONENT_DEVICE,
+    }
+
+    interface RoutePath
+
+    enum class HomePath : RoutePath {
+        HOME_MAIN,
+        HOME_INFO,
+        HOME_WORK,
+        HOME_PARAM,
+        HOME_FARMTOOL,
+        HOME_SERVICE,
+        HOME_REMOTE_HELPER,
+        HOME_UTURN_NOTICE,
+        HOME_APP_STATUE_CHECK,
+
+        HOME_AG_TYPE_CHOOSE,
+        HOME_BEGINNER_GUIDE,
+        HOME_USER,
+        HOME_SUBSIDY,
+        HOME_NAVIGATION_BAR,;
+
+        companion object {
+            const val HOME_APP_STATUE_CHECK_SUB_ROUTE_KEY_ERRORS = 3
+        }
+
+    }
+
+    enum class SettingPath : RoutePath {
+        SETTING_SYSTEM,
+        SETTING_UPDATE_BY_LOCAL,
+
+        SETTING_UPDATE_ONLINE_ALL,
+        SETTING_UPDATE_ONLINE_APP,
+        SETTING_UPDATE_CENTER,
+        SETTING_SYSTEM_DATA_TRANSMISSION,
+        SETTING_NETWORK_APN,
+
+        SETTING_MAP_PICKER,
+        SETTING_SYSTEM_PARAMETER,
+    }
+
+    enum class DevicePath : RoutePath {
+        /**
+         * GNSS 界面
+         */
+        DEVICE_GNSS,
+
+        /**
+         * GNSS 卫星信息界面
+         */
+        DEVICE_GNSS_SATELLITE_INFO,
+
+        DEVICE_VEHICLE_HOME,
+        DEVICE_VEHICLE_EDIT,
+        DEVICE_VEHICLE_CALIBRATION,
+        DEVICE_VEHICLE_CALIBRATION_ATTITUDE_WORK,
+        DEVICE_FARM_TOOLS_HOME,
+        DEVICE_FARM_TOOLS_EDIT,
+        DEVICE_FARM_TOOLS_ISOBUS_CONTROL_EDIT,
+        DEVICE_FARM_TOOLS_ISOBUS_MATERIAL_SELECT,
+
+        /** 调头参数设置独立页 */
+        DEVICE_UTURN_SETTING,
+        DEVICE_DEVICE_ADVANCED_PARAMETER_SETTING,
+    }
+
+    enum class CommonPath : RoutePath {
+        NAVIGATION_PAGE_CONTAINER,
+
+        COMMON_FILE_EXPLORE,
+        COMMON_FILE_IMPORT,
+        COMMON_FILE_EXPORT,
+        COMMON_CLOUD_FILE_IMPORT,
+        COMMON_CLOUD_FILE_EXPORT,
+        COMMON_CLOUD_FILE_EXPORT_DIALOG,
+    }
+
+    enum class WorkPath : RoutePath {
+        FIELD_HOME,
+        WORK_LINE_CREATE_LIST,
+        WORK_LINE_CREATE_CONTENT,
+        FIELD_BOUNDARY_CREATE,
+        FIELD_BOUNDARY_EDIT,
+        FIELD_BOUNDARY_PICK_LINE,
+        FIELD_BOUNDARY_EDIT_POINTS,
+        FIELD_TASK_DETAIL,
+        FIELD_BLOCK_STORE,
+        FIELD_BOUNDARY_STORE,
+        FIELD_WORK_LINE_STORE,
+        FIELD_WORK_LINE_EDIT,
+        FIELD_HARROW_WORK_LINE_EDIT,
+        FIELD_HARROW_ZONE_PICKER,
+        FIELD_MARKER_CREATE,
+        FIELD_MARKER_STORE,
+        FIELD_MARKER_EDIT,
+        FIELD_SUMMARY,
+        FIELD_TASK_STORE,
+        FIELD_BLOCK_ADD,
+        FIELD_PRESCRIPTION_STORE,
+        FIELD_MATERIAL,
+        FIELD_MATERIAL_ADD,
+        FIELD_CUSTOMER_FARM,
+        /** 手绘边界（追加在枚举末尾，避免插入中间导致既有 ordinal 错位） */
+        FIELD_BOUNDARY_HAND_DRAW;
+
+
+        companion object {
+            const val SUB_ROUTE_KEY_SUMMARY = 1
+            const val SUB_ROUTE_KEY_BOUNDARY = 2
+            const val SUB_ROUTE_KEY_LINE = 3
+            const val SUB_ROUTE_KEY_MARKER = 4
+            const val SUB_ROUTE_KEY_TASK = 5
+        }
+    }
+
+    enum class ISOBUSPath : RoutePath {
+        ISOBUS_HOME,
+        ISOBUS_VT,
+        ISOBUS_TC,
+        ISOBUS_TC_GEO,
+        ISOBUS_TC_SC,
+        ISOBUS_SETTING,
+        ISOBUS_STATISTIC,
+        ISOBUS_INFO,
+        ISOBUS_INFO_SETTING,
+    }
+
+}

@@ -1,0 +1,13 @@
+package com.sino.page.route
+
+/**
+ * @author ZhangHongYu
+ * @date 2025/6/18
+ */
+interface IHomePageLoader {
+
+    val tag: RouteModuleConfig.ModuleTag
+
+    fun loadPage(path: RouteModuleConfig.HomePath): RouteDestination?
+
+}

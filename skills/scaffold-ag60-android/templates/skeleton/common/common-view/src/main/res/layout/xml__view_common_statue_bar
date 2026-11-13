@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <ImageButton
+        android:id="@+id/btn_back"
+        style="@style/image_button_default"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="@string/action_cancel"
+        tools:ignore="ContentDescription" />
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/text_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        tools:text="Title" />
+    <FrameLayout
+        android:id="@+id/fl_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="48dp" />
+</merge>

@@ -1,0 +1,310 @@
+package com.sinognss.ag.common.view.dialog.impl
+
+import android.content.DialogInterface
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
+import android.widget.ScrollView
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
+import androidx.core.widget.NestedScrollView
+import com.sino.common.base.component.BaseVBCardDialogFragment
+import com.sinognss.ag.common.view.databinding.DialogCommonLocalNoticeBinding
+import java.util.WeakHashMap
+
+/**
+ * 通用局部确认弹窗，支持 Dialog 和页面容器内展示。
+ *
+ * @author longheng
+ * @date 2026/05/20
+ */
+class CommonLocalNoticeDialog(
+    private val title: String = "",
+    private val content: String = "",
+    private val iconRes: Int? = null,
+    private val outClickDismiss: Boolean = false,
+    private val eventListener: ((ClickEvent) -> Unit)? = null,
+) : BaseVBCardDialogFragment<DialogCommonLocalNoticeBinding>(DialogCommonLocalNoticeBinding::inflate) {
+
+    override val canCancel: Boolean = outClickDismiss
+
+    override val cancelOutside: Boolean = outClickDismiss
+
+    companion object {
+        private var currentDialog: CommonLocalNoticeDialog? = null
+        private val currentLocalNoticeMap = WeakHashMap<ViewGroup, LocalNoticeHolder>()
+
+        fun show(
+            fragmentManager: FragmentManager,
+            title: String = "",
+            content: String = "",
+            iconRes: Int? = null,
+            outClickDismiss: Boolean = false,
+            eventListener: ((ClickEvent) -> Unit)? = null,
+        ): CommonLocalNoticeDialog {
+            currentDialog?.dismiss()
+            return CommonLocalNoticeDialog(title, content, iconRes, outClickDismiss, eventListener).also {
+                currentDialog = it
+                it.show(fragmentManager, CommonLocalNoticeDialog::class.java.name)
+            }
+        }
+
+        fun show(
+            fragment: Fragment,
+            title: String = "",
+            content: String = "",
+            iconRes: Int? = null,
+            outClickDismiss: Boolean = false,
+            eventListener: ((ClickEvent) -> Unit)? = null,
+        ): View? {
+            val container = findFragmentNoticeContainer(fragment) ?: return null
+            val holder = currentLocalNoticeMap[container] ?: LocalNoticeHolder(container).also {
+                currentLocalNoticeMap[container] = it
+            }
+            return holder.show(title, content, iconRes, outClickDismiss, eventListener)
+        }
+
+        fun show(
+            targetView: View,
+            title: String = "",
+            content: String = "",
+            iconRes: Int? = null,
+            outClickDismiss: Boolean = false,
+            eventListener: ((ClickEvent) -> Unit)? = null,
+        ): View? {
+            val container = findTargetViewNoticeContainer(targetView) ?: return null
+            val holder = currentLocalNoticeMap[container] ?: LocalNoticeHolder(container).also {
+                currentLocalNoticeMap[container] = it
+            }
+            return holder.show(title, content, iconRes, outClickDismiss, eventListener)
+        }
+
+        fun dismiss() {
+            currentLocalNoticeMap.values.forEach { it.dismiss() }
+            currentLocalNoticeMap.clear()
+            currentDialog?.dismiss()
+        }
+
+        fun dismiss(fragment: Fragment) {
+            val container = findFragmentNoticeContainer(fragment) ?: return
+            dismiss(container)
+        }
+
+        fun dismiss(targetView: View) {
+            val container = findTargetViewNoticeContainer(targetView) ?: return
+            dismiss(container)
+        }
+
+        fun isShowing(): Boolean {
+            return currentDialog != null
+        }
+
+        fun isShowing(fragment: Fragment): Boolean {
+            val container = findFragmentNoticeContainer(fragment) ?: return false
+            return isShowing(container)
+        }
+
+        fun isShowing(targetView: View): Boolean {
+            val container = findTargetViewNoticeContainer(targetView) ?: return false
+            return isShowing(container)
+        }
+
+        private fun dismiss(container: ViewGroup) {
+            currentLocalNoticeMap.remove(container)?.dismiss()
+        }
+
+        private fun isShowing(container: ViewGroup): Boolean {
+            return currentLocalNoticeMap[container]?.isShowing == true
+        }
+
+        private fun findTargetViewNoticeContainer(targetView: View): ViewGroup? {
+            return targetView as? ViewGroup ?: findNoticeContainer(targetView)
+        }
+
+        private fun findFragmentNoticeContainer(fragment: Fragment): ViewGroup? {
+            val targetView = fragment.view ?: return null
+            return (targetView as? ViewGroup)?.takeIf { !isUnsupportedHostContainer(it) }
+                ?: findNoticeContainer(targetView)
+        }
+
+        private fun findNoticeContainer(targetView: View): ViewGroup? {
+            var currentView: View? = targetView
+            var fallbackContainer: ViewGroup? = null
+            while (currentView != null) {
+                val parent = currentView.parent as? ViewGroup ?: break
+                if (isUnsupportedHostContainer(parent)) {
+                    currentView = parent
+                    continue
+                }
+                if (parent is FrameLayout) {
+                    return parent
+                }
+                fallbackContainer = parent
+                currentView = parent
+            }
+            return if (fallbackContainer != null) {
+                fallbackContainer
+            } else {
+                (targetView as? ViewGroup)?.takeIf { !isUnsupportedHostContainer(it) }
+            }
+        }
+
+        private fun isUnsupportedHostContainer(container: ViewGroup): Boolean {
+            return container is NestedScrollView
+                || container is ScrollView
+                || container is HorizontalScrollView
+                || container is FragmentContainerView
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        currentDialog = null
+    }
+
+    override fun initData() {}
+
+    override fun initView() {
+        bindNotice(
+            binding = binding,
+            title = title,
+            content = content,
+            iconRes = iconRes,
+            dismissOnMaskClick = outClickDismiss,
+            dismissAction = { dismiss() },
+            eventListener = eventListener,
+        )
+    }
+
+    enum class ClickEvent {
+        POSITIVE,
+        NEGATIVE,
+    }
+
+    private class LocalNoticeHolder(private val container: ViewGroup) {
+
+        private val contentBinding by lazy(LazyThreadSafetyMode.NONE) {
+            DialogCommonLocalNoticeBinding.inflate(LayoutInflater.from(container.context))
+        }
+
+        private val maskLayout by lazy(LazyThreadSafetyMode.NONE) {
+            FrameLayout(container.context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                )
+                setBackgroundResource(
+                    com.sinognss.ag.common.view.R.drawable.drawable_bg_local_notice_mask,
+                )
+                isClickable = true
+                isFocusable = true
+                setPadding(horizontalPadding, 0, horizontalPadding, 0)
+            }
+        }
+
+        private val horizontalPadding: Int
+            get() = (16 * container.context.resources.displayMetrics.density).toInt()
+
+        val isShowing: Boolean
+            get() = maskLayout.parent === container
+
+        fun show(
+            title: String,
+            content: String,
+            iconRes: Int?,
+            dismissOnMaskClick: Boolean,
+            eventListener: ((ClickEvent) -> Unit)?,
+        ): View {
+            bindNotice(
+                binding = contentBinding,
+                title = title,
+                content = content,
+                iconRes = iconRes,
+                dismissOnMaskClick = dismissOnMaskClick,
+                dismissAction = { dismiss() },
+                eventListener = eventListener,
+            )
+            ensureAttached(dismissOnMaskClick)
+            return maskLayout
+        }
+
+        fun dismiss() {
+            if (!isShowing) return
+            container.removeView(maskLayout)
+        }
+
+        private fun ensureAttached(dismissOnMaskClick: Boolean) {
+            maskLayout.setOnClickListener {
+                if (dismissOnMaskClick) {
+                    dismiss()
+                }
+            }
+            contentBinding.root.setOnClickListener { }
+            if (contentBinding.root.parent is ViewGroup) {
+                (contentBinding.root.parent as ViewGroup).removeView(contentBinding.root)
+            }
+            if (maskLayout.indexOfChild(contentBinding.root) == -1) {
+                maskLayout.removeAllViews()
+                maskLayout.addView(
+                    contentBinding.root,
+                    FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                    ).apply {
+                        gravity = Gravity.CENTER
+                    },
+                )
+            }
+            if (isShowing) {
+                maskLayout.bringToFront()
+                maskLayout.translationZ = findTopTranslationZ()
+                return
+            }
+            maskLayout.translationZ = findTopTranslationZ()
+            container.addView(maskLayout)
+            maskLayout.bringToFront()
+        }
+
+        private fun findTopTranslationZ(): Float {
+            var maxElevation = 0f
+            for (index in 0 until container.childCount) {
+                maxElevation = maxOf(maxElevation, container.getChildAt(index).elevation)
+                maxElevation = maxOf(maxElevation, container.getChildAt(index).translationZ)
+            }
+            return maxElevation + 1f
+        }
+    }
+}
+
+private fun bindNotice(
+    binding: DialogCommonLocalNoticeBinding,
+    title: String,
+    content: String,
+    iconRes: Int?,
+    dismissOnMaskClick: Boolean,
+    dismissAction: () -> Unit,
+    eventListener: ((CommonLocalNoticeDialog.ClickEvent) -> Unit)?,
+) {
+    binding.tvTitle.isVisible = title.isNotEmpty()
+    binding.tvTitle.text = title
+    binding.tvContent.isVisible = content.isNotEmpty()
+    binding.tvContent.text = content
+    binding.ivIcon.isVisible = iconRes != null
+    if (iconRes != null) {
+        binding.ivIcon.setImageResource(iconRes)
+    }
+    binding.root.isClickable = dismissOnMaskClick.not()
+    binding.btnNegative.setOnClickListener {
+        eventListener?.invoke(CommonLocalNoticeDialog.ClickEvent.NEGATIVE)
+        dismissAction()
+    }
+    binding.btnPositive.setOnClickListener {
+        eventListener?.invoke(CommonLocalNoticeDialog.ClickEvent.POSITIVE)
+        dismissAction()
+    }
+}

@@ -1,0 +1,8 @@
+package __PKG__.app
+
+/**
+ * SCAFFOLD_STUB: no matching plaintext seed under D:\WorkSpace\git\ag6.0
+ * (or seed-plain). Replaced CDG/LOCK shell so ContentIO/cmd type returns Kotlin.
+ * Replace with real source when available.
+ */
+class MainActivity

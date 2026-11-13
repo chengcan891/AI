@@ -1,0 +1,121 @@
+package com.siongnss.ag.db.manager
+
+import android.app.Application
+import android.util.Log
+import com.sinognss.ag.db.base.database.IMainDataBase
+import com.sinognss.ag.db.base.database.ITrackDatabase
+import com.sinognss.ag.db.base.database.IUserDatabase
+import com.sinognss.ag.db.base.constant.DBConstant
+import com.sinognss.ag.db.user.AppUserDatabase
+import com.sinognss.sf.database.ApplicationDatabase
+import com.sinognss.sf.trackdb.AppTrackDatabase
+import java.io.File
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/01/06
+ * @Description
+ */
+class DBServiceManager {
+
+    companion object {
+        val instance: DBServiceManager by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) { DBServiceManager() }
+    }
+
+    private val TAG = "DBServiceManager"
+
+    private var mainDB: IMainDataBase? = null
+    private var trackDB: ITrackDatabase? = null
+    private var userDB: IUserDatabase? = null
+
+    private var application: Application? = null
+    private var dbRootPath: File? = null
+
+    /**
+     * 初始化全部数据库；发现任一数据库版本变化时，先备份整个数据库根目录。
+     *
+     * @param application 应用上下文。
+     * @param path 数据库根目录。
+     */
+    fun init(application: Application, path: File): Boolean {
+        check(DatabaseBackupManager.backupIfNeeded(path)) {
+            return false
+        }
+
+        this.application = application
+        this.dbRootPath = path
+
+        mainDB = ApplicationDatabase.initDataBase(application, DBConstant.fieldMainDir(dbRootPath!!))
+        userDB = AppUserDatabase.initDataBase(application, DBConstant.fieldUserDir(dbRootPath!!))
+        trackDB = AppTrackDatabase.initDataBase(application, DBConstant.defaultTrackDir(dbRootPath!!))
+        return true
+    }
+
+    fun getMainDB(): IMainDataBase {
+        if (mainDB == null) {
+            throw Exception("MainDB has not init")
+        }
+
+        return mainDB!!
+    }
+
+    fun closeMainDB() {
+        ApplicationDatabase.closeDataBase()
+        mainDB = null
+    }
+
+    fun setDefaultTrackDb() {
+        val app = application ?: throw Exception("DBServiceManager has not init")
+        setDefaultTrackDb(app)
+    }
+
+    fun setDefaultTrackDb(application: Application) {
+        Log.d(TAG, "setDefaultTrackDb: previous ${AppTrackDatabase.currentDatabase}")
+        val path = dbRootPath ?: throw Exception("DBServiceManager has not init")
+        AppTrackDatabase.closeDataBase()
+        trackDB = null
+        trackDB = AppTrackDatabase.initDataBase(application, DBConstant.defaultTrackDir(path))
+    }
+
+    fun setTrackDb(fieldId: Int) {
+        val app = application ?: throw Exception("DBServiceManager has not init")
+        setTrackDb(app, fieldId)
+    }
+
+    fun setTrackDb(application: Application, fieldId: Int) {
+        if (fieldId <= 0) {
+            setDefaultTrackDb(application)
+            return
+        }
+
+        Log.d(TAG, "setTrackDb: previous ${AppTrackDatabase.currentDatabase}, current: $fieldId")
+        val path = dbRootPath ?: throw Exception("DBServiceManager has not init")
+        AppTrackDatabase.closeDataBase()
+        trackDB = null
+        trackDB = AppTrackDatabase.initDataBase(application, DBConstant.fieldTrackDir(path, fieldId))
+    }
+
+    fun getTrackDB(): ITrackDatabase? {
+        return trackDB
+    }
+
+    fun getUserDB(): IUserDatabase {
+        return userDB!!
+    }
+
+    /**
+     * 关闭全部数据库连接并释放引用，切换存储目录前必须调用。
+     */
+    fun release() {
+        ApplicationDatabase.closeDataBase()
+        AppUserDatabase.closeDataBase()
+        AppTrackDatabase.closeDataBase()
+        mainDB = null
+        userDB = null
+        trackDB = null
+        dbRootPath = null
+        application = null
+    }
+
+
+}

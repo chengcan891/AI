@@ -24,3 +24,5 @@ Skills:
 
 Do not replace %USERPROFILE%\.codex\skills wholesale (it has .system).
 For Codex-only legacy paths, junction individual skill folders into ~/.codex/skills when needed.
+
+- scaffold-ag60-android  脚手架：生成 AG6.0 同构 Android 多模块工程（自包含模板/SharedStyle/控件骨架；运行时勿再读 ag6.0）

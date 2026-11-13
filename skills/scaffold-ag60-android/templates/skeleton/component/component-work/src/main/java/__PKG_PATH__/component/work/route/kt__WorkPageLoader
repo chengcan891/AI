@@ -1,0 +1,107 @@
+package com.sinognss.ag.component.work.route
+
+import android.os.Bundle
+import com.google.auto.service.AutoService
+import com.sino.page.route.IPageLoader
+import com.sino.page.route.RouteDestination
+import com.sino.page.route.RouteDestination.FragmentDestination
+import com.sino.page.route.RouteModuleConfig
+import com.sino.page.route.RouteModuleConfig.ModuleTag
+import com.sino.page.route.RouteModuleConfig.WorkPath
+import com.sino.page.route.config.RouteConfig
+import com.sinognss.ag.component.work.block.edit.FieldBlockEditFragment
+import com.sinognss.ag.component.work.block.store.FieldBlockStoreFragment
+import com.sinognss.ag.component.work.boundary.create.FieldBoundaryCreateFragment
+import com.sinognss.ag.component.work.boundary.edit.FieldBoundaryEditFragment2
+import com.sinognss.ag.component.work.boundary.editpoint.FieldBoundaryEditPointsFragment
+import com.sinognss.ag.component.work.boundary.handdraw.FieldBoundaryHandDrawFragment
+import com.sinognss.ag.component.work.boundary.pickline.FieldBoundaryPickLineFragment
+import com.sinognss.ag.component.work.boundary.store.FieldBoundaryStoreFragment
+import com.sinognss.ag.component.work.customerfarm.CustomerAndFarmFragment
+import com.sinognss.ag.component.work.field.FieldHomeContainerFragment
+import com.sinognss.ag.component.work.marker.create.WorkMarkersFragment
+import com.sinognss.ag.component.work.marker.edit.FieldMarkerEditFragment
+import com.sinognss.ag.component.work.marker.store.FieldMarkerStoreFragment
+import com.sinognss.ag.component.work.material.MaterialEditFragment
+import com.sinognss.ag.component.work.material.MaterialManagerFragment
+import com.sinognss.ag.component.work.prescription.store.FieldPrescriptionStoreFragment
+import com.sinognss.ag.component.work.summary.FieldSummaryFragment
+import com.sinognss.ag.component.work.task.detail.FieldTaskDetailFragment
+import com.sinognss.ag.component.work.task.store.FieldTaskStoreFragment
+import com.sinognss.ag.component.work.workline.createContent.aheadingline.WorkAHeadingSurveyFragment
+import com.sinognss.ag.component.work.workline.createContent.circle.WorkOnePointCircleSurveyFragment
+import com.sinognss.ag.component.work.workline.createContent.circle.WorkThreePointCircleSurveyFragment
+import com.sinognss.ag.component.work.workline.createContent.curveline.WorkCurveLineSurveyFragment
+import com.sinognss.ag.component.work.workline.createContent.harrow.WorkDiagonalHarrowSurveyFragment
+import com.sinognss.ag.component.work.workline.createContent.straightline.WorkStraightLineSurveyFragment
+import com.sinognss.ag.component.work.workline.createContent.verticalline.WorkVerticalLineSurveyFragment
+import com.sinognss.ag.component.work.workline.createList.FieldWorkLineCreateListFragment
+import com.sinognss.ag.component.work.workline.edit.FieldWorkLineEditFragment
+import com.sinognss.ag.component.work.workline.edit.harrow.HarrowWorkLineEditFragment
+import com.sinognss.ag.component.work.workline.edit.harrow.HarrowZonePickerFragment
+import com.sinognss.ag.component.work.workline.store.FieldWorkLineStoreFragment
+import com.sinognss.ag.db.base.constant.WorkLineType
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/01/15
+ * @Description
+ */
+@AutoService(IPageLoader::class)
+class WorkPageLoader : IPageLoader {
+
+    override val tag: ModuleTag = ModuleTag.COMPONENT_WORK
+
+    override fun loadPage(path: RouteModuleConfig.RoutePath, extras: Bundle?): RouteDestination? {
+        if (path !is WorkPath) {
+            return null
+        }
+
+        return when (path) {
+            WorkPath.FIELD_BLOCK_STORE -> FragmentDestination(FieldBlockStoreFragment::class.java)
+            WorkPath.FIELD_BOUNDARY_CREATE -> FragmentDestination(FieldBoundaryCreateFragment::class.java)
+            WorkPath.FIELD_BOUNDARY_EDIT -> FragmentDestination(FieldBoundaryEditFragment2::class.java)
+            WorkPath.FIELD_BOUNDARY_PICK_LINE -> FragmentDestination(FieldBoundaryPickLineFragment::class.java)
+            WorkPath.FIELD_BOUNDARY_EDIT_POINTS -> FragmentDestination(FieldBoundaryEditPointsFragment::class.java)
+            WorkPath.FIELD_BOUNDARY_HAND_DRAW -> FragmentDestination(FieldBoundaryHandDrawFragment::class.java)
+            WorkPath.FIELD_TASK_DETAIL -> FragmentDestination(FieldTaskDetailFragment::class.java)
+            WorkPath.FIELD_BOUNDARY_STORE -> FragmentDestination(FieldBoundaryStoreFragment::class.java)
+            WorkPath.FIELD_WORK_LINE_STORE -> FragmentDestination(FieldWorkLineStoreFragment::class.java)
+            WorkPath.FIELD_WORK_LINE_EDIT -> FragmentDestination(FieldWorkLineEditFragment::class.java)
+            WorkPath.FIELD_HARROW_WORK_LINE_EDIT -> FragmentDestination(HarrowWorkLineEditFragment::class.java)
+            WorkPath.FIELD_HARROW_ZONE_PICKER -> FragmentDestination(HarrowZonePickerFragment::class.java)
+            WorkPath.FIELD_MARKER_CREATE -> FragmentDestination(WorkMarkersFragment::class.java)
+            WorkPath.FIELD_MARKER_STORE -> FragmentDestination(FieldMarkerStoreFragment::class.java)
+            WorkPath.FIELD_MARKER_EDIT -> FragmentDestination(FieldMarkerEditFragment::class.java)
+            WorkPath.FIELD_SUMMARY -> FragmentDestination(FieldSummaryFragment::class.java)
+            WorkPath.FIELD_TASK_STORE -> FragmentDestination(FieldTaskStoreFragment::class.java)
+            WorkPath.WORK_LINE_CREATE_LIST -> FragmentDestination(FieldWorkLineCreateListFragment::class.java)
+            WorkPath.WORK_LINE_CREATE_CONTENT -> {
+                val key = extras?.getInt(RouteConfig.ROUTE_CONFIG_ROUTE_KEY, -1)
+                when (key) {
+                    WorkLineType.CURVE -> FragmentDestination(WorkCurveLineSurveyFragment::class.java)
+                    WorkLineType.DIAGONAL_HARROW_2 -> FragmentDestination(
+                        WorkDiagonalHarrowSurveyFragment::class.java
+                    )
+
+                    WorkLineType.STRAIGHT_LINE -> FragmentDestination(WorkStraightLineSurveyFragment::class.java)
+                    WorkLineType.A_HEADING -> FragmentDestination(WorkAHeadingSurveyFragment::class.java)
+                    WorkLineType.CO_CIRCLE -> FragmentDestination(WorkOnePointCircleSurveyFragment::class.java)
+                    WorkLineType.CO_CIRCLE_2 -> FragmentDestination(
+                        WorkThreePointCircleSurveyFragment::class.java
+                    )
+
+                    WorkLineType.VERTICAL_LINE -> FragmentDestination(WorkVerticalLineSurveyFragment::class.java)
+                    else -> FragmentDestination(WorkStraightLineSurveyFragment::class.java)
+                }
+            }
+
+            WorkPath.FIELD_BLOCK_ADD -> FragmentDestination(FieldBlockEditFragment::class.java)
+            WorkPath.FIELD_HOME -> FragmentDestination(FieldHomeContainerFragment::class.java)
+            WorkPath.FIELD_PRESCRIPTION_STORE -> FragmentDestination(FieldPrescriptionStoreFragment::class.java)
+            WorkPath.FIELD_CUSTOMER_FARM -> FragmentDestination(CustomerAndFarmFragment::class.java)
+            WorkPath.FIELD_MATERIAL -> FragmentDestination(MaterialManagerFragment::class.java)
+            WorkPath.FIELD_MATERIAL_ADD -> FragmentDestination(MaterialEditFragment::class.java)
+        }
+    }
+}

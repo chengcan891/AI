@@ -1,0 +1,55 @@
+package com.sinognss.ag.common.unit
+
+/**
+ * create by zhangchao
+ * on 2023/8/9
+ */
+
+enum class UnitType(val id: Int) {
+
+    /**
+     * 空类型
+     */
+//    NONE(0),
+
+    /**
+     * 长度
+     */
+    LENGTH(1),
+
+    /**
+     * 角度
+     */
+    ANGLE(2),
+
+    /**
+     * 比例因子
+     */
+//    SCALE(3),
+
+    /**
+     * 面积
+     */
+    AREA(4),
+
+    /**
+     * 体积
+     */
+    VOLUME(5),
+
+
+    /**
+     * 内存
+     */
+//    MEMORY(6);
+
+    /**
+     * 速度
+     */
+    SPEED(7),
+
+    /**
+     * 偏移，默认cm
+     */
+    OFFSET(8);
+}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="text_size_l">16sp</dimen>
+    <dimen name="text_size_xl">18sp</dimen>
+    <dimen name="text_size_xxl">22sp</dimen>
+    <dimen name="text_size_xxxl">28sp</dimen>
+    <dimen name="text_size_xxxxl">32sp</dimen>
+    <dimen name="text_size_xxxxxl">36sp</dimen>
+    <dimen name="text_size_m">14sp</dimen>
+    <dimen name="text_size_s">12sp</dimen>
+    <dimen name="text_size_xs">10sp</dimen>
+    <dimen name="text_size_xxs">8sp</dimen>
+
+    <dimen name="page_normal_padding">16dp</dimen>
+    <dimen name="button_radius">8dp</dimen>
+    <dimen name="button_size_large">56dp</dimen>
+    <dimen name="button_size_large_x">74dp</dimen>
+    <dimen name="button_size_normal">42dp</dimen>
+    <dimen name="button_size_small">36dp</dimen>
+    <dimen name="button_size_ms">28dp</dimen>
+    <dimen name="button_horizontal_padding">18dp</dimen>
+
+
+    <dimen name="page_margin_large_x">74dp</dimen>
+    <dimen name="page_margin_large">58dp</dimen>
+    <dimen name="page_margin_default">42dp</dimen>
+    <dimen name="page_margin_small">26dp</dimen>
+
+    <dimen name="card_container_radius_small">10dp</dimen>
+    <dimen name="card_container_radius">12dp</dimen>
+    <dimen name="card_width_xs">198dp</dimen>
+    <dimen name="card_width_small">256dp</dimen>
+    <dimen name="card_width_large">512dp</dimen>
+    <dimen name="card_width_middle">384dp</dimen>
+
+    <dimen name="card_height_xs">45dp</dimen>
+    <dimen name="card_height_small">56dp</dimen>
+    <dimen name="card_height_middle">82dp</dimen>
+    <dimen name="card_height_l">156dp</dimen>
+    <dimen name="card_height_xl">256dp</dimen>
+
+    <dimen name="view_margin_large_x">32dp</dimen>
+    <dimen name="view_margin_large">16dp</dimen>
+    <dimen name="view_margin_middle">10dp</dimen>
+    <dimen name="view_margin_default">8dp</dimen>
+    <dimen name="view_margin_s">6dp</dimen>
+    <dimen name="view_margin_small">4dp</dimen>
+    <dimen name="view_margin_ms">2dp</dimen>
+
+    <dimen name="page_padding_xxs">2dp</dimen>
+    <dimen name="page_padding_ms">4dp</dimen>
+    <dimen name="page_padding_xs">6dp</dimen>
+    <dimen name="page_padding_small">8dp</dimen>
+    <dimen name="page_padding_default">10dp</dimen>
+    <dimen name="page_padding_large">24dp</dimen>
+    <dimen name="page_padding_xl">56dp</dimen>
+
+    <dimen name="label_width_default">72dp</dimen>
+    <dimen name="label_width_l">128dp</dimen>
+
+    <dimen name="icon_size_xxl">86dp</dimen>
+    <dimen name="icon_size_xll">68dp</dimen>
+    <dimen name="icon_size_xl">48dp</dimen>
+    <dimen name="icon_size_l">32dp</dimen>
+    <dimen name="icon_size_default">24dp</dimen>
+    <dimen name="icon_size_s">20dp</dimen>
+    <dimen name="icon_size_ms">16dp</dimen>
+    <dimen name="icon_size_xxs">12dp</dimen>
+
+    <!-- 状态栏图标列垂直居中内容到容器边的距离，用于时间列日期顶/时间底对齐其他列图标顶/文字底 -->
+    <dimen name="status_bar_item_vertical_margin">15dp</dimen>
+    <dimen name="status_bar_item_vertical_margin_pro">8dp</dimen>
+
+    <dimen name="et_height_default">42dp</dimen>
+    <dimen name="item_height_default">42dp</dimen>
+    <dimen name="item_height_small">32dp</dimen>
+    <dimen name="item_height_large">56dp</dimen>
+    <dimen name="item_height_large_x">100dp</dimen>
+
+    <dimen name="item_title_with_content_height">92dp</dimen>
+
+    <dimen name="page_height_small">56dp</dimen>
+    <dimen name="page_height_default">120dp</dimen>
+
+    <dimen name="item_title_width_default">114dp</dimen>
+    <dimen name="text_size_icon">22sp</dimen>
+    <dimen name="work_customer_farm_tab_bar_width">250dp</dimen>
+
+    <dimen name="page_width_ms">80dp</dimen>
+    <dimen name="page_width_default">250dp</dimen>
+    <dimen name="page_width_large">300dp</dimen>
+    <dimen name="page_width_large_x">400dp</dimen>
+    <dimen name="page_width_work_param_advanced">440dp</dimen>
+
+    <dimen name="launch_icon_size">68dp</dimen>
+    <dimen name="launch_icon_padding">68dp</dimen>
+    <dimen name="launch_progress_width">280dp</dimen>
+    <dimen name="launch_progress_height">3dp</dimen>
+    <dimen name="launch_progress_content_height">24dp</dimen>
+    <dimen name="launch_title_text_size">32sp</dimen>
+    <dimen name="launch_slogan_margin_top">4dp</dimen>
+    <dimen name="launch_loading_margin_top">48dp</dimen>
+
+    <dimen name="classic_menu_item_size">70dp</dimen>
+    <dimen name="vertical_menu_item_slot_height">55dp</dimen>
+    <dimen name="vertical_menu_overflow_item_slot_height">40dp</dimen>
+
+    <!-- 新手引导 -->
+    <dimen name="beginner_guide_dialog_max_width">800dp</dimen>
+    <dimen name="beginner_guide_dialog_max_height">560dp</dimen>
+    <dimen name="beginner_guide_dialog_corner_radius">16dp</dimen>
+    <dimen name="beginner_guide_dialog_elevation">8dp</dimen>
+    <dimen name="beginner_guide_step_indicator_height">40dp</dimen>
+    <dimen name="beginner_guide_step_icon_size">64dp</dimen>
+    <dimen name="beginner_guide_step_icon_padding">14dp</dimen>
+    <dimen name="beginner_guide_auto_check_icon_size">18dp</dimen>
+    <dimen name="beginner_guide_action_icon_size">18dp</dimen>
+    <dimen name="beginner_guide_primary_button_width">320dp</dimen>
+    <dimen name="beginner_guide_navigation_button_width">160dp</dimen>
+
+</resources>

@@ -1,0 +1,83 @@
+package com.sinognss.ag.common.view.dialog.impl
+
+import androidx.core.view.isVisible
+import com.sino.common.base.component.BaseVBCardDialogFragment
+import com.sinognss.ag.common.view.databinding.DialogCommonNoticeBinding
+
+/**
+ * @author ZhangHongYu
+ * @date 2025/6/27
+ */
+class CommonNoticeDialog(
+    private val title: String = "",
+    private val content: String = "",
+    private val positive: String? = null,
+    private val negative: String? = null,
+    private val neutral: String? = null,
+    private val outClickDismiss: Boolean = false,
+    private val iconRes: Int? = null,
+    private val eventListener: ((ClickEvent) -> Unit)? = null
+) : BaseVBCardDialogFragment<DialogCommonNoticeBinding>(DialogCommonNoticeBinding::inflate) {
+
+
+    override val canCancel: Boolean = outClickDismiss
+
+    override val cancelOutside: Boolean = outClickDismiss
+
+    override fun initData() {}
+
+    override fun initView() {
+        binding.tvTitle.text = title
+        binding.tvContent.text = content
+
+        iconRes?.let {
+            binding.ivIcon.isVisible = true
+            binding.ivIcon.setImageResource(it)
+        }
+
+        if (positive == null) {
+            binding.btnPositive.isVisible = false
+        } else {
+            binding.btnPositive.isVisible = true
+            binding.btnPositive.setButtonTitle(positive)
+        }
+
+        binding.btnPositive.setOnClickListener {
+            eventListener?.invoke(ClickEvent.POSITIVE)
+            dismiss()
+        }
+
+        if (negative == null) {
+            binding.btnNegative.isVisible = false
+        } else {
+            binding.btnNegative.isVisible = true
+            binding.btnNegative.setButtonTitle(negative)
+        }
+
+        binding.btnNegative.setOnClickListener {
+            eventListener?.invoke(ClickEvent.NEGATIVE)
+            dismiss()
+        }
+
+        if (neutral == null) {
+            binding.btnNeutral.isVisible = false
+        } else {
+            binding.btnNeutral.isVisible = true
+            binding.btnNeutral.setButtonTitle(neutral)
+        }
+
+        binding.btnNeutral.setOnClickListener {
+            eventListener?.invoke(ClickEvent.NEUTRAL)
+            dismiss()
+        }
+
+    }
+
+    enum class ClickEvent {
+        POSITIVE,
+        NEGATIVE,
+        NEUTRAL
+    }
+
+
+}

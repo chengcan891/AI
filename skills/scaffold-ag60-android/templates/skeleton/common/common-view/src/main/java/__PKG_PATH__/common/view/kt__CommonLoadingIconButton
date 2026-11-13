@@ -1,0 +1,123 @@
+package com.sinognss.ag.common.view
+
+import android.animation.ObjectAnimator
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
+import android.view.animation.LinearInterpolator
+import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
+import com.sinognss.ag.common.view.databinding.ViewLoadingIconButtonBinding
+
+/**
+ * 带加载态的图标按钮：默认图标 + 文字，加载时半透明背景 + 转圈图标，不可点击。
+ */
+class CommonLoadingIconButton @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+) : FrameLayout(context, attrs, defStyleAttr) {
+
+    private val binding: ViewLoadingIconButtonBinding =
+        ViewLoadingIconButtonBinding.inflate(LayoutInflater.from(context), this, true)
+
+    private var title: String = ""
+    private var iconRes: Int = 0
+    private var isLoading = false
+    private var loadingAnimator: ObjectAnimator? = null
+
+    init {
+        context.theme.obtainStyledAttributes(attrs, R.styleable.CommonLoadingIconButton, defStyleAttr, 0).apply {
+            try {
+                val titleResId = getResourceId(R.styleable.CommonLoadingIconButton_loading_button_title, 0)
+                title = if (titleResId != 0) {
+                    context.getString(titleResId)
+                } else {
+                    getString(R.styleable.CommonLoadingIconButton_loading_button_title).orEmpty()
+                }
+                iconRes = getResourceId(R.styleable.CommonLoadingIconButton_loading_button_icon, 0)
+                val enabled = getBoolean(R.styleable.CommonLoadingIconButton_android_enabled, true)
+                setEnabled(enabled)
+            } finally {
+                recycle()
+            }
+        }
+        renderNormalState()
+    }
+
+    fun setButtonTitle(title: String) {
+        this.title = title
+        binding.tvTitle.text = title
+    }
+
+    fun setButtonTitle(res: Int) {
+        setButtonTitle(context.getString(res))
+    }
+
+    fun setLoading(loading: Boolean) {
+        if (isLoading == loading) {
+            return
+        }
+        isLoading = loading
+        if (loading) {
+            binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_main_loading)
+            binding.ivIcon.setImageResource(R.drawable.drawable_icon_loading_ring)
+            binding.ivIcon.rotation = 0f
+            startLoadingAnimation()
+            isClickable = false
+            binding.layoutRoot.isClickable = false
+            return
+        }
+        stopLoadingAnimation()
+        renderNormalState()
+        isClickable = isEnabled
+        binding.layoutRoot.isClickable = isEnabled
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        if (isLoading) {
+            return
+        }
+        super.setEnabled(enabled)
+        binding.layoutRoot.isEnabled = enabled
+        isClickable = enabled
+        binding.layoutRoot.isClickable = enabled
+        binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_main)
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        super.setOnClickListener(l)
+        binding.layoutRoot.setOnClickListener(l)
+    }
+
+    private fun renderNormalState() {
+        binding.layoutRoot.setBackgroundResource(R.drawable.drawable_bg_button_main)
+        binding.tvTitle.text = title
+        binding.tvTitle.setTextColor(ContextCompat.getColor(context, com.sinognss.common.res.R.color.white))
+        if (iconRes != 0) {
+            binding.ivIcon.setImageResource(iconRes)
+        }
+    }
+
+    private fun startLoadingAnimation() {
+        loadingAnimator?.cancel()
+        loadingAnimator = ObjectAnimator.ofFloat(binding.ivIcon, View.ROTATION, 0f, 360f).apply {
+            duration = 800L
+            repeatCount = ObjectAnimator.INFINITE
+            interpolator = LinearInterpolator()
+            start()
+        }
+    }
+
+    private fun stopLoadingAnimation() {
+        loadingAnimator?.cancel()
+        loadingAnimator = null
+        binding.ivIcon.rotation = 0f
+    }
+
+    override fun onDetachedFromWindow() {
+        stopLoadingAnimation()
+        super.onDetachedFromWindow()
+    }
+}

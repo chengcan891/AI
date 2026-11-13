@@ -1,0 +1,135 @@
+package com.sinognss.ag.device.common
+
+import com.sino.ag.device.radio.external.Radio
+import com.sinognss.ag.common.log.log
+import com.sinognss.ag.device.common.agseries.PadDevice
+import com.sinognss.ag.device.common.control.CommonDeviceControlService
+import com.sinognss.ag.device.common.control.HubVersionCheck
+import com.sinognss.ag.device.common.control.IDeviceHubCmdService
+import com.sinognss.ag.device.common.diff.ExternalRadioDeviceManager
+import com.sinognss.ag.device.common.gnss.DeviceGnssManager
+import com.sinognss.ag.device.common.message.CommonDeviceMessageService
+import com.sinognss.ag.device.common.message.TempDeviceMessageListenerService
+import com.sinognss.ag.flavor.AGType
+import com.sinognss.ag.flavor.AppFlavorService
+import com.siongnss.ag.device.profile.attribute.DeviceComponentVersion
+import com.siongnss.ag.device.profile.feature.DeviceFeatureType
+import com.siongnss.ag.device.profile.feature.GnssModelFeature
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.Volatile
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/01/21
+ * @Description
+ */
+class CommonDeviceService {
+
+    companion object {
+        val instance: CommonDeviceService by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) { CommonDeviceService() }
+
+        fun getHubCmdService(): IDeviceHubCmdService {
+            return instance.controlService.hubCmdService
+        }
+
+    }
+
+    /**
+     * 设备公共数据监听
+     */
+    val messageService = CommonDeviceMessageService()
+
+    /**
+     * 设备信息临时监听
+     */
+    val tempMessageListenerService = TempDeviceMessageListenerService()
+
+    val controlService = CommonDeviceControlService()
+
+    private val deviceConnector = DeviceConnector()
+
+    val deviceGnssManager = DeviceGnssManager()
+
+    val deviceProfile = DeviceProfile()
+
+    val externalRadioDeviceManager = ExternalRadioDeviceManager()
+
+    private val externalRadioReconnectAttempted = AtomicBoolean(false)
+
+    /**
+     * 在外置电台当前不可用时执行一次重新连接。
+     * CommonDeviceService 生命周期内最多触发一次实际重连；再次调用直接返回缓存状态。
+     *
+     * @return 当前或重连后的外置电台可用状态。
+     */
+    suspend fun retryExternalRadioConnectionOnce(): Boolean {
+        if (externalRadioDeviceManager.supportExternalRadio) {
+            return true
+        }
+        if (!externalRadioReconnectAttempted.compareAndSet(false, true)) {
+            return externalRadioDeviceManager.supportExternalRadio
+        }
+
+        externalRadioDeviceManager.init()
+        return externalRadioDeviceManager.awaitInitialized()
+    }
+
+    suspend fun initDeviceConnect(agType: AGType): Boolean =
+        suspendCancellableCoroutine { cont ->
+            deviceConnector.openSerialPort(agType) { success ->
+                if (cont.isActive) {
+                    cont.resume(success, null)
+                }
+            }
+
+            deviceGnssManager.initConnection()
+        }
+
+    fun initMessageService() {
+        messageService.init()
+    }
+
+    lateinit var radio: Radio
+
+    suspend fun initDeviceProfile(agType: AGType) {
+        deviceProfile.init(agType)
+        val gnssModel = (deviceProfile.getFeatureInfo(DeviceFeatureType.FORMATED_GNSS_MODEL) as? GnssModelFeature)
+
+        if (deviceProfile.hardwareResult == null || gnssModel == null) {
+            log.error("deviceProfile init failed, hardwareResult: ${deviceProfile.hardwareResult}, gnssModel : $gnssModel")
+            return
+        }
+
+        deviceGnssManager.initBoardService(gnssModel.feature)
+        HubVersionCheck.instance.init(deviceProfile.getComponentVersion(DeviceComponentVersion.Type.HUB_VERSION)?.versionCode ?: 0)
+    }
+
+
+    suspend fun reloadDeviceProfile(){
+        deviceProfile.reset()
+        initDeviceProfile(AppFlavorService.instance.agType)
+    }
+
+
+    fun getPadDevice(): PadDevice {
+        return deviceConnector.currentPadDevice
+    }
+
+    fun onDeviceDisconnect() {
+        deviceProfile.reset()
+        messageService.clear()
+    }
+
+    @Volatile
+    private var lastReceiveHubMessageTime = 0L
+
+    fun setReceiveHubMessage() {
+        lastReceiveHubMessageTime = System.currentTimeMillis()
+    }
+
+    fun isHubConnect(): Boolean {
+        return (System.currentTimeMillis() - lastReceiveHubMessageTime) < 3000
+    }
+
+}

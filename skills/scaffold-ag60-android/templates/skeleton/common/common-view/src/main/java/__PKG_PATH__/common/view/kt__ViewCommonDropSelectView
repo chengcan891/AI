@@ -1,0 +1,267 @@
+package com.sinognss.ag.common.view
+
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.text.InputType
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.widget.ArrayAdapter
+import android.widget.Filter
+import android.widget.FrameLayout
+import com.sinognss.ag.common.view.bean.ResourceWrapper
+import com.sinognss.ag.common.view.databinding.ViewCommonDropSelectBinding
+import com.sinognss.common.res.R as ResR
+
+/**
+ *
+ * @Author      ZhangHongYu
+ * @Date        2026/04/02
+ * @Description
+ */
+class ViewCommonDropSelectView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+) : FrameLayout(context, attrs, defStyleAttr) {
+
+    private val binding: ViewCommonDropSelectBinding =
+        ViewCommonDropSelectBinding.inflate(LayoutInflater.from(context), this, true)
+
+    private val editText = binding.root
+
+    private val items = mutableListOf<ResourceWrapper<Any>>()
+    private var dropItemLayoutRes = R.layout.edit_spinner_item
+    private val adapterDelegate = lazy(LazyThreadSafetyMode.NONE) {
+        NoFilterAdapter(context, dropItemLayoutRes, items).also {
+            editText.setAdapter(it)
+        }
+    }
+
+    val adapter: NoFilterAdapter
+        get() = adapterDelegate.value
+
+    var currentSelectItem: ResourceWrapper<Any>? = null
+
+    var onItemClick: ((position: Int, item: ResourceWrapper<Any>) -> Unit)? = null
+
+    private var autoShowDropDownOnFocus = true
+    private var supportEdit = false
+    private var isDropDownBackgroundInitialized = false
+
+    init {
+        val typedArray = context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.ViewCommonDropSelectView,
+            defStyleAttr,
+            0
+        )
+        try {
+            val count = typedArray.indexCount
+            for (index in 0 until count) {
+                when (val attr = typedArray.getIndex(index)) {
+                    R.styleable.ViewCommonDropSelectView_view_common_drop_bg -> {
+                        val backgroundResId = typedArray.getResourceId(attr, 0)
+                        if (backgroundResId != 0) {
+                            editText.setBackgroundResource(backgroundResId)
+                        }
+                    }
+
+                    R.styleable.ViewCommonDropSelectView_view_common_drop_support_input -> {
+                        setSupportEdit(typedArray.getBoolean(attr, false))
+                    }
+
+                    R.styleable.ViewCommonDropSelectView_view_common_drop_item_layout -> {
+                        val layoutResId = typedArray.getResourceId(attr, 0)
+                        if (layoutResId != 0) {
+                            dropItemLayoutRes = layoutResId
+                        }
+                    }
+                }
+            }
+        } finally {
+            typedArray.recycle()
+        }
+
+        editText.setOnItemClickListener { _, _, position, _ ->
+            dropDownShowed = false
+            getItem(position)?.let {
+                currentSelectItem = it
+                onItemClick?.invoke(position, it)
+            }
+        }
+        editText.setOnClickListener {
+            if (autoShowDropDownOnFocus) {
+                showDropDown()
+            }
+        }
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                updateDropDownOnFocus()
+            }
+        }
+        editText.setOnTouchListener { _, event ->
+            if (
+                supportEdit &&
+                event.action == MotionEvent.ACTION_UP &&
+                isDropDownIconTouched(event)
+            ) {
+                showDropDown()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    @Suppress("unused")
+    fun setEditBackground(drawable: Drawable) {
+        editText.background = drawable
+    }
+
+    fun setData(data: List<ResourceWrapper<Any>>, selectItemIndex: Int = 0) {
+        items.clear()
+        items.addAll(data)
+
+        if (adapterDelegate.isInitialized()) {
+            adapter.notifyDataSetChanged()
+        }
+
+        currentSelectItem = data.getOrNull(selectItemIndex)
+        updateCurrentItem()
+    }
+
+    fun setSelectIndex(index: Int) {
+        currentSelectItem = getItem(index)
+        updateCurrentItem()
+    }
+
+    fun setText(text: String) {
+        editText.setText(text, false)
+    }
+
+    fun getText(): String {
+        return editText.text?.toString().orEmpty()
+    }
+
+    /**
+     * 设置输入框占位提示。
+     *
+     * @param hint 占位文本。
+     */
+    fun setHint(hint: CharSequence) {
+        editText.hint = hint
+    }
+
+    /**
+     * 嵌入组合输入条时使用：去掉外框背景与描边，下拉列表仍保留标准卡片背景。
+     */
+    fun setInlineStyle() {
+        editText.background = null
+    }
+
+    private fun updateCurrentItem() {
+        editText.setText(currentSelectItem?.displayName.orEmpty(), false)
+    }
+
+    private fun updateDropDownOnFocus() {
+        if (editText.hasFocus() && autoShowDropDownOnFocus && getItemCount() > 0) {
+            showDropDown()
+        } else {
+            editText.dismissDropDown()
+        }
+    }
+
+    private var dropDownShowed = false
+
+    private fun showDropDown() {
+        if (!editText.isAttachedToWindow || !editText.isLaidOut) {
+            editText.post { showDropDown() }
+            return
+        }
+
+        if (dropDownShowed){
+            dropDownShowed = false
+            editText.dismissDropDown()
+        }else{
+            if (getItemCount() > 0) {
+                prepareDropDown()
+                editText.showDropDown()
+                dropDownShowed = true
+            }
+        }
+
+
+    }
+
+    private fun prepareDropDown() {
+        adapterDelegate.value
+        if (!isDropDownBackgroundInitialized) {
+            editText.setDropDownBackgroundResource(ResR.drawable.drawable_card_2_with_border)
+            isDropDownBackgroundInitialized = true
+        }
+    }
+
+    private fun getItemCount(): Int {
+        return items.size
+    }
+
+    private fun getItem(index: Int): ResourceWrapper<Any>? {
+        return items.getOrNull(index)
+    }
+
+    private fun isDropDownIconTouched(event: MotionEvent): Boolean {
+        val endDrawable = editText.compoundDrawablesRelative[2] ?: return false
+        val iconTouchWidth = editText.paddingEnd +
+            editText.compoundDrawablePadding +
+            endDrawable.bounds.width()
+        return if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+            event.x <= iconTouchWidth
+        } else {
+            event.x >= width - iconTouchWidth
+        }
+    }
+
+    fun setSupportEdit(support: Boolean) {
+        supportEdit = support
+        autoShowDropDownOnFocus = !support
+        if (support) {
+            editText.isFocusable = true
+            editText.isFocusableInTouchMode = true
+            editText.isCursorVisible = true
+            editText.inputType = InputType.TYPE_CLASS_TEXT
+            editText.threshold = Int.MAX_VALUE
+            editText.dismissDropDown()
+        } else {
+            editText.isFocusable = false
+            editText.isFocusableInTouchMode = false
+            editText.isCursorVisible = false
+            editText.inputType = InputType.TYPE_NULL
+            editText.threshold = 0
+        }
+    }
+
+    class NoFilterAdapter(
+        context: Context,
+        resource: Int,
+        objects: List<ResourceWrapper<Any>>
+    ) : ArrayAdapter<ResourceWrapper<Any>>(context, resource, objects) {
+
+        private val noFilter = object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                return FilterResults().apply {
+                    values = emptyList<ResourceWrapper<Any>>()
+                    count = 0
+                }
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                notifyDataSetChanged()
+            }
+        }
+
+        override fun getFilter(): Filter {
+            return noFilter
+        }
+    }
+}

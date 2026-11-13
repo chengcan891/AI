@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <style name="DarkTheme" parent="AppTheme">
+
+        <item name="text_color_1">@color/dark_text_1</item>
+        <item name="text_color_2">@color/dark_text_2</item>
+        <item name="text_color_3">@color/dark_text_3</item>
+        <item name="text_color_4">@color/light_text_1</item>
+        <item name="bg_color_1">@color/dark_bg_1</item>
+        <item name="bg_color_2">@color/dark_bg_2</item>
+        <item name="bg_color_3">@color/dark_bg_3</item>
+        <item name="bg_color_black">@color/dark_bg_1</item>
+        <item name="bg_color_1_revert">@color/light_bg_1</item>
+        <item name="bg_color_3_revert">@color/light_bg_3_60</item>
+        <item name="bg_active_btn_home_color">@color/dark_bg_active_btn_home</item>
+        <item name="color_divide">@color/dark_divider</item>
+        <item name="color_minibar">@color/white</item>
+
+        <item name="color_minibar_turn_bg">@color/black_10</item>
+        <item name="color_minibar_turn_text">@color/white</item>
+        <item name="color_minibar_turn_block_active">@color/white</item>
+        <item name="color_minibar_turn_block">@color/black_20</item>
+
+        <item name="android:colorEdgeEffect">@color/light_bg_3</item>
+        <item name="android:colorControlActivated">@color/dark_text_2</item>
+
+        <item name="colorControlHighlight">@color/light_bg_3</item>
+        <item name="bg_color_2_80">@color/dark_bg_2_80</item>
+        <item name="bg_color_2_90">@color/dark_bg_2_90</item>
+        <item name="bg_color_2_50">@color/dark_bg_2_50</item>
+        <item name="keyboard_number_panel_bg">#111B31</item>
+        <item name="keyboard_number_panel_stroke">#203050</item>
+        <item name="keyboard_number_input_bg">#07101D</item>
+        <item name="keyboard_number_input_stroke">#16233A</item>
+        <item name="keyboard_number_key_bg">#2A3448</item>
+        <item name="keyboard_number_key_bg_pressed">#344057</item>
+        <item name="keyboard_number_key_bg_disabled">#182133</item>
+        <item name="keyboard_number_key_text">@color/dark_text_1</item>
+        <item name="keyboard_number_delete_bg">#271B33</item>
+        <item name="keyboard_number_delete_bg_pressed">#35213F</item>
+        <item name="bg_color_1_50">@color/dark_bg_1_50</item>
+
+        <item name="float_panel_bg">@color/dark_bg_2_80</item>
+        <item name="classic_status_bar_bg">@color/classic_status_bar_bg</item>
+        <item name="classic_status_content">@color/white</item>
+        <item name="classic_status_network_active_bg">@color/black_20</item>
+        <item name="classic_float_panel_bg">@color/classic_float_panel_bg_dark</item>
+        <item name="classic_turn_bg">@color/classic_turn_bg</item>
+        <item name="classic_turn_block">@color/classic_turn_block_normal_dark</item>
+        <item name="classic_turn_block_active">@color/classic_turn_block_active</item>
+        <item name="classic_turn_text">@color/white</item>
+    </style>
+
+    <style name="LightTheme" parent="AppTheme">
+        <item name="text_color_1">@color/light_text_1</item>
+        <item name="text_color_2">@color/light_text_2</item>
+        <item name="text_color_3">@color/light_text_3</item>
+        <item name="text_color_4">@color/dark_text_1</item>
+        <item name="bg_color_1">@color/light_bg_1</item>
+        <item name="bg_color_2">@color/light_bg_2</item>
+        <item name="bg_color_3">@color/light_bg_3</item>
+        <item name="bg_color_black">@color/dark_bg_1</item>
+        <item name="bg_color_1_revert">@color/dark_bg_1</item>
+        <item name="bg_color_3_revert">@color/light_bg_3_60</item>
+        <item name="bg_active_btn_home_color">@color/light_bg_active_btn_home</item>
+        <item name="color_divide">@color/light_divider</item>
+        <item name="color_minibar">@color/white</item><!--color_black_222-->
+
+        <item name="color_minibar_turn_bg">@color/black_10</item>
+        <item name="color_minibar_turn_text">@color/white</item>
+        <item name="color_minibar_turn_block_active">@color/white</item>
+        <item name="color_minibar_turn_block">@color/black_20</item>
+
+        <item name="android:colorEdgeEffect">@color/dark_bg_3</item>
+        <item name="android:colorControlActivated">@color/light_text_2</item>
+
+        <item name="colorControlHighlight">@color/dark_bg_3</item>
+        <item name="bg_color_2_80">@color/light_bg_2_80</item>
+        <item name="bg_color_2_90">@color/light_bg_2_90</item>
+        <item name="bg_color_2_50">@color/light_bg_2_50</item>
+        <item name="bg_color_1_50">@color/light_bg_1_50</item>
+        <item name="keyboard_number_panel_bg">@color/white</item>
+        <item name="keyboard_number_panel_stroke">#E1E8F2</item>
+        <item name="keyboard_number_input_bg">#F8FAFC</item>
+        <item name="keyboard_number_input_stroke">#EEF2F7</item>
+        <item name="keyboard_number_key_bg">#F0F3F8</item>
+        <item name="keyboard_number_key_bg_pressed">#E5EBF3</item>
+        <item name="keyboard_number_key_bg_disabled">#F8FAFC</item>
+        <item name="keyboard_number_key_text">@color/light_text_1</item>
+        <item name="keyboard_number_delete_bg">#FFF1F1</item>
+        <item name="keyboard_number_delete_bg_pressed">#FFE0E0</item>
+
+        <item name="float_panel_bg">#F8FAFC</item>
+        <!-- 经典白天状态栏按设计图仍为深色底+白字 -->
+        <item name="classic_status_bar_bg">@color/classic_status_bar_bg</item>
+        <item name="classic_status_content">@color/white</item>
+        <item name="classic_status_network_active_bg">@color/black_20</item>
+        <item name="classic_float_panel_bg">@color/classic_float_panel_bg_light</item>
+        <item name="classic_turn_bg">@color/classic_turn_bg</item>
+        <item name="classic_turn_block">@color/classic_turn_block_normal_dark</item>
+        <item name="classic_turn_block_active">@color/classic_turn_block_active</item>
+        <item name="classic_turn_text">@color/white</item>
+    </style>
+
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!--    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">-->
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>

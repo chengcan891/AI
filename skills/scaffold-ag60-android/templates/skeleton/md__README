@@ -1,0 +1,28 @@
+# __APP_NAME__
+
+Scaffolded with **scaffold-ag60-android** (AG6.0-style multi-module Android architecture).
+
+## Layers
+
+| Layer | Modules |
+|-------|---------|
+| L0 App shell | `:app` |
+| L1 Presentation | `:component:component-*` |
+| L2 Domain | `:core:core-*`, `:core:page-route` |
+| L3 Capability | `:device:device-common` |
+| L4 Persistence | `:db:db-base`, `:db:db-manager` |
+| L5 Foundation | `:common:*` |
+
+## Build
+
+```bash
+./gradlew :app:assembleDebug
+```
+
+## Conventions
+
+- UI: ViewBinding + `BaseViewBindingFragment` / Activity
+- Styles: use SharedStyle from `:common:common-res` (`text_*`, `page_container`, `edit_text`, …)
+- Controls: prefer `:common:common-view` (`CommonStatueBar`, `CommonTabLayout`, …)
+- Navigation: `PageRoute` + `*PageLoader` SPI (no hard Domain→UI compile deps)
+- Do **not** read or copy from any external `ag6.0` tree; this skeleton is self-contained

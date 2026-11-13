@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="text_color_1" format="color" />
+    <attr name="text_color_2" format="color" />
+    <attr name="text_color_3" format="color" />
+    <attr name="text_color_4" format="color" />
+    <attr name="bg_color_1" format="color" />
+    <attr name="bg_color_2" format="color" />
+    <attr name="bg_color_3" format="color" />
+    <attr name="bg_color_black" format="color" />
+    <attr name="bg_color_1_revert" format="color" />
+    <attr name="bg_color_3_revert" format="color" />
+    <attr name="bg_active_btn_home_color" format="color" />
+    <attr name="color_minibar" format="color" />
+    <attr name="color_minibar_turn_bg" format="color" />
+    <attr name="color_minibar_turn_block" format="color" />
+    <attr name="color_minibar_turn_text" format="color" />
+    <attr name="color_minibar_turn_block_active" format="color" />
+
+    <attr name="bg_color_2_90" format="color" />
+    <attr name="bg_color_2_80" format="color" />
+    <attr name="bg_color_2_50" format="color" />
+    <attr name="bg_color_1_50" format="color" />
+
+    <attr name="color_divide" format="color" />
+
+    <attr name="keyboard_number_panel_bg" format="color" />
+    <attr name="keyboard_number_panel_stroke" format="color" />
+    <attr name="keyboard_number_input_bg" format="color" />
+    <attr name="keyboard_number_input_stroke" format="color" />
+    <attr name="keyboard_number_key_bg" format="color" />
+    <attr name="keyboard_number_key_bg_pressed" format="color" />
+    <attr name="keyboard_number_key_bg_disabled" format="color" />
+    <attr name="keyboard_number_key_text" format="color" />
+    <attr name="keyboard_number_delete_bg" format="color" />
+    <attr name="keyboard_number_delete_bg_pressed" format="color" />
+
+    <attr name="float_panel_bg" format="color" />
+    <attr name="classic_status_bar_bg" format="color" />
+    <attr name="classic_status_content" format="color" />
+    <attr name="classic_status_network_active_bg" format="color" />
+    <attr name="classic_float_panel_bg" format="color" />
+    <attr name="classic_turn_bg" format="color" />
+    <attr name="classic_turn_block" format="color" />
+    <attr name="classic_turn_block_active" format="color" />
+    <attr name="classic_turn_text" format="color" />
+
+</resources>

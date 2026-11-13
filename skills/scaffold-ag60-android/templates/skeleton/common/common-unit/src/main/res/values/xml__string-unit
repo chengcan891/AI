@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_meter">m</string>
+    <string name="unit_kilometer">km</string>
+    <string name="unit_foot">ft</string>
+    <string name="unit_acre">ac</string>
+    <string name="unit_hectare">ha</string>
+</resources>

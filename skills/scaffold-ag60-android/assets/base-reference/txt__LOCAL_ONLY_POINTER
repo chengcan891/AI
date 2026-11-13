@@ -1,0 +1,8 @@
+本目录不再嵌入可移植源码。
+
+本机对照（仅当前电脑，可能受 SafeNet/加密限制）：
+- D:\WorkSpace\git\ag6.0\common\base-component\src\main\java\com\sino\common\base\component\BaseViewBindingActivity.kt
+- D:\WorkSpace\git\ag6.0\common\base-component\src\main\java\com\sino\common\base\component\fragment\BaseViewBindingFragment.kt
+- D:\WorkSpace\git\ag6.0\common\base-component\src\main\java\com\sino\common\base\component\BaseVBCardDialogFragment.kt
+
+脚手架使用的可生成基类在 templates/skeleton/.../base-component/（kt__* 无扩展名存储）。

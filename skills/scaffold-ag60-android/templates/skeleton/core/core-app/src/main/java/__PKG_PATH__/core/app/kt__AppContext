@@ -1,0 +1,206 @@
+package com.sinognss.ag.core.app
+
+import android.annotation.SuppressLint
+import android.os.Build
+import com.sino.common.base.component.AppComponentConfig
+import com.sino.page.route.PageRoute
+import com.sino.page.route.RouteAccessException
+import com.sino.page.route.RouteModuleConfig.ISOBUSPath
+import com.sinognss.ag.common.log.log
+import com.sinognss.ag.common.utils.app.AppContextHolder
+import com.sinognss.ag.common.utils.app.DayNightUtils
+import com.sinognss.ag.common.utils.app.PhoneLocationUtils
+import com.sinognss.ag.common.view.dialog.CommonDialogUtils
+import com.sinognss.ag.common.view.toash.AgToastUtils
+import com.sinognss.ag.core.app.net.NetWorkStateChecker
+import com.sinognss.ag.core.app.register.RegisterService
+import com.sinognss.ag.core.app.system.AppSystemDir
+import com.sinognss.ag.core.app.system.AppSystemDirService
+import com.sinognss.ag.core.app.system.getDir
+import com.sinognss.ag.core.app.unit.AppUnitService
+import com.sinognss.ag.core.global.data.bean.DisplayMode
+import com.sinognss.ag.core.global.data.bean.SoftwareMode
+import com.sinognss.ag.core.global.data.event.AppGlobalEvent
+import com.sinognss.ag.core.global.data.setting.AppGlobalSettingKey
+import com.sinognss.ag.core.global.data.setting.getData
+import com.sinognss.ag.core.global.data.setting.getDataBlock
+import com.sinognss.ag.core.log.CoreLogConfiguration
+import com.sinognss.ag.core.log.CoreLogInitializer
+import com.sinognss.ag.core.log.GlobalLogConsole
+import com.sinognss.ag.core.log.HighFrequencyLog
+import com.sinognss.ag.core.work.map.WorkMapRenderService
+import com.sinognss.ag.core.work.service.MaterialContextService
+import com.sinognss.ag.core.work.service.WorkService
+import com.sinognss.ag.core.work.vehicle.VehicleContextService
+import com.sinognss.ag.flavor.AGType
+import com.sinognss.ag.flavor.AppFlavorService
+import com.sinognss.common.res.AppMessageType
+import com.siongnss.ag.core.gnss.DiffService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/01/14
+ * @Description
+ */
+object AppContext {
+
+    /**
+     * 软件模式
+     */
+    var softwareMode: SoftwareMode = SoftwareMode.SOFTWARE_MODE_PROFESSIONAL
+        private set
+
+    /**
+     * 应用单位服务
+     */
+    val appUnitService = AppUnitService()
+
+    /**
+     * 工作服务
+     */
+    val workService = WorkService.instance
+
+    /**
+     * 应用变体特性
+     */
+    val appFlavorService
+        get() = AppFlavorService.instance
+
+    /**
+     * 应用系统目录服务
+     */
+    val appSystemDirService = AppSystemDirService()
+
+    /**
+     * 车辆农具相关服务
+     */
+    val vehicleService
+        get() = VehicleContextService.instance
+
+    /**
+     * 物料相关服务
+     */
+    val materialService
+        get() = MaterialContextService.instance
+
+    val diffService
+        get() = DiffService.instance
+
+    fun initSystemDir() {
+        appSystemDirService.init()
+    }
+
+    fun initFactory() {
+        appSystemDirService.initFactory()
+    }
+
+    /**
+     * 应用运行时服务和数据是否初始化完毕
+     */
+    @Volatile
+    var appRuntimeInitialized = false
+
+    private var nextThemeUpdateTime = -1L
+
+    suspend fun initRuntimeService() {
+        appUnitService.init()
+        // 启动时从系统属性加载注册码到全局缓存，界面只读全局
+        RegisterService.instance.init()
+        RegisterService.instance.refreshOfficialIsobusStatus(readTabletSn())
+        vehicleService.initService()
+        materialService.initService()
+        workService.init()
+        initSoftwareMode()
+
+        withContext(Dispatchers.Main) {
+            NetWorkStateChecker.getInstance().start()
+        }
+
+        loadThemeUpdateTime()
+        initPage()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun readTabletSn(): String {
+        return Build.getSerial().trim()
+    }
+
+    fun initLog() {
+        CoreLogInitializer.initialize(
+            CoreLogConfiguration(
+                logDirectory = AppSystemDir.LOG.getDir(), isDebug = AppContextHolder.isDebug
+            )
+        )
+        GlobalLogConsole.initialize(AppContextHolder.application)
+        val debugSetting = AppGlobalSettingKey.APP_LOG_DEBUG_SETTING.getDataBlock(
+            HighFrequencyLog.HighFrequencyLogSetting()
+        )
+        HighFrequencyLog.applySetting(debugSetting)
+    }
+
+    private suspend fun initSoftwareMode() {
+        val softwareModeId = AppGlobalSettingKey.SOFTWARE_MODE_ID.getData<Int>(SoftwareMode.SOFTWARE_MODE_PROFESSIONAL.id)
+        softwareMode = SoftwareMode.getSoftwareModeById(softwareModeId)
+    }
+
+
+    suspend fun checkThemeAndUpdate() {
+        if (nextThemeUpdateTime < 0L || System.currentTimeMillis() < nextThemeUpdateTime) {
+            return
+        }
+
+        log.debug("checkThemeAndUpdate: start update theme")
+
+        val modeId = AppGlobalSettingKey.DISPLAY_MODE_ID.getData<Int>(DisplayMode.AUTO.id)
+        val displayMode = DisplayMode.getDisplayModeById(modeId)
+
+        if (displayMode == DisplayMode.AUTO) {
+            val theme = DisplayMode.getTheme(AppContextHolder.application, displayMode)
+            if (AppComponentConfig.appTheme != theme) {
+                AppComponentConfig.applyAppTheme(theme)
+                AppGlobalEvent.ThemeChangeEvent.postSuspended(Unit)
+                WorkMapRenderService.instance.setSkyboxStyle(displayMode)
+            }
+            log.debug("checkThemeAndUpdate: update theme $displayMode")
+        }
+
+        loadThemeUpdateTime()
+    }
+
+
+    private fun loadThemeUpdateTime() {
+        val application = AppContextHolder.application
+        val location = PhoneLocationUtils.getLastKnownLocationBySystem(application)
+        val schedule = DayNightUtils.getSchedule(location?.latitude, location?.longitude)
+        nextThemeUpdateTime = schedule.nextSwitchTimeMillis
+        log.debug("loadThemeUpdateTime: $nextThemeUpdateTime")
+    }
+
+    private fun initPage(){
+        PageRoute.setExceptionHandler { context, path, exception ->
+
+            return@setExceptionHandler when (exception) {
+                is RouteAccessException.CapabilityUnsupported -> {
+                    AgToastUtils.showToast(context, AppMessageType.ERROR, "CapabilityUnsupported")
+                    true
+                }
+
+                is RouteAccessException.RegisterUnavailable -> {
+
+                    if (path is ISOBUSPath) {
+                        CommonDialogUtils.showOnlyNoticeDialog(
+                            context,
+                            context.getString(com.sinognss.common.res.R.string.service_expiry_reminder_title),
+                            context.getString(R.string.setting_isobus_register_unavailable),
+                        ) {}
+                        return@setExceptionHandler true
+                    }
+                    false
+                }
+            }
+        }
+    }
+
+}

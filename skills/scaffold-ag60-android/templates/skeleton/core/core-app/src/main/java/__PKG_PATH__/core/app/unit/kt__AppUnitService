@@ -1,0 +1,332 @@
+package com.sinognss.ag.core.app.unit
+
+import android.content.Context
+import com.sinognss.ag.common.unit.IUnit
+import com.sinognss.ag.common.unit.UnitResourceGetter
+import com.sinognss.ag.common.unit.UnitType
+import com.sinognss.ag.common.unit.angle.AngleUnit
+import com.sinognss.ag.common.unit.area.AreaUnit
+import com.sinognss.ag.common.unit.length.LengthUnit
+import com.sinognss.ag.common.unit.length.LengthUnit.CENTIMETRE
+import com.sinognss.ag.common.unit.length.LengthUnit.FOOT
+import com.sinognss.ag.common.unit.length.LengthUnit.INCH
+import com.sinognss.ag.common.unit.length.LengthUnit.METER
+import com.sinognss.ag.common.unit.speed.SpeedUnit
+import com.sinognss.ag.common.unit.volume.VolumeUnit
+import com.sinognss.ag.common.view.tv.UnitTexUnitType
+import com.sinognss.ag.common.view.tv.UnitTextConvert
+import com.sinognss.ag.common.view.tv.UnitTextViewManager
+import com.sinognss.ag.core.app.language.LanguageManager
+import com.sinognss.ag.core.app.unit.AppUnit.Companion.SYSTEM_ANGLE_UNIT
+import com.sinognss.ag.core.app.unit.AppUnit.Companion.SYSTEM_AREA_UNIT
+import com.sinognss.ag.core.app.unit.AppUnit.Companion.SYSTEM_LENGTH_UNIT
+import com.sinognss.ag.core.app.unit.AppUnit.Companion.SYSTEM_OFFSET_UNIT
+import com.sinognss.ag.core.app.unit.AppUnit.Companion.SYSTEM_SPEED_UNIT
+import com.sinognss.ag.core.app.unit.AppUnit.Companion.SYSTEM_VOLUME_UNIT
+import com.sinognss.ag.core.global.data.setting.AppGlobalSettingKey
+import com.sinognss.ag.core.global.data.setting.getData
+import com.sinognss.ag.core.global.data.setting.saveData
+import java.util.Locale
+
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/01/19
+ * @Description
+ */
+class AppUnitService {
+
+    var appUnit: AppUnit = AppUnit()
+        private set
+
+    suspend fun init() {
+
+        appUnit = AppGlobalSettingKey.APP_UNIT.getData(AppUnit())
+
+        UnitResourceGetter.isChinese = LanguageManager.isChinese()
+
+        UnitTextConvert.currentConvert = object : UnitTextConvert {
+            override fun convert(context: Context, unitType: UnitTexUnitType, value: Float): Pair<String, String> {
+
+                val unitString = getAppUnitText(context,unitType)
+
+                return when (unitType) {
+                    UnitTexUnitType.LENGTH -> {
+                        val targetUnit = getAppUnit(UnitType.LENGTH) as LengthUnit
+                        val convertValue = unitConvert(LengthUnit.valueOf(SYSTEM_LENGTH_UNIT), targetUnit, value.toDouble())
+                        Pair(getUnitScaleValue(UnitType.LENGTH, convertValue), unitString)
+                    }
+
+                    UnitTexUnitType.ANGLE -> {
+                        val tagetUnit = getAppUnit(UnitType.ANGLE) as AngleUnit
+                        val convertValue = unitConvert(AngleUnit.valueOf(SYSTEM_ANGLE_UNIT), tagetUnit, value.toDouble())
+                        Pair(getUnitScaleValue(UnitType.ANGLE, convertValue), unitString)
+                    }
+
+                    UnitTexUnitType.AREA -> {
+                        val targetUnit = getAppUnit(UnitType.AREA) as AreaUnit
+                        val convertValue = unitConvert(AreaUnit.valueOf(SYSTEM_AREA_UNIT), targetUnit, value.toDouble())
+                        Pair(getUnitScaleValue(UnitType.AREA, convertValue), unitString)
+                    }
+
+                    UnitTexUnitType.VOLUME -> {
+                        val targetUnit = getAppUnit(UnitType.VOLUME) as VolumeUnit
+                        val convertValue = unitConvert(VolumeUnit.valueOf(SYSTEM_VOLUME_UNIT), targetUnit, value.toDouble())
+                        Pair(getUnitScaleValue(UnitType.VOLUME, convertValue), unitString)
+                    }
+                    UnitTexUnitType.SPEED -> {
+                        val targetUnit = getAppUnit(UnitType.SPEED) as SpeedUnit
+                        val convertValue = unitConvert(SpeedUnit.valueOf(SYSTEM_SPEED_UNIT), targetUnit, value.toDouble())
+                        Pair(getUnitScaleValue(UnitType.SPEED, convertValue), unitString)
+                    }
+
+                    UnitTexUnitType.OFFSET -> {
+                        val targetUnit = getAppUnit(UnitType.OFFSET) as LengthUnit
+                        val convertValue = unitConvert(LengthUnit.valueOf(SYSTEM_OFFSET_UNIT), targetUnit, value.toDouble())
+                        Pair(getUnitScaleValue(UnitType.OFFSET, convertValue), unitString)
+                    }
+                }
+            }
+
+            override fun convertValueAppToSystem(value: Float, unitType: UnitTexUnitType): Float {
+                return when (unitType) {
+                    UnitTexUnitType.LENGTH -> unitConvert(getAppUnit(UnitType.LENGTH) as LengthUnit, LengthUnit.valueOf(SYSTEM_LENGTH_UNIT), value.toDouble())
+                    UnitTexUnitType.ANGLE -> unitConvert(getAppUnit(UnitType.ANGLE) as AngleUnit, AngleUnit.valueOf(SYSTEM_ANGLE_UNIT), value.toDouble())
+                    UnitTexUnitType.AREA -> unitConvert(getAppUnit(UnitType.AREA) as AreaUnit, AreaUnit.valueOf(SYSTEM_AREA_UNIT), value.toDouble())
+                    UnitTexUnitType.VOLUME -> unitConvert(getAppUnit(UnitType.VOLUME) as VolumeUnit, VolumeUnit.valueOf(SYSTEM_VOLUME_UNIT), value.toDouble())
+                    UnitTexUnitType.SPEED -> unitConvert(getAppUnit(UnitType.SPEED) as SpeedUnit, SpeedUnit.valueOf(SYSTEM_SPEED_UNIT), value.toDouble())
+                    UnitTexUnitType.OFFSET -> unitConvert(getAppUnit(UnitType.OFFSET) as LengthUnit, LengthUnit.valueOf(SYSTEM_OFFSET_UNIT), value.toDouble())
+                }.toFloat()
+            }
+
+            override fun getAppUnitText(context: Context, unitType: UnitTexUnitType): String {
+                return getUnitTextByUnitTexUnitType(context, unitType, false)
+            }
+
+            override fun getEnUnitSymbolText(context: Context, unitType: UnitTexUnitType): String {
+                return getUnitTextByUnitTexUnitType(context, unitType, true)
+            }
+        }
+    }
+
+    fun getUnitTextByUnitTexUnitType(context: Context, unitType: UnitTexUnitType, forceEn: Boolean): String {
+        return when (unitType) {
+            UnitTexUnitType.LENGTH -> {
+                val targetUnit = getAppUnit(UnitType.LENGTH) as LengthUnit
+                if (forceEn){
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit, true)
+                }else{
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit)
+                }
+            }
+
+            UnitTexUnitType.ANGLE -> {
+                val targetUnit = getAppUnit(UnitType.ANGLE) as AngleUnit
+                if (forceEn){
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit, true)
+                }else{
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit)
+                }
+            }
+
+            UnitTexUnitType.AREA -> {
+                val targetUnit = getAppUnit(UnitType.AREA) as AreaUnit
+                if (forceEn) {
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit, true)
+                } else {
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit)
+                }
+            }
+
+            UnitTexUnitType.VOLUME -> {
+                val targetUnit = getAppUnit(UnitType.VOLUME) as VolumeUnit
+                if (forceEn){
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit, true)
+                }else{
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit)
+                }
+
+            }
+
+            UnitTexUnitType.SPEED -> {
+                val targetUnit = getAppUnit(UnitType.SPEED) as SpeedUnit
+                if (forceEn){
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit, true)
+                }else{
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit)
+                }
+            }
+
+            UnitTexUnitType.OFFSET -> {
+                val targetUnit = getAppUnit(UnitType.OFFSET) as LengthUnit
+                if (forceEn){
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit, true)
+                }else{
+                    UnitResourceGetter.getUnitString(context, targetUnit.unit)
+                }
+
+            }
+        }
+    }
+
+    fun unitConvert(fromUnit: IUnit?, targetUnit: IUnit?, value: Double): Double {
+        if (fromUnit == null && targetUnit == null) {
+            throw Exception("unitConvert failed, fromUnit targetUnit all null")
+        }
+
+        if (fromUnit != null && targetUnit != null && fromUnit.unitType != targetUnit.unitType) {
+            throw Exception("unitConvert failed, fromUnit targetUnit not same unitType")
+        }
+
+        val unitType = (fromUnit?.unitType ?: targetUnit?.unitType)
+
+        if (unitType == null) {
+            throw Exception("unitConvert failed, unitType is null")
+        }
+
+        when (unitType) {
+
+            UnitType.LENGTH -> {
+                val from = (fromUnit ?: LengthUnit.valueOf(SYSTEM_LENGTH_UNIT)) as LengthUnit
+                val target = (targetUnit ?: LengthUnit.valueOf(SYSTEM_LENGTH_UNIT)) as LengthUnit
+                return from.convertTo(value, target)
+            }
+
+            UnitType.ANGLE -> {
+                val from = (fromUnit ?: AngleUnit.valueOf(SYSTEM_ANGLE_UNIT)) as AngleUnit
+                val target = (targetUnit ?: AngleUnit.valueOf(SYSTEM_ANGLE_UNIT)) as AngleUnit
+                return AngleUnit.convert(value, from, target)
+            }
+
+            UnitType.AREA -> {
+                val from = (fromUnit ?: AreaUnit.valueOf(SYSTEM_AREA_UNIT)) as AreaUnit
+                val target = (targetUnit ?: AreaUnit.valueOf(SYSTEM_AREA_UNIT)) as AreaUnit
+                return from.convertTo(value, target)
+            }
+
+            UnitType.VOLUME -> {
+                val from = (fromUnit ?: VolumeUnit.valueOf(SYSTEM_VOLUME_UNIT)) as VolumeUnit
+                val target = (targetUnit ?: VolumeUnit.valueOf(SYSTEM_VOLUME_UNIT)) as VolumeUnit
+                return from.convertTo(value, target)
+            }
+
+            UnitType.SPEED -> {
+                val from = (fromUnit ?: SpeedUnit.valueOf(SYSTEM_SPEED_UNIT)) as SpeedUnit
+                val target = (targetUnit ?: SpeedUnit.valueOf(SYSTEM_SPEED_UNIT)) as SpeedUnit
+                return from.convertTo(value, target)
+            }
+
+            UnitType.OFFSET -> {
+                val from = (fromUnit ?: LengthUnit.valueOf(SYSTEM_OFFSET_UNIT)) as LengthUnit
+                val target = (targetUnit ?: LengthUnit.valueOf(SYSTEM_OFFSET_UNIT)) as LengthUnit
+                return from.convertTo(value, target)
+            }
+        }
+    }
+
+    fun getAppUnit(unitType: UnitType): IUnit {
+        return when (unitType) {
+            UnitType.LENGTH -> {
+                val lengthUnit = when (AppUnitSystem.getById(appUnit.systemId)) {
+                    AppUnitSystem.Custom -> appUnit.lengthUnit
+                    AppUnitSystem.Metric -> AppUnitSystem.Metric.defaultUnit.lengthUnit
+                    AppUnitSystem.Imperial -> AppUnitSystem.Imperial.defaultUnit.lengthUnit
+                }
+
+                LengthUnit.valueOf(lengthUnit)
+
+            }
+
+            UnitType.ANGLE -> {
+
+                val angleUnit = when (AppUnitSystem.getById(appUnit.systemId)) {
+                    AppUnitSystem.Custom -> appUnit.angleUnit
+                    AppUnitSystem.Metric -> AppUnitSystem.Metric.defaultUnit.angleUnit
+                    AppUnitSystem.Imperial -> AppUnitSystem.Imperial.defaultUnit.angleUnit
+                }
+
+                AngleUnit.valueOf(angleUnit)
+            }
+
+            UnitType.AREA -> {
+                val areaUnit = when (AppUnitSystem.getById(appUnit.systemId)) {
+                    AppUnitSystem.Custom -> appUnit.areaUnit
+                    AppUnitSystem.Metric -> AppUnitSystem.Metric.defaultUnit.areaUnit
+                    AppUnitSystem.Imperial -> AppUnitSystem.Imperial.defaultUnit.areaUnit
+                }
+                AreaUnit.valueOf(areaUnit)
+            }
+
+            UnitType.VOLUME -> {
+                val volumeUnit = when (AppUnitSystem.getById(appUnit.systemId)) {
+                    AppUnitSystem.Custom -> appUnit.volumeUnit
+                    AppUnitSystem.Metric -> AppUnitSystem.Metric.defaultUnit.volumeUnit
+                    AppUnitSystem.Imperial -> AppUnitSystem.Imperial.defaultUnit.volumeUnit
+                }
+                VolumeUnit.valueOf(volumeUnit)
+            }
+
+            UnitType.SPEED -> {
+                val speedUnit = when (AppUnitSystem.getById(appUnit.systemId)) {
+                    AppUnitSystem.Custom -> appUnit.speedUnit
+                    AppUnitSystem.Metric -> AppUnitSystem.Metric.defaultUnit.speedUnit
+                    AppUnitSystem.Imperial -> AppUnitSystem.Imperial.defaultUnit.speedUnit
+                }
+                SpeedUnit.valueOf(speedUnit)
+            }
+
+            UnitType.OFFSET -> {
+                val lengthUnit = when (AppUnitSystem.getById(appUnit.systemId)) {
+                    AppUnitSystem.Custom -> appUnit.offsetUnit
+                    AppUnitSystem.Metric -> AppUnitSystem.Metric.defaultUnit.offsetUnit
+                    AppUnitSystem.Imperial -> AppUnitSystem.Imperial.defaultUnit.offsetUnit
+                }
+                LengthUnit.valueOf(lengthUnit)
+            }
+        }
+    }
+
+    suspend fun updateAppUnit(appUnit: AppUnit) {
+        this.appUnit = appUnit
+
+        UnitTextViewManager.instance.onUnitChanged()
+        AppGlobalSettingKey.APP_UNIT.saveData(appUnit)
+    }
+
+    fun getUnitScaleValue(unitType: UnitType, value: Double): String {
+        val scale = when (unitType) {
+            UnitType.LENGTH -> appUnit.lengthScale
+            UnitType.ANGLE -> appUnit.angleScale
+            UnitType.AREA -> appUnit.areaScale
+            UnitType.VOLUME -> appUnit.volumeScale
+            UnitType.SPEED -> appUnit.speedScale
+            UnitType.OFFSET -> appUnit.offsetScale
+        }
+
+        return String.format(Locale.US, ("%.$scale") + "f", value)
+    }
+
+    fun getAppSupportLengthUnit(): MutableList<LengthUnit> {
+        return mutableListOf(METER, CENTIMETRE, INCH, FOOT)
+    }
+
+    fun getAppSupportAreaUnit(): MutableList<AreaUnit> {
+        return mutableListOf(AreaUnit.MU, AreaUnit.HECTARES, AreaUnit.SQUARE_METER, AreaUnit.ACRE)
+    }
+
+    fun getAppSupportSpeedUnit(): MutableList<SpeedUnit> {
+        return mutableListOf(SpeedUnit.KMH, SpeedUnit.MPH)
+    }
+
+    /**
+     * 将系统长度（米）转换为当前应用显示单位下的数值。
+     */
+    fun convertSystemLengthToDisplay(valueInMeter: Double): Double {
+        return unitConvert(
+            LengthUnit.valueOf(SYSTEM_LENGTH_UNIT),
+            getAppUnit(UnitType.LENGTH) as LengthUnit,
+            valueInMeter,
+        )
+    }
+
+}

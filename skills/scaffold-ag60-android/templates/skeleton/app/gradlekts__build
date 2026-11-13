@@ -1,0 +1,51 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "__PKG_ROOT__.app"
+    compileSdk = 35
+
+    defaultConfig {
+        applicationId = "__APP_ID__"
+        minSdk = 24
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0.0"
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = "17" }
+    buildFeatures { viewBinding = true }
+}
+
+dependencies {
+    implementation(project(":common:base-component"))
+    implementation(project(":common:common-view"))
+    implementation(project(":common:common-res"))
+    implementation(project(":core:page-route"))
+    implementation(project(":core:core-app"))
+    implementation(project(":core:core-global-data"))
+    implementation(project(":component:component-home"))
+    implementation(project(":component:component-setting"))
+    implementation(project(":component:component-work"))
+    implementation(project(":component:component-device"))
+    implementation(project(":component:component-common"))
+    implementation(project(":db:db-manager"))
+    implementation(project(":device:device-common"))
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
+    implementation("com.google.android.material:material:1.12.0")
+}

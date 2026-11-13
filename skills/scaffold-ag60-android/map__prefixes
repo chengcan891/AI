@@ -1,0 +1,12 @@
+# prefix<TAB>extension  (stem may not contain dots that look like Windows extensions)
+kt	.kt
+kts	.kts
+gradlekts	.gradle.kts
+xml	.xml
+pro	.pro
+properties	.properties
+txt	.txt
+md	.md
+java	.java
+gradle	.gradle
+gitignore	.gitignore

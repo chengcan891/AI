@@ -1,0 +1,45 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url = uri("https://maven.aliyun.com/repository/public/") }
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://maven.aliyun.com/repository/public/") }
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+
+rootProject.name = "__APP_NAME__"
+
+include(":app")
+
+include(":common:base-component")
+include(":common:common-res")
+include(":common:common-view")
+include(":common:common-unit")
+include(":common:common-log")
+include(":common:common-utils")
+
+include(":core:page-route")
+include(":core:core-app")
+include(":core:core-global-data")
+
+include(":component:component-home")
+include(":component:component-common")
+include(":component:component-setting")
+include(":component:component-work")
+include(":component:component-device")
+
+include(":db:db-base")
+include(":db:db-manager")
+
+include(":device:device-common")

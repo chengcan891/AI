@@ -1,0 +1,71 @@
+package com.sino.component.home.route
+
+import android.os.Bundle
+import com.google.auto.service.AutoService
+import com.sino.component.home.beginnerguide.BeginnerGuideDialogFragment
+import com.sino.component.home.check.AppCheckFragment
+import com.sino.component.home.container.HomeContainerActivity
+import com.sino.component.home.container.HomeModeUiFactory
+import com.sino.component.home.guide.HomeAgTypeChooseFragment
+import com.sino.component.home.info.HomeInfoContainerFragment
+import com.sino.component.home.user.HomeSubsidyFragment
+import com.sino.component.home.user.HomeUserFragment
+import com.sino.component.home.work.container.HomeUTurnNoticeFragment
+import com.sino.page.route.IPageLoader
+import com.sino.page.route.RouteDestination
+import com.sino.page.route.RouteDestination.*
+import com.sino.page.route.RouteModuleConfig
+import com.sinognss.ag.core.app.AppContext
+import com.sinognss.ag.flavor.isSupport
+import com.sinognss.ag.core.global.data.bean.SoftwareMode
+import com.sinognss.ag.flavor.AppCapability
+import com.sinognss.component.common.navigation.HomeNavigationBarClassicFragment
+import com.sinognss.component.common.navigation.HomeNavigationBarProfessionalFragment
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2025/12/25
+ * @Description
+ */
+@AutoService(IPageLoader::class)
+class HomePageLoader : IPageLoader {
+    override val tag: RouteModuleConfig.ModuleTag = RouteModuleConfig.ModuleTag.COMPONENT_HOME
+
+    override fun loadPage(path: RouteModuleConfig.RoutePath, extras: Bundle?): RouteDestination? {
+
+        if (path !is RouteModuleConfig.HomePath) {
+            return null
+        }
+
+        return when (path) {
+            RouteModuleConfig.HomePath.HOME_MAIN -> ActivityDestination(HomeContainerActivity::class.java)
+            RouteModuleConfig.HomePath.HOME_INFO -> FragmentDestination(HomeInfoContainerFragment::class.java)
+            RouteModuleConfig.HomePath.HOME_WORK -> FragmentDestination(HomeModeUiFactory.getWorkContainerFragmentClass())
+
+            RouteModuleConfig.HomePath.HOME_PARAM -> null
+            RouteModuleConfig.HomePath.HOME_FARMTOOL -> null
+            RouteModuleConfig.HomePath.HOME_SERVICE -> null
+            RouteModuleConfig.HomePath.HOME_REMOTE_HELPER -> null
+            RouteModuleConfig.HomePath.HOME_UTURN_NOTICE -> FragmentDestination(HomeUTurnNoticeFragment::class.java)
+            RouteModuleConfig.HomePath.HOME_APP_STATUE_CHECK -> FragmentDestination(AppCheckFragment::class.java)
+            RouteModuleConfig.HomePath.HOME_AG_TYPE_CHOOSE -> FragmentDestination(HomeAgTypeChooseFragment::class.java)
+            RouteModuleConfig.HomePath.HOME_BEGINNER_GUIDE -> DialogDestination(BeginnerGuideDialogFragment::class.java)
+            RouteModuleConfig.HomePath.HOME_USER -> FragmentDestination(HomeUserFragment::class.java)
+            RouteModuleConfig.HomePath.HOME_SUBSIDY -> {
+                if (!AppCapability.CN_NAV_SUBSIDY.isSupport()){
+                    null
+                }else{
+                    FragmentDestination(HomeSubsidyFragment::class.java)
+                }
+            }
+
+            RouteModuleConfig.HomePath.HOME_NAVIGATION_BAR -> {
+                when (AppContext.softwareMode) {
+                    SoftwareMode.SOFTWARE_MODE_CLASSIC -> FragmentDestination(HomeNavigationBarClassicFragment::class.java)
+                    SoftwareMode.SOFTWARE_MODE_PROFESSIONAL -> FragmentDestination(HomeNavigationBarProfessionalFragment::class.java)
+                }
+            }
+        }
+    }
+
+}

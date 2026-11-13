@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_menu_info">详情</string>
+    <string name="main_menu_pid">调参</string>
+    <string name="main_menu_menu">设置</string>
+
+    <string name="main_menu_ab_line">作业田块</string>
+    <string name="menu_vehicle_manage">车辆管理</string>
+    <string name="menu_parameter_adjust">参数校准</string>
+    <string name="menu_satellite_locate">卫星定位</string>
+    <string name="menu_cloud_service">云服务</string>
+    <string name="menu_system_setting">系统设置</string>
+    <string name="menu_user">我的</string>
+    <string name="menu_rtk_config">信号设置</string>
+    <string name="handover_bank">交接行</string>
+
+    <string name="main_automatic_u_turn_params">掉头参数</string>
+    <string name="menu_start_motor">开启电机</string>
+    <string name="menu_stop_motor">关闭电机</string>
+
+    <string name="menu_offset">线偏移</string>
+    <string name="menu_current">当前</string>
+    <string name="menu_clear_all">清除</string>
+
+    <string name="menu_remote_assistance">远程协助</string>
+    <string name="menu_telephone">服务电话\n400-630-2933</string>
+    <string name="menu_file_help">文档协助</string>
+    <string name="menu_video_help">视频协助</string>
+
+    <string name="menu_finish_work">结束作业</string>
+    <string name="menu_vertical_change">90°线</string>
+    <string name="menu_vertical_default">原始线</string>
+    <string name="menu_previous_workline">上一条</string>
+    <string name="menu_next_workline">下一条</string>
+
+    <string name="main_menu_home">应用</string>
+    <string name="home_info_card_sort_enabled">已开启卡片自定义排序（长按卡片可自由拖动）</string>
+    <string name="home_info_card_restore_default">恢复默认</string>
+    <string name="home_info_card_sort_complete">完成</string>
+    <string name="home_info_card_drag_handle">拖动卡片排序</string>
+    <string name="home_service_heading_reset_desc">需要在车辆停止状态下操作;</string>
+    <string name="home_service_parameter_desc">全面了解设备运行参数;</string>
+</resources>

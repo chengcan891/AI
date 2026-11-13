@@ -1,0 +1,13 @@
+package com.sino.page.route
+
+import android.content.Context
+
+/**
+ * @author ZhangHongYu
+ * @date 2025/7/25
+ */
+interface ICommonPageRouter {
+
+    fun navigationToWebPage(context: Context, url: String)
+
+}

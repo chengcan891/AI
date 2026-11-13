@@ -1,0 +1,44 @@
+package com.sinognss.component.common.route
+
+import android.os.Bundle
+import com.google.auto.service.AutoService
+import com.sino.page.route.IPageLoader
+import com.sino.page.route.RouteDestination
+import com.sino.page.route.RouteDestination.ActivityDestination
+import com.sino.page.route.RouteDestination.DialogDestination
+import com.sino.page.route.RouteDestination.FragmentDestination
+import com.sino.page.route.RouteModuleConfig
+import com.sinognss.component.common.StatueBarFragmentStackContainerActivity
+import com.sinognss.component.common.cloud.download.CloudFileDownloadFragment
+import com.sinognss.component.common.cloud.share.CloudFileExportDialogFragment
+import com.sinognss.component.common.cloud.share.CloudFileExportFragment
+import com.sinognss.component.common.dataexchange.exportfile.CommonFileExportFragment
+import com.sinognss.component.common.dataexchange.importfile.CommonFileImportFragment
+import com.sinognss.component.common.file.CommonFileExplorerFragment
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/01/29
+ * @Description
+ */
+@AutoService(IPageLoader::class)
+class CommonPageLoader : IPageLoader {
+    override val tag: RouteModuleConfig.ModuleTag = RouteModuleConfig.ModuleTag.COMPONENT_COMMON
+
+    override fun loadPage(path: RouteModuleConfig.RoutePath, extras: Bundle?): RouteDestination? {
+
+        if (path !is RouteModuleConfig.CommonPath) {
+            return null
+        }
+        return when (path) {
+//            RouteModuleConfig.CommonPath.NAVIGATION_PAGE_CONTAINER -> RouteDestination.ActivityDestination(NavigationFragmentStackContainerActivity::class.java)
+            RouteModuleConfig.CommonPath.NAVIGATION_PAGE_CONTAINER -> ActivityDestination(StatueBarFragmentStackContainerActivity::class.java)
+            RouteModuleConfig.CommonPath.COMMON_FILE_EXPLORE -> FragmentDestination(CommonFileExplorerFragment::class.java)
+            RouteModuleConfig.CommonPath.COMMON_FILE_IMPORT -> FragmentDestination(CommonFileImportFragment::class.java)
+            RouteModuleConfig.CommonPath.COMMON_FILE_EXPORT -> FragmentDestination(CommonFileExportFragment::class.java)
+            RouteModuleConfig.CommonPath.COMMON_CLOUD_FILE_IMPORT -> FragmentDestination(CloudFileDownloadFragment::class.java)
+            RouteModuleConfig.CommonPath.COMMON_CLOUD_FILE_EXPORT -> FragmentDestination(CloudFileExportFragment::class.java)
+            RouteModuleConfig.CommonPath.COMMON_CLOUD_FILE_EXPORT_DIALOG -> DialogDestination(CloudFileExportDialogFragment::class.java)
+        }
+    }
+}

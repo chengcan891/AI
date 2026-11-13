@@ -1,0 +1,219 @@
+package com.sinognss.ag.common.view.dialog.impl
+
+import android.content.Context
+import android.content.DialogInterface
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
+import com.sino.common.base.component.BaseVBCardDialogFragment
+import com.sinognss.ag.common.view.databinding.DialogCommonProgressLoadingBinding
+import java.util.WeakHashMap
+
+private const val MIN_PROGRESS = 0
+private const val MAX_PROGRESS = 100
+
+/**
+ * 进度加载弹窗，支持 Context 全屏展示和 ViewGroup 局部覆盖展示。
+ * Created by sdh on 2026/5/29 14:04.
+ */
+class CommonProgressLoadingDialog(
+    private var title: String = "",
+    private var message: String = "",
+    private var progress: Int = 0,
+    supportCancel: Boolean = false,
+) : BaseVBCardDialogFragment<DialogCommonProgressLoadingBinding>(DialogCommonProgressLoadingBinding::inflate) {
+
+    override val canCancel: Boolean = supportCancel
+    override val cancelOutside: Boolean = supportCancel
+
+    companion object {
+        private var currentDialog: CommonProgressLoadingDialog? = null
+        private val currentLocalProgressMap = WeakHashMap<ViewGroup, LocalProgressHolder>()
+
+        fun show(
+            context: Context,
+            title: String = "",
+            message: String = "",
+            progress: Int = 0,
+            canCancel: Boolean = false,
+        ): CommonProgressLoadingDialog? {
+            val fragmentManager = when (context) {
+                is AppCompatActivity -> context.supportFragmentManager
+                is FragmentActivity -> context.supportFragmentManager
+                else -> null
+            } ?: return null
+
+            val dialog = currentDialog
+            if (dialog == null) {
+                currentDialog = CommonProgressLoadingDialog(title, message, progress, canCancel)
+                currentDialog!!.show(fragmentManager, CommonProgressLoadingDialog::class.java.name)
+            } else {
+                dialog.updateProgress(progress, title, message)
+            }
+            return currentDialog
+        }
+
+        fun show(
+            viewGroup: ViewGroup,
+            title: String = "",
+            message: String = "",
+            progress: Int = 0,
+        ): View {
+            val holder = currentLocalProgressMap[viewGroup]
+            return holder?.show(title, message, progress)
+                ?: LocalProgressHolder(viewGroup).also {
+                    currentLocalProgressMap[viewGroup] = it
+                }.show(title, message, progress)
+        }
+
+        fun dismiss() {
+            currentLocalProgressMap.values.forEach { it.dismiss() }
+            currentLocalProgressMap.clear()
+            val dialog = currentDialog ?: return
+            currentDialog = null
+            dialog.dismissAllowingStateLoss()
+        }
+
+        fun dismiss(viewGroup: ViewGroup) {
+            currentLocalProgressMap.remove(viewGroup)?.dismiss()
+        }
+
+        fun isShowing(): Boolean {
+            return currentDialog != null
+        }
+
+        fun isShowing(viewGroup: ViewGroup): Boolean {
+            return currentLocalProgressMap[viewGroup]?.isShowing == true
+        }
+
+        fun updateProgress(
+            progress: Int,
+            title: String? = null,
+            message: String? = null,
+        ) {
+            currentDialog?.updateProgress(progress, title, message)
+        }
+
+        fun updateProgress(
+            viewGroup: ViewGroup,
+            progress: Int,
+            title: String? = null,
+            message: String? = null,
+        ) {
+            currentLocalProgressMap[viewGroup]?.updateProgress(progress, title, message)
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        currentDialog = null
+    }
+
+    override fun initData() {}
+
+    override fun initView() {
+        bindProgress(binding, title, message, progress)
+    }
+
+    fun updateProgress(
+        progress: Int,
+        title: String? = null,
+        message: String? = null,
+    ) {
+        this.progress = progress
+        title?.let { this.title = it }
+        message?.let { this.message = it }
+        if (isInitialized) {
+            bindProgress(binding, this.title, this.message, this.progress)
+        }
+    }
+
+    private class LocalProgressHolder(private val container: ViewGroup) {
+
+        private var title: String = ""
+        private var message: String = ""
+        private var progress: Int = 0
+
+        private val contentBinding by lazy(LazyThreadSafetyMode.NONE) {
+            DialogCommonProgressLoadingBinding.inflate(LayoutInflater.from(container.context))
+        }
+
+        val isShowing: Boolean
+            get() = contentBinding.root.parent === container
+
+        fun show(title: String, message: String, progress: Int): View {
+            ensureAttached()
+            updateProgress(progress, title, message)
+            return contentBinding.root
+        }
+
+        fun dismiss() {
+            if (!isShowing) return
+            container.removeView(contentBinding.root)
+        }
+
+        fun updateProgress(
+            progress: Int,
+            title: String? = null,
+            message: String? = null,
+        ) {
+            this.progress = progress
+            title?.let { this.title = it }
+            message?.let { this.message = it }
+            bindProgress(contentBinding, this.title, this.message, this.progress)
+        }
+
+        private fun ensureAttached() {
+            val parent = contentBinding.root.parent as? ViewGroup
+            if (parent != null && parent !== container) {
+                parent.removeView(contentBinding.root)
+            }
+            contentBinding.root.isClickable = true
+            contentBinding.root.isFocusable = true
+            if (isShowing) {
+                contentBinding.root.bringToFront()
+                contentBinding.root.translationZ = findTopTranslationZ()
+                return
+            }
+            contentBinding.root.translationZ = findTopTranslationZ()
+            container.addView(
+                contentBinding.root,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                ),
+            )
+            contentBinding.root.bringToFront()
+        }
+
+        private fun findTopTranslationZ(): Float {
+            var maxElevation = 0f
+            for (index in 0 until container.childCount) {
+                maxElevation = maxOf(maxElevation, container.getChildAt(index).elevation)
+                maxElevation = maxOf(maxElevation, container.getChildAt(index).translationZ)
+            }
+            return maxElevation + 1f
+        }
+    }
+}
+
+private fun bindProgress(
+    binding: DialogCommonProgressLoadingBinding,
+    title: String,
+    message: String,
+    progress: Int,
+) {
+    val safeProgress = progress.coerceIn(MIN_PROGRESS, MAX_PROGRESS)
+    binding.tvTitle.isVisible = title.isNotEmpty()
+    binding.tvTitle.text = title
+    binding.tvMessage.isVisible = message.isNotEmpty()
+    binding.tvMessage.text = message
+    binding.progressLoading.progress = safeProgress
+    binding.tvPercent.text = buildString {
+        append(safeProgress)
+        append("%")
+    }
+}

@@ -1,0 +1,279 @@
+package com.sinognss.ag.core.app.language
+
+import android.content.Context
+import java.util.Arrays
+import java.util.Locale
+
+
+/**
+ * description
+ *
+ * @author admin
+ * @date 2021/4/20
+ */
+object LanguageManager {
+    const val LANGUAGE_CHINESE: String = "zh"
+    const val LANGUAGE_ENGLISH: String = "en"
+    const val LANGUAGE_RUSSIAN: String = "ru"
+
+    /**
+     * 系统
+     */
+    val SYS: Locale = Locale("sys", "")
+
+    /**
+     * 维吾尔语
+     */
+//    val UG: Locale = Locale("ug", "CN")
+
+    /**
+     * 阿拉伯语
+     */
+    val AR: Locale = Locale("ar", "")
+
+    /**
+     * 印地语
+     */
+    val HI: Locale = Locale("hi", "")
+
+    /**
+     * 土耳其语
+     */
+    val TURKISH: Locale = Locale("tr", "")
+
+
+    /**
+     * 俄语
+     */
+    val RUSSIAN: Locale = Locale("ru", "")
+
+    /**
+     * 西班牙
+     */
+    val ES: Locale = Locale("es", "")
+
+    /**
+     * 希腊
+     */
+    val EL: Locale = Locale("el", "")
+
+    /**
+     * 保加利亚
+     */
+    val BG: Locale = Locale("bg", "")
+
+
+    /**
+     * 法国
+     */
+    val FR: Locale = Locale("fr", "")
+
+    /**
+     * 日本
+     */
+    val JP: Locale = Locale("ja", "")
+
+    /**
+     * 越南
+     */
+    val VI: Locale = Locale("vi", "")
+
+    /**
+     * 波兰语
+     */
+    val PO: Locale = Locale("po", "")
+
+    /**
+     * 韩语
+     */
+    val KR: Locale = Locale("kr", "")
+
+    /**
+     * 荷兰语言：Nederlands
+     */
+    val DU: Locale = Locale("du", "")
+
+    /**
+     * 葡萄牙语
+     */
+    val PT: Locale = Locale("pt", "")
+
+    /**
+     * 德语
+     */
+    val DE: Locale = Locale("de", "")
+
+    /**
+     * 意大利语
+     */
+    val IT: Locale = Locale("it", "")
+
+    /**
+     * 匈牙利
+     */
+    val HU: Locale = Locale("hu", "")
+
+    /**
+     * 应用支持的本地化语言
+     */
+    private val SUPPORT_LOCALE = arrayOf(
+        SYS,
+        Locale.SIMPLIFIED_CHINESE,
+        Locale.ENGLISH,
+        AR,
+        BG,
+        DE,
+        DU,
+        EL,
+        ES,
+        FR,
+        HI,
+        HU,
+        IT,
+        JP,
+        KR,
+        PO,
+        PT,
+        RUSSIAN,
+        TURKISH,
+        VI,
+    )
+
+
+    val supportedLanguage: List<Locale>
+        get() = listOf(*SUPPORT_LOCALE)
+
+    /**
+     * 获取本地化的显示语言名称
+     *
+     * @param locale
+     * @return
+     */
+    fun getDisplayLanguage(locale: Locale, tip: String): String {
+        if (Locale.SIMPLIFIED_CHINESE.language == locale.language) {
+            if (Locale.TRADITIONAL_CHINESE.country == locale.country) {
+                return "中文(繁體)"
+            } else if (Locale.SIMPLIFIED_CHINESE.country == locale.country) {
+                return "中文(简体)"
+            }
+            return locale.getDisplayLanguage(locale)
+        } else if (RUSSIAN.language == locale.language) {
+            return "Русский"
+        } else if (FR.language == locale.language) {
+            return "Français"
+        } else if (SYS.language == locale.language) {
+            return tip
+        } else if (VI.language == locale.language) {
+            return "Tiếng Việt"
+        } else if (PO.language == locale.language) {
+            return "Polski"
+        } else if (KR.language == locale.language) {
+            return "한국어"
+        } else if (DU.language == locale.language) {
+            return "Nederlands"
+        } else {
+            return locale.getDisplayLanguage(locale)
+        }
+    }
+
+    /**
+     * 获取语言的中文显示名称。
+     * @param locale 目标语言地区信息
+     * @param systemTip 系统默认语言的显示文案
+     * @return 对应的中文语言名称
+     */
+    fun getChineseDisplayLanguage(locale: Locale): String {
+        return when (locale.language) {
+            SYS.language -> "跟随系统"
+            Locale.SIMPLIFIED_CHINESE.language -> "简体中文"
+            Locale.ENGLISH.language -> "英语"
+            AR.language -> "阿拉伯语"
+            HI.language -> "印地语"
+            TURKISH.language -> "土耳其语"
+            RUSSIAN.language -> "俄语"
+            ES.language -> "西班牙语"
+            EL.language -> "希腊语"
+            BG.language -> "保加利亚语"
+            FR.language -> "法语"
+            JP.language -> "日语"
+            VI.language -> "越南语"
+            PO.language -> "波兰语"
+            KR.language -> "韩语"
+            DU.language -> "荷兰语"
+            PT.language -> "葡萄牙语"
+            DE.language -> "德语"
+            IT.language -> "意大利语"
+            HU.language -> "匈牙利语"
+            else -> locale.getDisplayLanguage(Locale.SIMPLIFIED_CHINESE)
+        }
+    }
+
+    fun isEnglish(context: Context): Boolean {
+        return getDefault().language == LANGUAGE_ENGLISH
+    }
+
+    fun isChinese(): Boolean {
+        return getDefault().language == LANGUAGE_CHINESE
+    }
+
+    fun getDefault(): Locale {
+        val locale = Locale.getDefault()
+        return adaptiveSupportLanguage(locale)
+    }
+
+    /**
+     * 是否为支持的本地化
+     *
+     *
+     * update by LiShuai 修改比较方式，改为同时比较language和country
+     * 华为手机getDefault返回，简体中文：zh_Hans_CN
+     * 繁体中文：zh_Hant_TW、zh_Hant_HK
+     *
+     * @param locale
+     * @return true: 支持 , false: 不支持
+     */
+    fun isSupport(locale: Locale): Boolean {
+        var supported = false
+
+        for (l in SUPPORT_LOCALE) {
+            if (l.language == locale.language) {
+                if (LANGUAGE_CHINESE == l.language) {
+                    if (l.country == locale.country) {
+                        supported = true
+                        break
+                    }
+                } else {
+                    supported = true
+                    break
+                }
+            }
+        }
+        return supported
+    }
+
+    fun getLocalByLanguage(language: String): Locale {
+        return LanguageManager.supportedLanguage.firstOrNull {
+            it.language == language
+        } ?: getDefault()
+    }
+
+    @JvmStatic
+    private fun adaptiveSupportLanguage(locale: Locale): Locale {
+
+        if (supportedLanguage.contains(locale)) {
+            return locale;
+        }
+
+        val matchedLanguages = supportedLanguage.filter { it.language == locale.language }
+
+        if (matchedLanguages.isNullOrEmpty()) {
+            return supportedLanguage[0]
+        } else {
+            val matchedCountries = matchedLanguages.filter { it.country == locale.country }
+            if (!matchedCountries.isNullOrEmpty()) {
+                return matchedCountries.first()
+            }
+        }
+        return matchedLanguages.first()
+    }
+}

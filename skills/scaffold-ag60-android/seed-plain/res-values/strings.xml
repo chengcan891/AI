@@ -1,0 +1,1443 @@
+<resources>
+    <string name="setting">设置</string>
+    <string name="ok">确定</string>
+    <string name="set_zero">清零</string>
+    <string name="disconnect">连接断开</string>
+    <string name="check_hub_connection">请检查Hub连接</string>
+    <string name="illegal_input">非法输入</string>
+    <string name="pls_input_range_valus">请输入介于 %s 和 %s 之间的值</string>
+    <string name="do_connect">连接</string>
+    <string name="left">左</string>
+    <string name="car_producer_name">拖拉机厂家</string>
+    <string name="car_series">型号</string>
+    <string name="warn_params_count_error">设置的参数个数不对，无法进行设置</string>
+    <string name="warn_params_name_error">参数名不正确，无法设置参数值</string>
+    <string name="warn_differ_delay_tool_large">差分龄期过大，请停止自动驾驶</string>
+    <string name="warn_no_rtk_data_b_set_failed">无RTK数据，操作失败</string>
+    <string name="warn_heading_not_static_b_set_failed">航向未固定，操作失败</string>
+    <string name="warn_gyroscope_error_b_set_failed">速率陀螺错误，操作失败</string>
+    <string name="warn_token_not_match_start_failed">Token值不对应，操作失败</string>
+    <string name="warn_no_ab_line_too_short_b_set_failed">AB线距离低于10米，操作失败</string>
+    <string name="warn_no_bc_line_too_short_c_set_failed">BC两点距离低于30米，操作失败</string>
+    <string name="warn_no_ac_line_too_short_c_set_failed">AC两点距离低于30米，操作失败</string>
+    <string name="warn_no_cd_line_too_short_d_set_failed">CD两点距离低于30米，操作失败</string>
+    <string name="warn_no_bd_line_too_short_d_set_failed">BD两点距离低于30米，操作失败</string>
+    <string name="warn_no_ad_line_too_short_d_set_failed">AD两点距离低于30米，操作失败</string>
+    <string name="warn_no_ab_line_start_failed">无AB线，操作失败</string>
+    <string name="warn_already_in_driving">自动驾驶已经运行</string>
+    <string name="warn_gnss_disconnected_b_set_failed">接收机未连接，操作失败</string>
+    <string name="warn_front_gyro_missing_b_set_failed">前轮陀螺未连接，操作失败</string>
+    <string name="warn_body_gyro_missing">车身陀螺未连接，操作失败</string>
+    <string name="warn_motor_missing_b_set_failed">电机未连接，操作失败</string>
+    <string name="warn_no_curve_mission">无曲线作业，需下发</string>
+    <string name="warn_register_out_data_need_register">注册到期，需注册</string>
+    <string name="warn_ab_set_failed_curve_transfer">曲线传输中，操作失败</string>
+    <string name="warn_ab_set_failed_in_pilot">自动驾驶进行中，操作失败</string>
+    <string name="warn_ab_set_failed_a_first">打点失败,请先设置A点</string>
+    <string name="warn_tool_not_apply">未应用农具</string>
+    <string name="missing_locating">定位丢失</string>
+    <string name="missing_heading">航向丢失</string>
+    <string name="missing_front_gyro">前轮速率陀螺丢失</string>
+    <string name="missing_body_gyro">车身速率陀螺丢失</string>
+    <string name="missing_trouble_messages">故障信息</string>
+    <string name="missing_motor">电机丢失</string>
+    <string name="missing_smart_wheel">智能方向盘丢失</string>
+    <string name="shift_left">左:</string>
+    <string name="shift_fight">右:</string>
+    <string name="right">右</string>
+    <string name="front">前 </string>
+    <string name="back">后 </string>
+    <string name="registerbutton">点击注册</string>
+    <string name="get_left_time">获取到期日期</string>
+    <string name="radio_power">功率</string>
+    <string name="locationstate">卫星定位</string>
+    <string name="azimuthstate">航向状态</string>
+    <string name="tool_width">农具宽度</string>
+    <string name="speed_mode">速度模式</string>
+    <string name="speed">速度</string>
+    <string name="m" translatable="false">m</string>
+    <string name="speed_km_h" translatable="false">km/h</string>
+    <string name="create_mission">新建作业</string>
+    <string name="create_new">新建AB</string>
+    <string name="setting_success">设置成功</string>
+    <string name="get_success">获取成功</string>
+    <string name="setting_failed">设置失败</string>
+    <string name="tool_dis_to_tail">农具到后轴距离</string>
+    <string name="work_tool_lr_shifts">农具左右偏移</string>
+    <string name="fieldname">田块名称</string>
+    <string name="menu_width">宽度(A+B)</string>
+    <string name="farm_tool_width">农具宽度</string>
+    <string name="farm_bank_width">交接行宽度</string>
+    <string name="field_block_name">地块名称</string>
+    <string name="field_and_line_name">作业线名称</string>
+    <string name="pls_check_rtk_channel">*请选择差分服务接入通道</string>
+
+    <string name="menu_lr_shift">左右偏移(D)</string>
+    <string name="menu_toback_dis">到后轴距离(C)</string>
+    <string name="apply">应用</string>
+    <string name="confirm">确定</string>
+    <string name="sim_card_one_id">卡1ID</string>
+    <string name="sim_card_two_id">卡2ID</string>
+    <string name="workname">作业名称</string>
+    <string name="success">成功</string>
+    <string name="delete">删除</string>
+    <string name="worktype">作业类型</string>
+    <string name="tv_workpattern">作业方式</string>
+    <string name="warning_mission_name_exist">作业名已存在!</string>
+    <string name="rawdata">原始数据</string>
+    <string name="lora">罗网</string>
+    <string name="net_differ">网络差分</string>
+    <string name="satellite_based">星基</string>
+    <string name="radio">数传模块</string>
+    <string name="utctime">UTC 时间</string>
+    <string name="satellitenum">卫星数量</string>
+    <string name="differenceage_lable">差分龄期</string>
+    <string name="azimuth">航向</string>
+    <string name="port">端口</string>
+    <string name="source_tag">源节点</string>
+    <string name="user_name">用户名</string>
+    <string name="user_pwd">密码</string>
+    <string name="point_import">导入</string>
+    <string name="point_export">导出</string>
+    <string name="latitude">纬度</string>
+    <string name="longitude">经度</string>
+    <string name="base_station_distance_label">距离基站</string>
+    <string name="protocol">协议</string>
+    <string name="channel">频道</string>
+    <string name="read">读取</string>
+    <string name="hint">提示</string>
+    <string name="coordinateX">坐标X</string>
+    <string name="coordinateY">坐标Y</string>
+    <string name="no_car_warning">当前车辆未创建\n请创建车辆!</string>
+    <string name="clean">清空</string>
+    <string name="open">打开</string>
+    <string name="open_serial_port">打开串口</string>
+    <string name="cancel">取消</string>
+    <string name="pause">暂停</string>
+    <string name="close">关闭</string>
+    <string name="exit">退出</string>
+    <string name="stop_connection">断开连接</string>
+    <string name="continues">继续</string>
+    <string name="motor">电机</string>
+    <string name="loading_tips">加载中，请稍候…</string>
+    <!-- 修改3km 为正常   <string name="param_setting_three_km">3km</string>-->
+    <string name="motor_setting">电机设置</string>
+    <string name="motor_enable">电机使能</string>
+    <string name="enable_success">使能成功</string>
+    <string name="enable_failed">使能失败</string>
+    <string name="motor_disable">电机失能</string>
+    <string name="disable_success">失能成功</string>
+    <string name="disable_failed">失能失败</string>
+    <string name="motor_degree_cur">当前角度</string>
+    <string name="motor_voltage">当前电压</string>
+    <string name="motor_voltage_low">电压过低</string>
+    <string name="motor_current">当前电流</string>
+    <string name="motor_degree_set">设置角速度</string>
+    <string name="motor_param_set">设置参数</string>
+    <string name="motor_param_get">获取参数</string>
+    <string name="motor_param_kp" translatable="false">KP</string>
+    <string name="motor_param_ki" translatable="false">KI</string>
+    <string name="motor_param_kd" translatable="false">KD</string>
+
+
+    <string name="param_turn_k">倒车灵敏度</string>
+    <string name="param_turn_s">前进灵敏度</string>
+    <string name="param_go_line_k">上线系数</string>
+    <string name="forward_param_go_line_k">前进上线系数</string>
+    <string name="reverse_param_go_line_k">倒车上线系数</string>
+    <string name="param_on_line_k">在线系数</string>
+    <string name="forward_param_on_line_k">前进在线系数</string>
+    <string name="reverse_param_on_line_k">倒车在线系数</string>
+
+    <string name="param_setting_turn_kp">转向灵敏度</string>
+
+    <!--    高级参数-->
+    <string name="pid_forward_integral_lim_desc">积分限幅</string>
+    <string name="pid_advanced_motor_lim_range_desc">电机限幅</string>
+    <string name="pid_advanced_mqbc_desc">转弯时间</string>
+    <string name="pid_advanced_ivbo_one_desc">跨行数</string>
+
+    <string name="pid_advanced_mqcs_desc">边界距离</string>
+    <string name="motor_degree_get">获取角度</string>
+    <string name="motor_param_reset">恢复默认</string>
+    <string name="function_send">发送</string>
+    <string name="pickup">获取</string>
+
+    <string name="warn_location_not_static_b_set_failed">位置不固定，操作失败</string>
+    <string name="heading_adjust">航向校准</string>
+    <string name="forward_heading_angle_zero">前进航向角零位</string>
+    <string name="reverse_heading_angle_zero">倒车航向角零位</string>
+    <string name="tool_line_check">农具交接行</string>
+    <string name="next">下一步</string>
+    <string name="cuntom_action">其他</string>
+
+    <string name="query">查询</string>
+    <string name="limited_time">到期日期：</string>
+    <string name="softwarecode">本机软件12位编号</string>
+    <string name="softwareregistercodeinput">注册码</string>
+    <string name="hint_sixteen_register"> 请输入16位注册码</string>
+    <string name="rollanglevalue">横滚角校准值</string>
+    <string name="pitchanglevalue">俯仰角校准值</string>
+    <string name="local">本地</string>
+    <string name="hub" translatable="false">HUB</string>
+    <string name="debug_external_radio" translatable="false">E-Radio</string>
+    <string name="debug_gnss_data_source_title">GNSS数据来源</string>
+    <string name="debug_gnss_data_source_direct">直连</string>
+    <string name="debug_save">保存</string>
+    <string name="debug_can_id_label" translatable="false">CAN ID</string>
+    <string name="debug_can_id_prefix" translatable="false">ID: 0x</string>
+    <string name="debug_can_id_hint" translatable="false">00000000</string>
+    <string name="debug_can_command_hint">输入指令…</string>
+    <string name="debug_can_frame_standard">标准帧</string>
+    <string name="debug_can_frame_extended">扩展帧</string>
+    <string name="debug_command_sent">指令已发送</string>
+    <string name="super_advanced_potions">高级选项</string>
+    <string name="super_bull_mode_advanced">高级参数</string>
+    <string name="lateral_deviation_desc">航向偏差</string>
+    <string name="tool_manage">农具管理</string>
+    <string name="create">创建</string>
+    <string name="revise">编辑</string>
+    <string name="ante_height">天线高</string>
+    <string name="wheelbase">轴距</string>
+    <string name="frequency">频率</string>
+    <string name="warning_check_ecu_network">请检查HUB连接！</string>
+    <string name="selectfile">选择文件</string>
+    <string name="selectfolder">选择文件夹</string>
+    <string name="upgrade">开始升级</string>
+    <string name="selectfileconfirm">是否要选择此文件？</string>
+    <string name="selectfolderconfirm">是否导入到此文件夹？</string>
+    <string name="current_work_token">当前作业线</string>
+    <string name="softwareregister">软件注册</string>
+    <string name="cloud_service_switch">云开关</string>
+    <string name="ipaddress">IP地址</string>
+    <string name="success_apply">应用成功</string>
+    <string name="success_delete">删除成功</string>
+    <string name="tool_name">农具名称</string>
+    <string name="before">上一步</string>
+    <string name="finish">完成</string>
+    <string name="vehiclemanagement">车辆管理</string>
+    <string name="car_name">车辆名称</string>
+    <string name="cur_car_null">当前车辆为空</string>
+    <string name="owner_name">车主姓名</string>
+    <string name="owner_phone">车主电话</string>
+    <string name="gnss_ant_height_simple">天线高度</string>
+    <string name="gnss_ant_fb_distance_simple">天线前后偏移</string>
+    <string name="car_fb_distance">农机轴距</string>
+    <string name="tractor_front_dis">农机前轮间距</string>
+    <string name="direction">方向</string>
+    <string name="stopautodrivinghint1">需要退出自动驾驶才能打开此界面,确定要退出自动驾驶？</string>
+    <string name="stopautodrivingsuccess">停止自动驾驶成功</string>
+    <string name="notnull">不能为空</string>
+    <string name="turn_on">开启</string>
+    <string name="portmastbenumber">端口必须是数字</string>
+    <string name="port_error_hint">端口必须在0~65535之间</string>
+    <string name="unknow_line">未知</string>
+    <string name="work_line">直线</string>
+    <string name="work_line_auto_drive">自动掉头</string>
+    <string name="work_curveline">平移曲线</string>
+    <string name="work_cocircle">一点圆</string>
+    <string name="reset_point_b">B点重设</string>
+    <string name="front_gyro">前轮陀螺</string>
+    <string name="exit_system_msg">确定退出应用？</string>
+    <string name="exit_firmware_updating_prompt">固件升级中，您确认退出吗？</string>
+    <string name="type_firmware_hub" translatable="false">HUB</string>
+    <string name="type_firmware_motor">电机</string>
+    <string name="type_firmware_front_gyro">前轮角传</string>
+    <string name="type_firmware_body_gyro">车身角传</string>
+    <string name="type_firmware_external_body_gyro">WZ车身角传</string>
+    <string name="type_firmware_hub_blue">HUB蓝牙</string>
+    <string name="type_firmware_wheel_blue">方向盘蓝牙</string>
+    <string name="type_firmware_radio">数传模块</string>
+    <string name="type_firmware_board">板卡</string>
+    <string name="bluetooth_device">蓝牙设备</string>
+    <string name="search_device">搜索</string>
+    <string name="connected_device">设备</string>
+    <string name="custom">自定义</string>
+    <string name="wheel">方向盘</string>
+    <string name="title_camera">摄像头</string>
+
+    <!--    提取翻译 -->
+    <string name="search">搜索</string>
+    <string name="searching">搜索中</string>
+    <string name="connecting">连接中…</string>
+    <string name="open_bluetooth">请打开蓝牙！</string>
+    <string name="disconnect_bluetooth_before_connecting">请断开设备后,再连接！</string>
+    <string name="bluetooth_connecting_prompt">设备连接中！</string>
+    <string name="bluetooth_connected_prompt">设备连接成功。</string>
+    <string name="bluetooth_disconnected_prompt">设备已断开。</string>
+    <string name="bluetooth_connect_error_prompt">无法连接设备！</string>
+    <string name="line_type_curve">曲线</string>
+    <string name="input_mission_name_prompt">请输入作业名！</string>
+    <string name="select_firmware">请选择固件</string>
+    <!--    <string name="firmware_updating_prompt">固件升级中！</string>-->
+    <string name="check_connection_prompt">请检查连接！</string>
+    <string name="body_gyro_upgrade_unsupported">当前车身姿态传感器类型不支持升级</string>
+    <string name="insert_upan_prompt">请插入U盘！</string>
+    <string name="export_success_upan_prompt">保存到 优盘:/SN_OUT_TASK_DATA</string>
+    <string name="updating">正在升级中…</string>
+    <string name="select_aim_firmware_prompt">请选择需要升级的固件！</string>
+    <string name="hardware_not_supported">硬件不支持</string>
+    <string name="hub_not_connected">HUB未连接！</string>
+    <string name="no_farm_machine">未创建车辆！</string>
+    <string name="no_current_arm_machine">当前车辆未应用！</string>
+    <string name="no_farm_tool">未创建或应用农具！</string>
+    <string name="no_mission">未创建或应用作业！</string>
+    <string name="no_current_mission">农具未应用！</string>
+    <string name="not_fix">定位或航向未固定！</string>
+    <string name="heading_angle_text">航向角</string>
+    <string name="direction_forward">前进</string>
+    <string name="direction_backward">倒车</string>
+    <string name="direction_static">停车</string>
+    <string name="drive_status_not_begin">未开始</string>
+    <string name="drive_status_going_line">入线中</string>
+    <string name="drive_status_auto_drive">在线中</string>
+    <string name="drive_status_mark_a">A点标记中…</string>
+    <string name="unknown">未知</string>
+    <string name="start_failed">操作失败：%d</string>
+    <string name="set_after_create_mission">请先创建作业！</string>
+    <string name="start">开始</string>
+    <string name="start_success">启动成功</string>
+    <string name="request_permission_prompt">神牛需要以下权限才能使用</string>
+    <string name="permission_allowed_prompt">请在设置中允许以下权限</string>
+    <string name="allow">允许</string>
+    <string name="register_code_error">注册码不合法，长度应该是16位</string>
+    <string name="register_success">注册成功</string>
+    <string name="register_failed">注册失败 - %d</string>
+    <string name="expiration_prompt">到期时间：%s</string>
+    <string name="status_invalid">无效</string>
+    <string name="status_single">单点</string>
+    <string name="status_pseudo_range_diff">伪距</string>
+    <string name="status_fix">固定</string>
+    <string name="status_float">浮动</string>
+    <string name="status_unknown">未知</string>
+    <string name="unknown_error">未知错误</string>
+    <string name="farm_tool_name_exist_prompt">农具名称重复!</string>
+    <string name="setting_prompt">设置中…</string>
+    <string name="getting_prompt">获取中…</string>
+    <string name="closing_prompt">关闭中…</string>
+    <string name="open_success">开启成功</string>
+    <string name="close_failed">关闭失败</string>
+    <string name="close_error">关闭失败</string>
+    <string name="china_mobile">移动</string>
+    <string name="china_unicom">联通</string>
+    <string name="china_telecom">电信</string>
+    <string name="none">无</string>
+    <string name="card_state_0">未注册，终端当前并未在搜寻新的运营商</string>
+    <string name="card_state_1">已注册本地网络</string>
+    <string name="card_state_2">未注册，终端正在搜寻基站</string>
+    <string name="card_state_4">未知代码</string>
+    <string name="card_state_5">已注册，处于漫游状态</string>
+    <string name="dr_roll_label">俯仰角</string>
+    <string name="double_ant_roll_label">横滚角</string>
+    <string name="input_angle_prompt">请输入角度</string>
+    <string name="kp_input_illegal">KP输入非法</string>
+    <string name="ki_input_illegal">KI输入非法</string>
+    <string name="kd_input_illegal">KD输入非法</string>
+    <string name="mission_export_success">作业导出成功！</string>
+    <string name="input_port_error">端口输入错误</string>
+    <string name="left_to_left_distance_error_prompt">左对左输入错误!</string>
+    <string name="firmware_get_version_error_prompt">获取版本信息出错误！</string>
+    <string name="firmware_not_need_to_be_upgraded_prompt">不需要升级！</string>
+    <string name="firmware_download_error_prompt">下载固件出错！</string>
+    <string name="firmware_file_modify_prompt">固件文件被修改！</string>
+    <string name="firmware_file_name_error_prompt">固件文件名错误！</string>
+    <string name="firmware_upgrade_request_upgrade_no_response">请求升级未响应！</string>
+    <string name="firmware_upgrade_request_upgrade_forbid">禁止升级！</string>
+    <string name="firmware_upgrade_request_data_no_response">发送升级数据包未响应！</string>
+    <string name="firmware_upgrade_request_data_error">升级数据包写入错误！</string>
+    <string name="firmware_upgrade_send_md5_no_response_error">发送md5未响应！</string>
+    <string name="firmware_upgrade_md5_error">md5错误！</string>
+    <string name="firmware_upgrade_finish_no_response_error">结束升级未响应！</string>
+    <string name="firmware_upgrade_finish_error">升级失败！</string>
+    <string name="firmware_upgrade_power_warning_title">严禁断电、关机、拔线</string>
+    <string name="firmware_upgrade_power_warning_hint">断电会损坏设备，请等待自动完成</string>
+    <string name="firmware_download_data_error">固件文件数据传输错误!</string>
+
+    <string name="point_setting_return_point_info_error">返回点信息异常！</string>
+
+    <string name="curve_transfer_error">曲线传输异常！</string>
+
+    <string name="cmd_no_response">发送指令未响应！</string>
+    <string name="cmd_ok">发送指令成功！</string>
+
+    <string name="mission_point_invalid">作业点数据不可用！</string>
+
+    <string name="central_meridian">中央子午线</string>
+
+    <string name="input_data_range_prompt">[%1$s]不合理，请检查输入！(%2$s,%3$s)</string>
+    <string name="input_data_range_include_limits_prompt">[%1$s]不合理，请检查输入！[%2$s,%3$s]</string>
+    <string name="input_data_null_prompt">[%1$s]不能为空！</string>
+    <string name="length_not_match_prompt">[%1$s]长度不能超过%2$s位！</string>
+    <string name="param_adjust_right_to_right">S1距离</string>
+    <string name="param_adjust_left_to_left">S2距离</string>
+    <string name="param_adjust_hope_distance">期望距离</string>
+    <string name="measure_tool_width">测量农具宽度</string>
+    <string name="adjust_tool_width">修正后农具宽度</string>
+    <string name="warning">警告</string>
+    <string name="action_success">操作成功！</string>
+    <string name="mission_type_not_support">作业类型不支持当前操作！</string>
+    <string name="logical_error">逻辑异常！</string>
+
+    <string name="net_info_invalid">网络账号信息不可用。</string>
+
+
+    <!--    <string name="close_rtkmode_first">请先关闭当前差分模式,并等待一分钟。</string>-->
+
+    <string name="base_line">基准线</string>
+
+    <string name="no_data_in_database">没有找到数据！</string>
+
+    <string name="turning">正在掉头</string>
+    <string name="get_shared_work">获取共享作业</string>
+    <string name="select_work">选择作业</string>
+    <string name="work_data_error_prompt">作业信息错误！</string>
+
+    <string name="set_b_error">打B点返回错误！</string>
+    <string name="not_return_b_point">没有返回B点信息！</string>
+    <string name="not_return_radius">没有返回半径信息！</string>
+    <string name="receive_curve_point_error">接受曲线点数据出错！</string>
+
+    <string name="rtk_mode_not_start">数据差分未开启。</string>
+
+    <string name="no_text_input">输入内容不能为空!</string>
+
+    <string name="applying">应用中…</string>
+
+    <string name="curve_no_response_of_start">启动自动驾驶未响应！</string>
+    <string name="receive_curve_point_num_error">曲线点数量接收错误！</string>
+    <string name="save_curve_point_count_error">曲线点数量存储错误！</string>
+    <string name="receive_curve_point_data_error">曲线点数据错误！</string>
+    <string name="receive_curve_point_data_time_out">接收曲线点数据超时！</string>
+
+    <string name="set_and_query_param_are_different">设置的参数和查询的不同！</string>
+
+    <string name="input_user_paw_err">输入密码错误!</string>
+    <string name="ntrip_user_pwd_unauthorized">账号密码错误！</string>
+    <string name="no_response_of_ntrip_login">登录未响应！</string>
+    <string name="ntrip_connect_error">连接出错！</string>
+    <string name="no_response_of_mission_line_set">作业线下发未响应！</string>
+    <string name="mission_line_set_ok">作业线设置成功！</string>
+    <string name="page_error_of_curve_point">曲线数据页数错误！</string>
+
+    <!--    参数设置通用返回-->
+    <string name="no_response_of_params_set">参数设置未响应！</string>
+    <string name="u_turn_params_set_failed">调头参数设置失败，请重试！</string>
+
+    <string name="installation_offset">安装偏移</string>
+    <string name="body_gyro">车身陀螺</string>
+
+    <string name="config_left">左</string>
+    <string name="config_right">右</string>
+    <string name="config_front">前</string>
+    <string name="config_back">后</string>
+
+    //新增翻译 2021、8、30
+    <string name="adjust_params">校准参数</string>
+
+    //合并后版本增加
+    <string name="lora_gga_out_of_range">GGA超出范围!</string>
+    <string name="lora_device_not_register_with_lora">设备未注册罗网!</string>
+    <string name="lora_capability_not_activated">能力未激活!</string>
+    <string name="lora_capability_expired">能力已过期!</string>
+    <string name="lora_capability_failure">能力已失效!</string>
+    <string name="lora_unknown">未知状态!</string>
+    <string name="lora_openapi_call_failed">openApi调用失败!</string>
+    <string name="lora_no_account">平台无账号!</string>
+    <string name="lora_get_capability_config_failed">能力配置获取失败!</string>
+    <string name="lora_not_find_capability">未找到能力!</string>
+    <string name="lora_account_not_contains_capability">当前账号未包含该能力!</string>
+    <string name="sort_order">排序方式</string>
+    <string name="time">时间</string>
+    <string name="distance">距离</string>
+    <string name="upgrade_success">升级成功！</string>
+
+
+    <!--需要新增翻译-->
+    <string name="work_line_diagonal_harrow">耙地线</string>
+    <string name="quick_menu">快捷菜单</string>
+    <string name="gyroscope_axis_one">单轴陀螺</string>
+    <string name="param_advance_rool_k">前进横偏系数</string>
+    <string name="param_advance_heading_k">前进航向系数</string>
+    <string name="param_back_rool_k">倒车横偏系数</string>
+    <string name="param_back_heading_k">倒车航向系数</string>
+    <string name="gyroscope_encoder">编码器</string>
+    <string name="gyroscope_axis_three">三轴陀螺</string>
+    <string name="recharge_qr_code_notice">使用微信小程序扫一扫二维码</string>
+    <string name="camera_mode">开启摄像头</string>
+    <string name="warn_receiver_no_card">一体机无卡2，无法进行设置</string>
+
+    <string name="terrain_compensation">地形补偿</string>
+    <string name="turn_compensation">转向补偿</string>
+    <string name="forward_looking_distance">前视距离</string>
+    <string name="auto_drive">自动驾驶</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+
+    <string name="msg_forward_steering_compensation">前进补偿</string>
+    <string name="msg_reverse_steering_compensation">倒车补偿</string>
+
+    <string name="software">软件</string>
+
+    <string name="switch_monitor_btn_key">演示模式</string>
+
+
+    <string name="calibration">校准</string>
+    <string name="msg_title_for_vehicle_calibration">车辆校准</string>
+    <string name="msg_private_space_downloading">文件下载中…</string>
+    <string name="msg_private_space_title">工具箱</string>
+    <string name="msg_private_space_download">下载</string>
+
+    <string name="mode">模式</string>
+    <string name="row_space_step">1. 请返回主界面进行完成AB点采集后进行前进自动驾驶，在三条相邻线路上各进行一次自动驾驶；\n
+    2.记录S1, S2的值, 输入到对应的输入框中；\n
+    3.校准完成后，重复1和2，核对校准效果，满足要求就完成校准，否则就重复执行1,2直到满足要求。\n
+        点击清零按钮完成农具左右偏移量的校准值清零。\n
+    </string>
+    <string name="status">状态</string>
+    <string name="area_unit">面积单位</string>
+    <string name="units">单位</string>
+    <string name="bt_connected">已连接</string>
+    <string name="bt_disconnect">未连接</string>
+
+    <string name="missing_heading_solution">1、请检查周围环境有无遮挡或信号干扰;\n2、请检查天线线缆连接.</string>
+    <string name="missing_locating_solution">1、请检查周围环境有无遮挡或信号干扰;\n2、请检查天线线缆连接;\n3、请检查网络信号和差分设置.</string>
+    <string name="missing_double_ant_solution">请检查天线和线缆.</string>
+    <string name="missing_front_gyro_soltion">请检查前轮陀螺和线缆.</string>
+    <string name="missing_body_gyro_soltion">请检查车身陀螺和线缆.</string>
+    <string name="missing_motor_solution">1.电机角度丢失;\n2.请检查电机和电机线缆.</string>
+    <string name="missing_smart_wheel_solution">请检查方向盘状态和电池电量.</string>
+    <string name="missing_rtk_data">RTK无数据</string>
+    <string name="missing_rtk_data_solution">1、请将车辆停放到露天空旷环境;\n2、经检查天线线缆连接和设备接收到的卫星数;\n3、请检查网络和差分设置.</string>
+    <string name="device_running_exption_msg">设备异常</string>
+
+    <string name="check">检查</string>
+
+    <string name="work_line_a_heading">A+线</string>
+    <string name="a_heading_set_heading_error">设置航向返回错误！</string>
+    <string name="app_download_suc_title">软件下载成功,现在去安装？</string>
+    <string name="msg_no_network_title">平板没有连接到网络,请先连接网络.</string>
+    <string name="three_in_one_software">三卡合一软件</string>
+    <string name="sino_remote_control_software">司南远程协助软件</string>
+
+    <string name="param_turn_finish_k">解除自动驾驶阈值</string>
+
+    <string name="pid_advanced_integration_coefficient">积分系数</string>
+
+    <string name="not_register">未注册！</string>
+    <string name="register_code_error_prompt">请输入正确的注册码！</string>
+    <string name="expired">已过期</string>
+    <string name="device_not_register_prompt">设备未注册,请注册设备！</string>
+    <string name="device__expired_prompt">设备已过期,请重新注册！</string>
+
+    <string name="main_warning_info">请先停车，然后车辆向前以3km/h以上的速度行驶。</string>
+
+    <string name="harrow_point_num_setting">拐点设置</string>
+    <string name="harrow_point_num">拐点个数</string>
+    <string name="precision_mode">精度模式</string>
+
+    <string name="slop_mode">坡地模式</string>
+
+    <string name="warn_gyro_arm_configuration_failed">陀螺杆臂配置失败，请重新配置。</string>
+    <string name="app_cloud_issue_work">接收到云端下发的作业：%s，是否保存并应用？</string>
+
+    <string name="harrow_last_line">已经接近作业结束!\n注意进行停车操作！</string>
+    <string name="harrow_continue_work_prompt">检测到上次耙地作业进度（第 %1$d 个路线点）。点击确定继续，点击取消重新开始。</string>
+    <string name="harrow_apply_failed_cancel_disabled">耙地线尚未正确应用，请调整设置后重新确定；当前不能取消。</string>
+
+    <string name="roll_angle_zero_position">横滚角度零位</string>
+    <string name="pitch_angle_zero_position">俯仰角度零位</string>
+    <string name="attitude_adjust">姿态校准</string>
+
+    <string name="algorithm_test">算法测试</string>
+
+    <string name="free_track">自由轨迹</string>
+
+
+    <string name="min_radius">最小半径</string>
+    <string name="setting_radius_prompt">1.可以输入最小半径；\n2.点击获取，获取当前位置到圆心的距离作为最小半径。</string>
+    <string name="min_radius_error">最小半径必须大于%s米！</string>
+    <!--    <string name="tost_for_camera_not_find">摄像头未连接</string>-->
+
+    <!--    星基收敛-->
+    <string name="satellite_convergence">星基</string>
+    <string name="satellite_unconvergence">星基未收敛</string>
+    <string name="please_wait_satellite_convergence">请等待星基收敛！</string>
+
+    <string name="track">记录轨迹</string>
+    <string name="auto">自动</string>
+    <string name="manual">手动</string>
+    <string name="not_record">不记录</string>
+    <string name="farm_tool">农具</string>
+    <string name="back_track">倒车轨迹</string>
+    <string name="ordinary_navigation_logo">普通导航车标</string>
+
+
+    <string name="app_board_raw">板卡数据</string>
+
+    <string name="app_board_version_prompt">查询板卡信息异常！</string>
+    <string name="app_prompt_ntrip_user_pwd_unauthorized">账号密码错误！</string>
+    <string name="app_prompt_no_response_of_ntrip_login">连接差分未响应！</string>
+    <string name="app_invalid_gga">无效的GGA数据！</string>
+
+    <string name="app_deviceId">设备ID</string>
+    <string name="app_host">服务器</string>
+    <string name="app_port">端口</string>
+    <string name="app_source">源列表</string>
+    <string name="app_user_name">用户名</string>
+    <string name="app_pwd">密码</string>
+
+
+    <string name="app_prompt_start_success">启动成功</string>
+    <string name="app_prompt_ntrip_connect_error">连接出错！</string>
+    <string name="app_prompt_get_resource_error">获取源列表出错！</string>
+
+    <string name="app_dif_age">差分龄期</string>
+    <string name="app_dis_to_base">基站距离</string>
+
+    <!--  gga  差分状态-->
+
+
+    <!--    蓝牙-->
+    <string name="app_firmware_version">固件版本</string>
+    <string name="app_test_mode">测试模式</string>
+    <string name="app_common_mode">正常模式</string>
+
+    <string name="app_clean">清除</string>
+    <string name="app_renew">续费</string>
+
+    <string name="base_station_type">基站类型</string>
+
+
+    <!--    <string name="firmware">固件</string>-->
+    <!--    <string name="upgrade">升级</string>-->
+
+
+    <string name="firmware_not_exist">固件不存在</string>
+    <string name="unable_to_enter_upgrade_mode">无法进入升级模式</string>
+    <string name="write_firmware_data">发送固件数据失败</string>
+    <string name="upgrade_failed_from_receiver">升级失败, 消息来自接收机</string>
+    <string name="error_read_firmware">读取固件失败</string>
+    <string name="writing_firmware">正在写入固件数据…</string>
+    <string name="firmware_writed">固件数据写入完成！</string>
+
+    <string name="update_success">升级成功！</string>
+
+    <string name="turn_mode">掉头方式</string>
+    <string name="fish_tail">鱼尾</string>
+    <string name="turn_mode_default">默认</string>
+    <string name="satellite_information">卫星信息</string>
+    <string name="one_key_turn">一键掉头</string>
+
+
+    <string name="agree">同意</string>
+    <string name="not_agree">不同意</string>
+
+    <string name="msg_not_install_sunlogin_client_title">您未安装远程控制应用,请先在 系统设置->工具箱->下载</string>
+    <string name="mission_name">作业名</string>
+    <string name="firmware_version_error">固件版本不匹配</string>
+
+    <string name="service_error">服务器出错</string>
+    <string name="not_found">请求的资源不存在</string>
+    <string name="timeout">请求超时</string>
+    <string name="network_wrong">网络异常，请检查网络连接</string>
+    <string name="network_abnormal">网络异常</string>
+    <string name="error400">请求失败400</string>
+    <string name="error403">请求失败403</string>
+    <string name="error405">请求失败405</string>
+    <string name="error504">请求失败504</string>
+    <string name="error415">请求失败415</string>
+    <string name="error1700">短信验证码发送失败,请联系管理员</string>
+    <string name="error1701">激活失败,验证码错误</string>
+    <string name="error1702">激活失败,未同步到生产数据</string>
+    <string name="error1703">激活失败,该车辆无铭牌号,请联系平台</string>
+    <string name="error1704">车辆未激活,无法获取激活信息</string>
+    <string name="error1705">激活失败,后台数据异常</string>
+    <string name="error1706">手机号日频率限制</string>
+    <string name="error1712">incorrect number format</string>
+    <string name="error1713">请求失败,超时重试</string>
+    <string name="reacquire">重新获取</string>
+    <string name="code_has_been_sent">验证码已发送</string>
+    <string name="phone_err_tips">手机号应为11位数</string>
+    <string name="phone_err_tips1">您的手机号%1$s是错误格式!!!</string>
+    <string name="input_share_code">请输入分享码</string>
+    <string name="share_code_title">分享码</string>
+    <string name="input_name_error">请输入姓名</string>
+    <string name="input_phone_error">请输入电话</string>
+    <string name="input_code_error">请输入验证码</string>
+    <string name="query_sn_error">未查询到板卡sn,请检查连接,并重启软件</string>
+    <string name="assistance_mode">开启辅助驾驶</string>
+    <string name="field_block">田块</string>
+    <string name="create_field_block">新建田块</string>
+    <string name="field_block_name_error_prompt">田块名不能为空或包含特殊字符！</string>
+    <string name="block_name_hint">请输入田块名称！</string>
+
+    <string name="create_set_a_hint">请驾驶到合适位置后打%s点</string>
+    <string name="distance_from_previous_point">距离上一个点:</string>
+    <string name="distance_base_line_msg">基准线信息</string>
+
+    <string name="adjust_ok">校准成功！</string>
+    <string name="change_diff_dialog">切换差分会短暂无法固定，请停车操作</string>
+    <string name="hardware_manage">硬件管理</string>
+    <string name="common_functions">控制中心</string>
+    <string name="sky_view">星空图</string>
+    <string name="noise_signal_ratio">信噪比</string>
+
+
+    <string name="channel1">通路1</string>
+    <string name="channel2">通路2</string>
+
+
+    <string name="please_input">请输入</string>
+
+    <string name="more">更多</string>
+    <string name="user_guide_first_step">1:车辆农具创建</string>
+    <string name="user_guide_second_step">2:网络信号设置</string>
+
+    <string name="antenna_position">天线位置</string>
+
+    <string name="reset_work">作业恢复中</string>
+
+    <string name="name">姓名：</string>
+    <string name="telephone">电话：</string>
+    <string name="identity">ID：</string>
+    <string name="network_validity_period">网络有效期：</string>
+    <string name="qr_code">二维码</string>
+    <string name="software_validity_period">软件有效期：</string>
+    <string name="satellite_base_validity_period">星基有效期：</string>
+    <string name="renewal">续费</string>
+    <string name="warranty_date">质保有效期：</string>
+
+    <string name="clear_track">清除轨迹</string>
+    <string name="clear_track_dialog_tips">要清除当前作业轨迹吗？</string>
+
+    <string name="baud_rate">波特率</string>
+    <string name="forward_error_correction">前向纠错</string>
+
+    <string name="finish_work_notice">您确定结束当前作业吗？</string>
+
+
+    <string name="rtk_hold_time">差分状态保持时间</string>
+
+    <string name="not_support_with_mock">模拟模式不支持当前操作！</string>
+    <string name="cancel_u_turn">取消掉头</string>
+
+    <string name="real_time_status">实时状态</string>
+
+    <string name="function_not_supported">功能暂不支持！</string>
+    <string name="bluetooth_rtk">蓝牙RTK</string>
+    <string name="field_create_time">创建时间</string>
+    <string name="mission_auto_driver_distance">自动驾驶距离</string>
+    <string name="dis_from_articulated_to_front">铰接点到前轴的距离</string>
+    <string name="dis_from_articulated_to_back">铰接点到后轴的距离</string>
+    <string name="single_point_mode">单点平滑</string>
+    <string name="to_boundary_alarm_prompt">边界告警</string>
+    <string name="three_points_inline_error">三点共线异常</string>
+    <string name="ab_set_too_meter_error">AB两点不足一米</string>
+    <string name="bc_set_too_meter_error">BC两点不足一米</string>
+    <string name="disable_output">不输出</string>
+    <string name="gnss_ant_lr_distance_simple">天线左右偏移</string>
+    <string name="data_output">数据导出</string>
+    <string name="length_unit">长度单位</string>
+    <string name="co_circle2">三点圆</string>
+    <string name="circular_mode">环线模式</string>
+    <string name="error_set_no_thirty_meter">AB点路径不足60米，请重新打点！</string>
+    <string name="turn_radius">转弯半径</string>
+    <string name="turn_radius_error">请输入二倍到四倍轴距间的正确转弯半径!</string>
+    <string name="turn_radius_title">请输入%s到%s的值.</string>
+
+    <string name="start_fail">开启失败! (%d)</string>
+    <string name="system_language">系统语言</string>
+    <string name="field_direction">田块方向</string>
+    <string name="curve_point_limit">接近曲线点的极限，请尽快完成采点，以免曲线无法使用！</string>
+    <string name="shape_file_mission_data_error">数据错误或者不支持!</string>
+    <string name="not_positiion_error">没有GPS位置信息!</string>
+    <string name="not_return_max_point">未返回最大拐点数信息!</string>
+    <string name="task_is_running">任务执行中，请稍后再试！</string>
+    <string name="jump_calibration_prompt">RTK未固定，是否使用单点平滑进行校准？</string>
+    <string name="rtk_is_not_fix">RTK未固定</string>
+    <string name="missing_locating_but_signal">无RTK,单点平滑工作中</string>
+
+    <string name="bord_trans_prompt">板卡固件传输完成，等待升级…</string>
+    <string name="bord_update_prompt">板卡固件升级完成，等待重启…</string>
+    <string name="bord_restart_prompt">板卡重启完成！</string>
+    <string name="firmware_upgrade_relaunch_notice_title">升级完成</string>
+    <string name="firmware_upgrade_relaunch_notice_content">固件升级完成，需重启软件后生效，是否立即重启？</string>
+    <string name="ec20_receiver_trans_prompt">EG25固件传输完成，等待升级…</string>
+    <string name="ec20_receiver_update_prompt">EG25固件升级完成，重启后生效！请主动重启接收机！</string>
+    <string name="ec20_receiver_restart_prompt">EG25固件升级成功！</string>
+    <string name="radio_trans_prompt">数传模块固件传输完成，等待升级…</string>
+    <string name="radio_update_prompt">数传模块固件升级完成！</string>
+    <string name="motor_trans_prompt">电机固件传输完成，等待升级…</string>
+    <string name="debug">调试</string>
+
+
+    <!-- 需要翻译 start-->
+    <string name="turn_position">掉头位置</string>
+    <string name="turn_position_point">点</string>
+    <string name="turn_position_boundary">边界</string>
+    <string name="map_overlay_openstreet" translatable="false">OSM</string>
+    <string name="map_overlay_td">天地图</string>
+    <string name="map_overlay_td_image">卫星图</string>
+    <string name="map_overlay_google_image">谷歌</string>
+    <string name="create_vertical_line_prompt">您确定创建直线的垂线作业吗？</string>
+    <string name="to_vertical_line_prompt">您确定切换到直线的垂线作业\"%s\"吗？</string>
+    <string name="to_dependent_line_prompt">您确定切换到原始线作业\"%s\"吗？</string>
+    <string name="file_save_fail">文件保存失败</string>
+    <string name="import_file_cancel">导入取消</string>
+    <string name="file_save_success">文件保存成功</string>
+    <string name="field_block_import_isoxml_file">导入ISOXML文件</string>
+    <string name="field_block_data_type">XML格式</string>
+    <string name="field_block_data_type_txt">TXT格式</string>
+    <string name="field_block_data_type_shape" translatable="false">Shapefile</string>
+
+    <string name="warning_please_select_cors_item">请先选中差分账号！</string>
+    <string name="warning_cant_delete_cors">当前账号应用中,禁止删除!</string>
+    <string name="export_file">文件导出</string>
+    <string name="import_file">文件导入</string>
+    <string name="no_any_file">无任何文件</string>
+    <string name="no_usb_drive_insertion_detected">未检测到U盘插入</string>
+    <string name="local_files_or_usb_files">本地文件和优盘文件不能同时选择</string>
+    <string name="import_shape_file_tips">目前只支持WGS84椭球下的M投影或者无投影或者T,请确认是否导入</string>
+    <string name="import_continue">继续导入</string>
+    <string name="import_cover">覆盖</string>
+    <string name="field_info_exists">该田块已经存在！</string>
+    <string name="support_file_format">支持导入格式：SHP(*.shp),TXT(*.txt),XML(*.xml),INI(*.ini)</string>
+    <string name="new_file_name">已导入为:</string>
+    <string name="warning_cors_already_apply">当前账号已应用</string>
+    <string name="add_new_cors">新增网络差分</string>
+    <string name="edit_cors">修改网络差分</string>
+    <string name="warning_cant_edit_cors">当前账号应用中,禁止编辑!</string>
+    <string name="warning_notice_delete_cors">确定删除IP:%s?</string>
+    <string name="ip_error_prompt">IP地址和端口号不能为空！</string>
+    <string name="ntrip_user_pwd_error">账号密码不能为空！</string>
+    <string name="mount_point">源列表</string>
+    <string name="work_mode_switch">作业模式快捷切换</string>
+    <string name="set_automatic_u_turn_error_msg">边界外无法设置掉头参数</string>
+    <string name="border_limit_notice">掉头后，规划的作业线将超出边界，请手动接管!</string>
+    <string name="no_power">未上电</string>
+    <string name="carrier_noservice">无服务</string>
+
+
+    <!-- 需要翻译 end-->
+    <string name="input_b_prompt">请输入纬度！</string>
+    <string name="input_l_prompt">请输入经度！</string>
+    <string name="online_mode">入线模式</string>
+    <string name="recent_mode">近点入线</string>
+    <string name="gentle_mode">平缓入线</string>
+    <string name="show_field_detail">田块详情</string>
+    <string name="show_field_area_detail">田块面积: %s</string>
+    <string name="show_field_work_area_detail">作业面积: %s</string>
+    <string name="field_block_map_select_point">选点</string>
+
+    <string name="import_file_type_wrong">文件格式错误</string>
+    <string name="export_file_type">导出文件格式</string>
+    <string name="export_file_locate">导出文件至</string>
+    <string name="export_file_path">导出文件路径</string>
+    <string name="upan">优盘</string>
+    <string name="select_file_type">选择文件格式</string>
+    <string name="field_work_import_title">田块作业导入</string>
+    <string name="field_work_export_title">田块作业导出</string>
+
+
+    <string name="export_success_local_prompt">保存到 本地:/AG501Pro/Export</string>
+    <string name="auto_create">自动</string>
+    <string name="manual_input">手动输入</string>
+    <string name="imu_reset_success">航向复位成功</string>
+    <string name="imu_reset">航向复位</string>
+    <string name="msg_attitude_adjust_notice">1.找一块坚硬且平坦的区域进行校准。确保车辆前方有大约60米X10米的开阔区域。点击开始校准按钮后，系统将绘制出一条A+线并进入自动驾驶模式； \n\n2.将车辆以大于3公里/小时的速度前进50米； \n\n3.手动向前行驶约10米，然后调头，在前方线路上停车，并点击下一按钮； \n\n4.以大于3公里/小时的速度继续驾驶车辆，驶过起点位置后停车，系统将自动完成计算。</string>
+    <string name="msg_attitude_adjust_fail">姿态校准失败，请重新开始！</string>
+
+    <string name="attitude_work_step0_desc">找一块坚硬且平坦的区域进行校准。确保车辆前方有大约60米X10米的开阔区域。点击开始校准按钮后，系统将绘制出一条A+线并进入自动驾驶模式。</string>
+
+    <string name="attitude_work_step1_desc">将车辆以大于3公里/小时的速度前进50米。</string>
+    <string name="attitude_work_step2_desc">手动向前行驶约10米，然后掉头，在前方线路上停车，并点击下一步按钮。</string>
+    <string name="attitude_work_step3_desc">以大于3公里/小时的速度继续驾驶车辆，驶过起点位置后停车，系统将自动完成计算。</string>
+    <string name="attitude_work_speed_low_warning">当前车速小于3公里/小时，请提速！</string>
+    <string name="attitude_work_distance_from_start">距起点：</string>
+    <string name="attitude_work_distance_format">%s米</string>
+    <string name="attitude_work_init_fail">姿态校准初始化失败</string>
+    <string name="attitude_work_pilot_stopped">检测到自动驾驶已停止，本次姿态校准失败，请重新开始或退出。</string>
+
+    <string name="menu_beginner_guide">新手引导</string>
+    <string name="beginner_guide_main_page">1.认识主界面</string>
+    <string name="beginner_guide_main_page_area">此处可以查看已作业的面积</string>
+    <string name="beginner_guide_main_page_satellite_num">此处可以查看当前的卫星数量</string>
+    <string name="beginner_guide_main_page_gnss_state">此处可以查看定位的状态，显示固定时表示可以作业</string>
+    <string name="beginner_guide_main_page_offset">此处可以查看车辆当前位置与导航线之间的偏差</string>
+    <string name="beginner_guide_main_page_token_number">此处可以查看车辆当前位置最近的导航线的线号</string>
+    <string name="beginner_guide_main_page_wifi">此处可以查看Wifi的信号情况</string>
+    <string name="beginner_guide_main_page_4g">此处可以查看物联网卡的信号情况</string>
+    <string name="beginner_guide_main_page_time">此处可以查看当前时间</string>
+    <string name="beginner_guide_main_page_speed">此处可以查看车辆当前的速度</string>
+    <string name="beginner_guide_farm_tool">2.如何设置农具宽度与交接行</string>
+    <string name="beginner_guide_farm_tool_click">点击“农具宽度”，设置农具宽度和交接行</string>
+    <string name="beginner_guide_ab_work">3.如何打AB线作业</string>
+    <string name="beginner_guide_ab_work_step_3">请在第一行作业开始位置点击A点</string>
+    <string name="beginner_guide_ab_work_step_4">请行驶到第一行作业结束位置点击B点（行驶到作业结束位置时，请先点击B点再进行掉头）</string>
+    <string name="beginner_guide_ab_work_step_5">新建作业成功，点击自动驾驶即可开始作业</string>
+    <string name="beginner_guide_ab_work_step_6">点击结束自动驾驶即可停止作业</string>
+    <string name="beginner_guide_ab_work_step_7">引导完成，注意安全驾驶</string>
+    <string name="beginner_guide_farm_blank">4.如何使用快速交接行</string>
+    <string name="beginner_guide_farm_blank_warning">请先应用支持快速交接行的作业或者新建作业后才能开始引导</string>
+    <string name="beginner_guide_farm_blank_click">点击“交接行”，快速使用交接行</string>
+    <string name="beginner_guide_ab_offset">5.如何使用AB微移</string>
+    <string name="beginner_guide_ab_offset_warning">请先应用支持AB微移的作业或者新建作业后才能开始引导</string>
+    <string name="beginner_guide_ab_offset_step_1">输入需要微移的距离</string>
+    <string name="beginner_guide_ab_offset_step_2">点击左即向左微移</string>
+    <string name="beginner_guide_ab_offset_step_3">点击右即向右微移</string>
+    <string name="beginner_guide_ab_offset_step_4">该开关用来控制AB位移的快捷菜单是否显示</string>
+    <string name="beginner_guide_ab_offset_step_5">点击当前按钮会把AB平移至当前线</string>
+    <string name="beginner_guide_ab_offset_step_6">点击清除按钮会清除所有微移</string>
+    <string name="beginner_guide_ab_offset_step_7">点击B点重设按钮会重新设置B点</string>
+
+    <string name="current_lon">经度</string>
+    <string name="current_lat">纬度</string>
+    <string name="net_speed">网速</string>
+    <string name="gyroscope_status">陀螺</string>
+    <string name="hdop_status" translatable="false">HDOP</string>
+    <string name="hrms_status" translatable="false">HRMS</string>
+    <string name="self_test">自检</string>
+
+    <string name="terminal_network">网络</string>
+    <string name="work_state_delay_radio" translatable="false">%1$d/Radio</string>
+    <string name="work_state_delay_network" translatable="false">%1$d/Net</string>
+    <string name="cloud_up">上云</string>
+    <string name="diff_name">差分</string>
+    <string name="operator">运营商</string>
+    <string name="register_infor" translatable="false">IMSI</string>
+    <string name="sim_signal">信号强度</string>
+    <string name="sim_card_iccid" translatable="false">ICCID</string>
+    <string name="lon_std">经度STD</string>
+    <string name="lat_std">纬度STD</string>
+
+    <string name="auto_driving_self_check_tips">请停止自动驾驶,并保证农机处于静止状态</string>
+    <string name="before_self_check_tips">请保证农机处于静止状态</string>
+    <string name="hdop_state_one">理想</string>
+    <string name="hdop_state_two">良好</string>
+    <string name="hdop_state_three">可接受</string>
+    <string name="hdop_state_thour">较差</string>
+    <string name="hdop_state_five">极差</string>
+    <string name="scatter_plot">散点图</string>
+    <string name="no_data_track">暂无数据</string>
+    <string name="locate_quality_Offset">静态采集</string>
+    <string name="param_self_online">横向偏差</string>
+    <string name="motor_voltage_high">电压过高</string>
+    <string name="missing_motor_value">1.电压过低;\n2.请检查电瓶状态及线缆连接.</string>
+    <string name="missing_motor_value_high">1.电压过高;\n2.请检查电瓶状态及线缆连接.</string>
+    <string name="farm_self_par">农具参数</string>
+
+    <string name="ntrip_error">差分异常</string>
+    <string name="ntrip_error_no_send_gga_to_ntrip">连接状态正常，但未向差分服务器发送gga数据!</string>
+    <string name="ntrip_error_no_send_data_to_board">连接状态正常，但未向板卡发送差分数据!</string>
+    <string name="motor_force_enable">强制使能</string>
+    <string name="error_hub_connect">HUB连接失败</string>
+    <string name="error_hub_connect_notice">请重启平板后重试</string>
+    <string name="error_net_connect">网络未连接</string>
+    <string name="error_net_connect_notice">当前系统无网络连接,请检查平板网络连接</string>
+    <string name="error_cloud_up">上云异常</string>
+    <string name="error_cloud_up_notice">当前系统无网络连接,请检查平板网络连接</string>
+
+    <string name="locate_quality_self_check_switch">切换</string>
+    <string name="locate_quality_self_check_clear">清除</string>
+    <string name="locate_quality_self_check_save">保存</string>
+    <string name="locate_quality_point">点位图(m)</string>
+    <string name="locate_quality_driving_status">在线入线状态</string>
+    <string name="locate_quality_satellite_num">卫星数</string>
+    <string name="locate_quality_pjk_flag">定位状态</string>
+    <string name="locate_quality_tra_heading">航向</string>
+    <string name="locate_quality_tra_roll">横滚角</string>
+    <string name="locate_quality_tra_pitch">俯仰角</string>
+    <string name="locate_quality_motor_angle">电机角度</string>
+    <string name="locate_quality_file_save_success">文件保存至</string>
+    <string name="locate_quality_unit_one">颗</string>
+    <string name="locate_quality_x_differ" translatable="false">E-W(m)</string>
+    <string name="locate_quality_y_differ" translatable="false">N-S(m)</string>
+    <string name="degree_s" translatable="false">°/s</string>
+    <string name="volt" translatable="false">V</string>
+
+    <string name="clear_cache_data">清除数据</string>
+
+    <string name="signal_strength">信号强度</string>
+    <string name="reg_status">注册状态</string>
+    //新增翻译 2024.9.5
+    <string name="input_wlan_wifi_paw_toast">连接WIFI(%s) 需要您输入密码.</string>
+    <string name="channel3">通路3</string>
+
+    <string name="model_1">模块1</string>
+    <string name="model_2">模块2</string>
+
+    <string name="card_state_3">注册拒绝</string>
+    <string name="updategrade_firmware_promopt">您确定要升级%s吗？</string>
+    <string name="enhance">网络增强</string>
+    <string name="enhance_open_ok">增强功能开启成功！</string>
+    <string name="enhance_open_failed">增强功能开启失败！</string>
+    <string name="enhance_close_ok">增强功能关闭成功！</string>
+    <string name="enhance_close_failed">增强功能关闭失败！</string>
+
+    <string name="export_only_txt_support">所选田块作业只支持TXT格式导出！</string>
+
+    <string name="firmware_version_error_after_update_prompt">没有获取到版本信息，升级失败！</string>
+    <string name="msg_stop_attitude_adjust_notice">确定结束吗？结束之后姿态校准清零并回到未校准状态。</string>
+    <string name="end">结束</string>
+
+    <string name="diff_delay_error_msg">信号弱，请停止自动驾驶！</string>
+    <string name="diff_delay_error_msg_2">信号弱，请检查信号设置是否正常连接！</string>
+
+
+    <string name="start_auto_drive_speed_warning">速度过快，无法启用自动驾驶！请减速后重试！</string>
+    <string name="rtk_fix_warn_msg">精度不达标，不允许自动驾驶！</string>
+    <string name="pick">采集</string>
+    <string name="create_mode">创建模式</string>
+
+
+
+
+    <string name="create_mission_not_support">创建作业中不支持当前操作!</string>
+    <string name="msg_vehicle_reversing_status">正在倒车</string>
+
+    <string name="work_area">作业面积</string>
+    <string name="repeat_work_area">重复作业面积</string>
+
+    <string name="color_of_repeated_track">重复轨迹颜色</string>
+
+    <string name="farm">农场</string>
+    <string name="work_line_1">作业线</string>
+    <string name="task">任务</string>
+
+    <string name="loop_mode">循环模式</string>
+    <string name="unilateral">单边</string>
+    <string name="farm_name">农场名称</string>
+    <string name="create_farm">新建农场</string>
+    <string name="select_farm_prompt">请选择目标农场！</string>
+    <string name="no_special_error_prompt">\"%s\"不能为空或包含特殊字符！</string>
+    <string name="farmer_name">农场主名</string>
+    <string name="edit_field_block">编辑田块</string>
+
+
+    <string name="error1221">上传失败，田块边界不能为空！</string>
+    <string name="error1226">上传失败，地块不存在！</string>
+    <string name="radius_error_when_creating_work_line_prompt">目前位置与当前应用田块距离过远，请重新应用正确田块或者新建田块！</string>
+    <string name="no_current_field_prompt">没有当前田块，是否需要去创建田块？</string>
+
+    <string name="create_task">新建任务</string>
+    <string name="edit_task">编辑任务</string>
+    <string name="task_name">任务名称</string>
+    <string name="prescription">处方</string>
+    <string name="task_create_time">任务创建时间</string>
+    <string name="task_start_time">任务开始时间</string>
+    <string name="task_end_time">任务结束时间</string>
+
+    <string name="task_content_1">犁地</string>
+    <string name="task_content_2">耙地</string>
+    <string name="task_content_3">旋耕</string>
+    <string name="task_content_4">播种</string>
+    <string name="task_content_5">插秧</string>
+    <string name="task_content_6">栽苗</string>
+    <string name="task_content_7">喷药</string>
+    <string name="task_content_8">施肥</string>
+    <string name="task_content_9">除草</string>
+    <string name="task_content_10">松土</string>
+    <string name="task_content_11">收获</string>
+    <string name="task_content_12">展示用户输入</string>
+    <string name="pause_or_finish_task_prompt">请选择暂停或结束当前任务(%s)</string>
+    <string name="continue_task_prompt">当前任务没有处于运行状态，是否先运行任务？</string>
+
+    <string name="pick_radius_fix_error">请检查定位是否正常！</string>
+    <string name="not_need_to_clear_track">当前不存在轨迹，不需要清除！</string>
+    <string name="no_current_task_when_record_track_prompt">没有当前任务，无法记录轨迹，是否需要去创建任务？</string>
+    <string name="track_record_data_preparing">轨迹数据准备中，请稍后再试</string>
+
+    <string name="get_sim_code">立即发送</string>
+    <string name="offline_activate">离线激活</string>
+    <string name="second">秒</string>
+    <string name="email">邮箱</string>
+    <string name="message">短信</string>
+    <string name="email_err_tips1">您的邮箱是错误格式!!!</string>
+    <string name="input_name_hint">姓名</string>
+    <string name="input_phone_hint">电话</string>
+
+    <string name="beginner_guide_ab_work_step_2_1">请点击“确认”，创建作业</string>
+    <string name="task_running">运行中</string>
+    <string name="task_pause">暂停中</string>
+    <string name="record_track">记录中</string>
+    <string name="circular_param_msg">默认模式:\n掉头方向不受限制，系统根据用户设定的参数自动调设置掉头方向，左右均可。\n单边模式:\n优先保证掉头方向一致，在该模式下，系统在每次掉头的位置只转向车辆的一侧，即用户选择的掉头方向。</string>
+    <string name="title_open_virtual_keybard">启用虚拟键盘显示</string>
+    <string name="content_open_virtual_keybard">请按照以下步骤手动启用虚拟键盘：\n\n 1. 进入「设置」→「系统」→「语言和输入法」\n2. 点击「实体键盘」\n3. 开启「显示虚拟键盘」开关」</string>
+
+
+    <string name="board">板卡</string>
+    <string name="board_sn">板卡SN</string>
+    <string name="region">区域</string>
+    <string name="expired_day">过期时间</string>
+    <string name="ppp_expired_day">PPP过期时间</string>
+    <string name="lband" translatable="false">L-Band</string>
+    <string name="ppp_sn" translatable="false">PPP SN</string>
+
+    <string name="cn">中国大陆</string>
+    <string name="global">全球</string>
+    <string name="system">系统</string>
+    <string name="bit_error_rate">误码率</string>
+
+
+    <string name="mark_name">标记点名称</string>
+
+
+    <string name="body_gyro_speed_rate_average">车身历史平均数</string>
+    <string name="front_gyro_speed_rate_average">前轮历史平均数</string>
+    <string name="body_gyro_speed_rate">车身陀螺速率</string>
+    <string name="front_gyro_speed_rate">前轮陀螺速率</string>
+    <string name="sim1" translatable="false">SIM1</string>
+    <string name="sim2" translatable="false">SIM2</string>
+    <string name="control_param">控制参数</string>
+    <string name="param_size">参数尺寸</string>
+    <string name="xy" translatable="false">X,Y</string>
+
+    <string name="vehicle_type">车辆类型</string>
+    <string name="vehicle_brand">车辆品牌</string>
+    <string name="steering_gap">转向间隙</string>
+    <string name="transmission_ratio">传动比</string>
+    <string name="offset_coefficient">偏移系数</string>
+
+    <string name="import_export">导入导出</string>
+    <string name="main_menu">主菜单</string>
+
+    <string name="reset">重置</string>
+
+    <string name="auto_pilot_setting">自动驾驶设置</string>
+
+    <string name="create_border">新建边界</string>
+    <string name="exchange_work_line">作业线切换</string>
+
+
+    <string name="during_work_creation_operation_is_not_supported">创建作业中不支持当前操作!</string>
+    <string name="during_border_pick_operation_is_not_supported">采集边界中不支持当前操作!</string>
+    <string name="during_work_operation_is_not_supported">作业中不支持当前操作!</string>
+
+
+    <string name="grant_permission_exit_prompt">抱歉，由于您未授予必要权限，因此该应用程序将退出。</string>
+    <string name="key_work">关键词</string>
+    <string name="cancel_apply">不应用</string>
+
+    <string name="tel">电话</string>
+    <string name="ab_line">AB线</string>
+
+    <string name="error_notice_add_data">添加数据失败</string>
+    <string name="car">车辆</string>
+
+    <string name="apply_failed">应用失败!</string>
+
+
+    <string name="restart">重新开始</string>
+
+
+    <string name="speed_value_unit">速度:%.1f %s</string>
+    <string name="tractor">拖拉机</string>
+
+    <string name="calibration_status_ready">已标定</string>
+    <string name="calibration_status_waited">未标定</string>
+
+    <string name="app_host_ip">服务器IP</string>
+
+    <string name="device_module_type">模块类型</string>
+
+    <string name="frequency_mhz">频率(MHz)</string>
+
+    <string name="mount_point_empty_error">源列表不能为空！</string>
+
+    <string name="delete_prompt_content">确认删除%s吗？</string>
+
+    <string name="off_en" translatable="false">OFF</string>
+    <string name="on_en" translatable="false">ON</string>
+
+    <string name="ele_angle">高度角</string>
+    <string name="azimuth_angle">方位角</string>
+
+    <string name="data_transmission">数据传输</string>
+
+    <string name="position_value_n" translatable="false">%sN</string>
+    <string name="position_value_w" translatable="false">%sW</string>
+    <string name="position_value_e" translatable="false">%sE</string>
+    <string name="position_value_s" translatable="false">%sS</string>
+
+    <string name="work_tool_bar_config">工具栏管理</string>
+    <string name="work_tool_bar_display_config">配置工具栏显示</string>
+    <string name="work_tool_bar_sort_tips">长按拖拽可以排序</string>
+    <string name="work_param_setting_title">调参</string>
+
+    <string name="reselect">重新选择</string>
+
+    <string name="file_selected">已选文件</string>
+
+    <string name="current_with_value">当前：%s</string>
+    <string name="new_with_value">最新：%s</string>
+
+    <string name="save_and_exit">保存&amp;退出</string>
+
+    <string name="common_cancel_apply">取消应用</string>
+    <string name="common_create_new">新建</string>
+    <string name="common_manage">管理</string>
+    <string name="common_searching">搜索...</string>
+
+    <string name="data_loading_tip">数据加载中…</string>
+
+    <string name="line_offset_current">当前微移</string>
+    <string name="turn">转向</string>
+    <string name="uturn">调头</string>
+
+
+    <string name="setting_failed_notice">设置失败，请重试！</string>
+    <string name="search_file_hint">搜索文件或文件夹...</string>
+    <string name="common_file_import_des">从本地存储或USB导入田块、导航线数据</string>
+    <string name="common_file_import_title">导入文件数据</string>
+    <string name="common_file_import_path_label">数据路径</string>
+    <string name="common_file_import_duplicate_strategy">重复项处理方式</string>
+    <string name="common_file_import_duplicate_desc">选择相同文件的处理方式</string>
+    <string name="common_file_import_duplicate_copy">创建副本</string>
+    <string name="common_file_import_duplicate_overwrite">覆盖现有</string>
+    <string name="common_file_import_progress_title">正在导入数据…</string>
+    <string name="common_file_import_progress_reading">正在读取文件</string>
+    <string name="common_file_import_progress_parsing">正在解析文件结构</string>
+    <string name="common_file_import_progress_duplicates">正在处理重复项</string>
+    <string name="common_file_import_progress_done">导入完成</string>
+    <string name="common_file_import_success">导入成功</string>
+    <string name="common_file_import_failed">导入失败</string>
+    <string name="common_file_import_no_selection">请选择需要导入的文件</string>
+    <string name="common_file_import_target_field_missing">未找到当前田块，无法导入</string>
+    <string name="common_file_import_no_boundary">所选文件中没有可导入的边界</string>
+    <string name="common_file_import_no_work_line">所选文件中没有可导入的导航线</string>
+    <string name="common_file_import_unsupported_file">暂不支持该文件格式</string>
+    <string name="common_file_import_source_missing">无法读取所选文件</string>
+    <string name="common_file_import_complete_count">数据量</string>
+    <string name="common_file_import_complete_count_value">%1$d项 / %2$d失败</string>
+    <string name="common_file_import_complete_path">导入源</string>
+    <string name="common_file_export_title">导出文件</string>
+    <string name="common_file_export_progress_title">正在导出数据…</string>
+    <string name="common_file_export_progress_preparing">正在准备导出数据</string>
+    <string name="common_file_export_progress_building">正在整理导出内容</string>
+    <string name="common_file_export_progress_writing">正在写入导出文件</string>
+    <string name="common_file_export_progress_done">导出完成</string>
+    <string name="common_file_export_des">将当前田块与作业记录导出至本地存储</string>
+    <string name="common_file_export_path_label">输出路径</string>
+    <string name="common_file_export_select_all">全选</string>
+    <string name="common_file_export_unselect_all">全不选</string>
+    <string name="common_file_export_selection_count" translatable="false">%1$d / %2$d</string>
+    <string name="common_file_export_select_format">选择导出格式</string>
+    <string name="common_file_export_shp_disabled_for_farm_tool">不支持农具导出</string>
+    <string name="common_file_export_shapfile" translatable="false">SHP</string>
+    <string name="common_file_export_isoxml" translatable="false">ISOXML</string>
+    <string name="common_file_export_generate_share_code">生成分享码</string>
+
+    <string name="common_file_cloud_export_title">导出分享码</string>
+    <string name="common_file_cloud_export_des">跳转至导出页面，选择完成后生成六位数字分享码</string>
+
+    <string name="common_file_cloud_import_title">导入分享码</string>
+    <string name="common_file_cloud_import_des">输入六位数字分享码导入云端数据</string>
+
+    <string name="common_file_cloud_import_code">请输入6位数字分享码</string>
+    <string name="common_file_cloud_import_code_des">输入正确的分享码极速导入云端共享数据</string>
+
+    <string name="common_file_cloud_download_and_save_success">文件下载成功，保存路径: %s</string>
+
+
+    <string name="cloud_share_code_des">分享码告诉对方即可导入数据</string>
+    <string name="cloud_file_to_pc_download_prompt">在电脑端打开网站：%s后输入分享码即可下载文件</string>
+    <string name="cloud_share_code_title">导出分享码</string>
+    <string name="cloud_share_code_copy_sucess">分享码复制成功</string>
+    <string name="cloud_share_ip_copy_sucess">网址复制成功</string>
+
+    <string name="cloud_share_loading">文件分享中...</string>
+
+
+    <string name="sd_card_uppercase" translatable="false">SD CARD</string>
+    <string name="sd_card" translatable="false">sdcard</string>
+
+    <string name="handle">处理</string>
+
+    <string name="available">可用</string>
+
+    <string name="number_with_faults">%d 异常</string>
+    <string name="error">异常</string>
+
+    <string name="explanation">说明</string>
+    <string name="known">知道了</string>
+    <string name="normal">正常</string>
+    <string name="autopilot_not_engaged">未开启自动驾驶</string>
+
+
+    <string name="device_type">设备类型</string>
+    <string name="device_model">设备型号</string>
+
+    <string name="notice_driving_function_forbidden">自动驾驶中此功能无法操作！</string>
+    <string name="notice_device_param_set_failed">设备参数设置失败!</string>
+
+    <string name="service">服务</string>
+
+    <string name="field_markers">标记物</string>
+    <string name="marker_new">创建标记物</string>
+    <string name="marker_point">点标记</string>
+    <string name="marker_line">线标记</string>
+    <string name="marker_area">面标记</string>
+    <string name="marker_add_success">%1$s添加成功</string>
+    <string name="marker_obstacle">障碍物</string>
+    <string name="marker_wirepole">电线杆</string>
+    <string name="marker_waterhole">水井</string>
+    <string name="marker_tree">树木</string>
+    <string name="marker_stone">石头</string>
+    <string name="marker_other">其他</string>
+    <string name="marker_prepare_line">准备采集线标记</string>
+    <string name="marker_prepare_area">准备采集面标记</string>
+    <string name="marker_setting_title">标记物设置</string>
+    <string name="marker_display_point_type">显示点标记类型</string>
+
+
+    <string name="notice_calibration_function_forbidden">校准中此功能无法操作！</string>
+    <string name="work_overlay">覆盖层</string>
+    <string name="work_overlay_track_layer">轨迹图层</string>
+    <string name="work_overlay_speed">速度</string>
+    <string name="work_overlay_elevation">高程</string>
+    <string name="real_time_info">实时信息</string>
+    <string name="vehicle_status">车辆状态</string>
+    <string name="more_params">更多参数</string>
+    <string name="setting_hand_panel_no_device">未检测到蓝牙手柄</string>
+    <string name="notice_pilot_type_no_guideline">当前为导航线模式，切换为边界模式可自动驾驶边界线</string>
+
+    <string name="home_service_remote_help_title">一键求助</string>
+    <string name="home_service_remote_help_desc">让我们协助您更好地完成工作；</string>
+    <string name="home_service_remote_help_connected_desc">客服专家已接入您的设备协助中</string>
+    <string name="home_remote_helper_pair_code_label">识别码</string>
+    <string name="home_remote_helper_prompt">请联系技术人员进行远程协助；</string>
+    <string name="home_remote_helper_waiting">等待技术人员接入…</string>
+    <string name="home_remote_helper_connected">技术人员已连接</string>
+    <string name="home_remote_helper_assisting_indicator">●  远程协助中...</string>
+    <string name="home_remote_helper_storage_permission_failed">存储权限申请失败</string>
+    <string name="home_remote_helper_audio_permission_failed">录音权限申请失败</string>
+    <string name="single_point_mode_desc">通过滤波算法平滑点定位轨迹，减少冲突</string>
+
+    <string name="home_remote_helper_close_prompt">关闭窗口后，远程协助将在后台运行</string>
+    <string name="home_remote_helper_disconnect">断开协助</string>
+    <string name="home_remote_helper_close">关闭窗口</string>
+
+    <string name="share">分享</string>
+
+
+    <string name="rtk" translatable="false">RTK</string>
+
+    <string name="downloading">正在下载</string>
+    <string name="ready">已就绪</string>
+
+    <string name="firmware_updating_operation_late_prompt">固件升级中,请等待固件升级完成后再进行操作！</string>
+
+    <string name="input_data_format_error_prompt">[%1$s]格式错误！</string>
+
+    <string name="battery_level_percent" translatable="false">%1$d%%</string>
+
+    <string name="classic_drive_manual_driving">手动驾驶中</string>
+    <string name="classic_drive_assist_ready">就绪</string>
+    <string name="classic_drive_assist_driving">辅助驾驶中</string>
+    <string name="classic_drive_auto_driving">自动驾驶中</string>
+    <string name="classic_drive_check_error">状态异常</string>
+
+    <string name="line_offset_left_move">左移</string>
+    <string name="line_offset_right_move">右移</string>
+    <string name="line_offset_reset_zero">归零</string>
+
+    <string name="create_ab_line">定线</string>
+    <string name="harrow_work_mode">作业模式</string>
+    <string name="harrow_mode_full_field">整地模式</string>
+    <string name="harrow_mode_zone">分区模式</string>
+    <string name="harrow_zone">作业分区</string>
+    <string name="harrow_zone_one">分区一</string>
+    <string name="harrow_zone_two">分区二</string>
+    <string name="harrow_select_zone_on_map">地图选择分区</string>
+    <string name="harrow_zone_not_selected">请先在地图上设置两个分区点</string>
+    <string name="harrow_zone_selected">已设置分区点：%1$d、%2$d</string>
+    <string name="harrow_planning_failed">耙地线规划失败，请检查边界和设置</string>
+    <string name="harrow_zone_picker_title">地图选择分区</string>
+    <string name="harrow_zone_picker_first_point">请在边界线上选择第一个分区点</string>
+    <string name="harrow_zone_picker_second_point">请在边界线上选择第二个分区点</string>
+    <string name="harrow_zone_picker_ready">分区预览已生成</string>
+    <string name="harrow_zone_picker_viewing">已选择分区，点击重新选点可修改</string>
+    <string name="harrow_zone_picker_reset">重新选点</string>
+    <string name="harrow_zone_picker_preview_failed">分区规划失败，请重新选择分区点</string>
+    <string name="harrow_edit_tab_basic">基础信息</string>
+    <string name="harrow_edit_tab_planning">田块规划</string>
+    <string name="harrow_along_with">顺耙</string>
+
+    <string name="legacy_migration_title">旧版数据迁移</string>
+    <string name="legacy_migration_prompt_content">检测到AG501Pro旧版数据，是否迁移到当前软件?</string>
+    <string name="legacy_migration_data_item_title">数据项</string>
+    <string name="legacy_migration_field_data">田块数据</string>
+    <string name="legacy_migration_guidance_line_data">导航线</string>
+    <string name="legacy_migration_work_track_data">作业轨迹</string>
+    <string name="legacy_migration_vehicle_data">车辆及校准参数</string>
+    <string name="legacy_migration_farm_tool_data">农具</string>
+    <string name="legacy_migration_available_count">可迁移（%1$d项）</string>
+    <string name="legacy_migration_progress_group_title">各数据项迁移进度</string>
+    <string name="legacy_migration_progress_overall">总迁移进度</string>
+    <string name="legacy_migration_progress_item_title">%1$s（%2$d项）</string>
+    <string name="legacy_migration_progress_status_completed">已完成 100%%</string>
+    <string name="legacy_migration_progress_status_running" translatable="false">%1$d%%</string>
+    <string name="legacy_migration_progress_status_waiting">等待中</string>
+    <string name="legacy_migration_progress_detail_completed">已完成 %1$d/%2$d 项</string>
+    <string name="legacy_migration_progress_detail_running">正在迁移，已完成 %1$d/%2$d 项</string>
+    <string name="legacy_migration_progress_detail_running_unknown">正在迁移...</string>
+    <string name="legacy_migration_progress_detail_waiting">等待前置数据迁移完成</string>
+    <string name="legacy_migration_start">立即迁移</string>
+    <string name="legacy_migration_later">暂不迁移</string>
+    <string name="legacy_migration_success_title">数据成功升级迁移!</string>
+    <string name="legacy_migration_failed_content">历史数据迁移失败，旧数据库未被修改，AG501Pro不会被卸载，下次启动仍会提醒。原因：%1$s</string>
+    <string name="legacy_migration_failed_unknown">未知错误</string>
+    <string name="legacy_migration_failed_rollback_content">历史数据迁移失败，且 AG6.0 数据自动恢复未完成。请勿继续作业，保留 AG501Pro 并联系技术支持。原因：%1$s</string>
+    <string name="legacy_migration_failure_reason_with_code">%1$s\n错误码：%2$s\n阶段：%3$s</string>
+    <string name="legacy_migration_failure_target_data_exists">AG6.0 已存在业务数据，为避免覆盖已停止迁移。</string>
+    <string name="legacy_migration_failure_source_unavailable">停止旧应用后无法读取 AG501Pro 数据，请确认旧数据目录仍然存在。</string>
+    <string name="legacy_migration_failure_source_changed">迁移检测期间 AG501Pro 数据发生变化，请重新启动后重试。</string>
+    <string name="legacy_migration_failure_source_snapshot">无法创建或读取 AG501Pro 数据快照，请检查存储空间和文件权限。</string>
+    <string name="legacy_migration_failure_source_corrupted">AG501Pro 数据库无法打开或完整性检查未通过。</string>
+    <string name="legacy_migration_failure_source_schema">当前 AG501Pro 数据库版本暂不受支持。</string>
+    <string name="legacy_migration_failure_required_data">AG501Pro 缺少迁移所需的车辆数据。</string>
+    <string name="legacy_migration_failure_target_backup">无法备份 AG6.0 数据库，请检查存储空间后重试。</string>
+    <string name="legacy_migration_failure_target_database">AG6.0 目标数据库未正确初始化。</string>
+    <string name="legacy_migration_failure_data_import">写入历史业务数据时发生异常。</string>
+    <string name="legacy_migration_failure_runtime_refresh">数据已写入，但刷新当前车辆、农具或作业状态时失败。</string>
+    <string name="legacy_migration_failure_report">无法写入迁移报告，迁移已按失败处理。</string>
+    <string name="legacy_migration_failure_marker">无法写入 AG6.0 迁移成功标记，迁移已按失败处理。</string>
+    <string name="legacy_migration_failure_backup_cleanup">迁移收尾时无法清理回滚备份。</string>
+    <string name="marker_collecting_line">正在采集线标记...</string>
+    <string name="marker_collecting_area">正在采集面标记...</string>
+    <string name="marker_add_point">加点</string>
+    <string name="marker_delete_point">撤点</string>
+    <string name="marker_line_points_insufficient">线标记至少需要两个不同位置点</string>
+    <string name="marker_area_points_insufficient">面标记至少需要三个不同位置点</string>
+    <string name="marker_area_invalid">面标记面积无效，请继续采集</string>
+    <string name="marker_collection_conflict">请先结束当前标记采集</string>
+    <string name="field_marker_edit_title">编辑标记物</string>
+    <string name="field_marker_name">标记名称</string>
+    <string name="field_marker_name_hint">请输入标记名称</string>
+    <string name="field_marker_name_empty">请输入标记名称</string>
+    <string name="field_marker_load_failed">标记物不存在或已被删除</string>
+
+    <string name="check_hub_long_time_no_data">数据延迟过大，请检测hub连接！</string>
+    <string name="app_db_init_failed">数据异常，请先手动备份%s文件夹中的数据，然后删除该文件夹并重新启动应用。</string>
+
+    <string name="version_not_support_notice">当前版本不支持该操作</string>
+
+
+    <string name="notice_device_state_change_restart_app">检测到设备状态变化，请重启App！</string>
+
+    <string name="log_share_title">日志回传</string>
+    <string name="home_service_log_desc">上传运行日志，快速定位异常</string>
+    <string name="log_share_preparing">正在打包日志…</string>
+    <string name="log_share_prepare_failed">日志打包失败，请重试</string>
+    <string name="log_share_uploading">正在上传日志…</string>
+    <string name="log_share_success">日志上传成功，回传码如下</string>
+    <string name="log_share_support_notice">请将回传码提供给技术支持，以便定位问题。点击回传码可复制。</string>
+    <string name="log_share_code_copied">回传码已复制</string>
+    <string name="log_share_upload_failed">日志上传失败：%1$s</string>
+    <string name="home_service_phone_label">服务电话：</string>
+
+    <string name="home_service_phone_sn">400-630-2933转3</string>
+
+    <string name="filter">过滤</string>
+</resources>

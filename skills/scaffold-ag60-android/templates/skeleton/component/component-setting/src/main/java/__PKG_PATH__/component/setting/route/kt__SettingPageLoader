@@ -1,0 +1,45 @@
+package com.sinognss.component.setting.route
+
+import android.os.Bundle
+import com.google.auto.service.AutoService
+import com.sino.page.route.IPageLoader
+import com.sino.page.route.RouteDestination
+import com.sino.page.route.RouteDestination.*
+import com.sino.page.route.RouteModuleConfig.*
+import com.sinognss.component.setting.datatrans.SystemDataTransFragment
+import com.sinognss.component.setting.system.network.apn.SettingNetworkApnFragment
+import com.sinognss.component.setting.system.container.SettingSystemContainerFragment
+import com.sinognss.component.setting.system.map.MapPickerFragment
+import com.sinognss.component.setting.system.parameter.SettingSystemParameterFragment
+import com.sinognss.component.setting.update.center.UpdateCenterFragment
+import com.sinognss.component.setting.update.local.UpdateLocalFileScanFragment
+import com.sinognss.component.setting.update.online.app.UpdateAppOnlineFragment
+import com.sinognss.component.setting.update.online.firmware.FirmwareOnlineUpdateFragment
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2025/12/30
+ * @Description
+ */
+@AutoService(IPageLoader::class)
+class SettingPageLoader : IPageLoader {
+    override val tag: ModuleTag = ModuleTag.COMPONENT_SETTING
+
+    override fun loadPage(path: RoutePath, extras: Bundle?): RouteDestination? {
+        if (path !is SettingPath) {
+            return null
+        }
+
+        return when (path) {
+            SettingPath.SETTING_SYSTEM -> FragmentDestination(SettingSystemContainerFragment::class.java)
+            SettingPath.SETTING_UPDATE_BY_LOCAL -> FragmentDestination(UpdateLocalFileScanFragment::class.java)
+            SettingPath.SETTING_UPDATE_ONLINE_ALL -> FragmentDestination(FirmwareOnlineUpdateFragment::class.java)
+            SettingPath.SETTING_UPDATE_ONLINE_APP -> FragmentDestination(UpdateAppOnlineFragment::class.java)
+            SettingPath.SETTING_UPDATE_CENTER -> FragmentDestination(UpdateCenterFragment::class.java)
+            SettingPath.SETTING_SYSTEM_DATA_TRANSMISSION -> FragmentDestination(SystemDataTransFragment::class.java)
+            SettingPath.SETTING_NETWORK_APN -> FragmentDestination(SettingNetworkApnFragment::class.java)
+            SettingPath.SETTING_MAP_PICKER -> FragmentDestination(MapPickerFragment::class.java)
+            SettingPath.SETTING_SYSTEM_PARAMETER -> FragmentDestination(SettingSystemParameterFragment::class.java)
+        }
+    }
+}

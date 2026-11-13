@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App theme; SharedStyle / theme-attrs live in :common:common-res -->
+    <style name="Theme.App.Scaffold" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/new_main_color</item>
+        <item name="colorPrimaryVariant">@color/new_main_color</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="android:statusBarColor">@color/new_main_color</item>
+    </style>
+</resources>

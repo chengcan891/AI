@@ -1,0 +1,23 @@
+package com.sino.page.route
+
+import android.os.Bundle
+
+/**
+ * @author ZhangHongYu
+ * @date 2025/6/18
+ */
+interface IPageLoader {
+
+    val tag: RouteModuleConfig.ModuleTag
+
+    /**
+     * 加载本模块的路由终点。
+     *
+     * @param path 目标路由。
+     * @param extras 页面参数。
+     * @return 路由终点，不属于本加载器或未找到页面时返回 null。
+     * @throws RouteAccessException 功能或注册授权不允许访问，不能以 null 代替。
+     */
+    fun loadPage(path: RouteModuleConfig.RoutePath, extras: Bundle? = null): RouteDestination?
+
+}

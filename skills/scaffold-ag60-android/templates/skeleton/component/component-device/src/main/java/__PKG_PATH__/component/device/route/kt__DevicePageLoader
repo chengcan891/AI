@@ -1,0 +1,66 @@
+package com.sinognss.ag.component.device.route
+
+import android.os.Bundle
+import com.google.auto.service.AutoService
+import com.sino.page.route.IPageLoader
+import com.sino.page.route.RouteDestination
+import com.sino.page.route.RouteDestination.*
+import com.sino.page.route.RouteModuleConfig.DevicePath
+import com.sino.page.route.RouteModuleConfig.ModuleTag
+import com.sino.page.route.RouteModuleConfig.RoutePath
+import com.sinognss.ag.component.device.farmtools.edit.container.DeviceFarmToolEditFragment
+import com.sinognss.ag.component.device.farmtools.edit.isobus.container.DeviceFarmToolIsobusControlEditFragment
+import com.sinognss.ag.component.device.farmtools.edit.isobus.material.IsobusMaterialSelectFragment
+import com.sinognss.ag.component.device.farmtools.home.DeviceFarmToolHomeFragment
+import com.sinognss.ag.component.device.farmtools.uturn.DeviceUTurnSettingFragment
+import com.sinognss.ag.component.device.rtk.container.SettingRtkContainerFragment
+import com.sinognss.ag.component.device.rtk.satellite.info.SettingRtkSatelliteInfoFragment
+import com.sinognss.ag.component.device.vehicle.advanced.DeviceVehicleAdvancedParameterFragment
+import com.sinognss.ag.component.device.vehicle.calibration.DeviceVehicleCalibrationFragment
+import com.sinognss.ag.component.device.vehicle.calibration.attitude.work.DeviceVehicleAttitudeCalibrationWorkFragment
+import com.sinognss.ag.component.device.vehicle.edit.container.DeviceVehicleEditFragment
+import com.sinognss.ag.component.device.vehicle.home.DeviceVehicleHomeFragment
+import com.sinognss.ag.flavor.isSupport
+import com.sinognss.ag.flavor.AppCapability
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/02/09
+ * @Description
+ */
+@AutoService(IPageLoader::class)
+class DevicePageLoader : IPageLoader {
+
+    override val tag: ModuleTag = ModuleTag.COMPONENT_DEVICE
+
+    override fun loadPage(path: RoutePath, extras: Bundle?): RouteDestination? {
+        if (path !is DevicePath) {
+            return null
+        }
+        if (!AppCapability.ISO_BUS.isSupport() && path in ISO_BUS_PATHS) {
+            return null
+        }
+
+        return when (path) {
+            DevicePath.DEVICE_GNSS -> FragmentDestination(SettingRtkContainerFragment::class.java)
+            DevicePath.DEVICE_VEHICLE_HOME -> FragmentDestination(DeviceVehicleHomeFragment::class.java)
+            DevicePath.DEVICE_VEHICLE_EDIT -> FragmentDestination(DeviceVehicleEditFragment::class.java)
+            DevicePath.DEVICE_VEHICLE_CALIBRATION -> FragmentDestination(DeviceVehicleCalibrationFragment::class.java)
+            DevicePath.DEVICE_FARM_TOOLS_HOME -> FragmentDestination(DeviceFarmToolHomeFragment::class.java)
+            DevicePath.DEVICE_FARM_TOOLS_EDIT -> FragmentDestination(DeviceFarmToolEditFragment::class.java)
+            DevicePath.DEVICE_FARM_TOOLS_ISOBUS_CONTROL_EDIT -> FragmentDestination(DeviceFarmToolIsobusControlEditFragment::class.java)
+            DevicePath.DEVICE_FARM_TOOLS_ISOBUS_MATERIAL_SELECT -> FragmentDestination(IsobusMaterialSelectFragment::class.java)
+            DevicePath.DEVICE_UTURN_SETTING -> FragmentDestination(DeviceUTurnSettingFragment::class.java)
+            DevicePath.DEVICE_VEHICLE_CALIBRATION_ATTITUDE_WORK -> FragmentDestination(DeviceVehicleAttitudeCalibrationWorkFragment::class.java)
+            DevicePath.DEVICE_DEVICE_ADVANCED_PARAMETER_SETTING -> FragmentDestination(DeviceVehicleAdvancedParameterFragment::class.java)
+            DevicePath.DEVICE_GNSS_SATELLITE_INFO -> FragmentDestination(SettingRtkSatelliteInfoFragment::class.java)
+        }
+    }
+
+    private companion object {
+        val ISO_BUS_PATHS = setOf(
+            DevicePath.DEVICE_FARM_TOOLS_ISOBUS_CONTROL_EDIT,
+            DevicePath.DEVICE_FARM_TOOLS_ISOBUS_MATERIAL_SELECT,
+        )
+    }
+}

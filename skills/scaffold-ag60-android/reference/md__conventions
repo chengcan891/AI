@@ -1,0 +1,52 @@
+> **嵌入快照**：本文已收入 `scaffold-ag60-android` 技能，运行时勿再打开外部 ag6.0 / ag6.0-doc_cc。
+
+# 新项目约定（自包含）
+
+本文件从 AG6.0 约定提炼，供脚手架生成的项目与后续 `project-conventions-*` 使用。
+
+## 栈
+
+Android Kotlin，Gradle 多模块，MVVM，ViewBinding，Fragment。
+
+## 基类
+
+| 用途 | 类 |
+|------|-----|
+| Activity | `…common.base.component.BaseViewBindingActivity` |
+| Fragment | `…common.base.component.fragment.BaseViewBindingFragment` |
+| 卡片对话框 | `BaseVBCardDialogFragment` |
+| 带输入卡片对话框 | `BaseVBCardInputDialogFragment` |
+
+## SharedStyle
+
+目录：`common/common-res/src/main/res/values/`
+
+必用：`text_*`、`text_title` / `text_subtitle` / `text_button` / `text_content`、`page_container`、`card_view_container`、`edit_text`、`image_button_default` / `_small` / `_large`。
+
+禁止在业务模块平行复制通用样式；禁止硬编码字号/色替代 SharedStyle（除非走 theme-attr）。
+
+## SharedControl
+
+包：`…common.view`
+
+优先：`CommonStatueBar`、`CommonIconButton`、`CommonTabLayout`（`distributeEvenly=true`）、`ViewCommonFilterBar`、`ViewCommonDropSelectView`、`CommonDialogUtils`。
+
+## 单位
+
+禁止业务 layout 写死 `"m"`；用 `:common:common-unit` 的 `LengthUnit` / `AppUnitService.unitConvert`，单位文案用独立 TextView。
+
+## 路由
+
+- Path：`PageRoute.Path`
+- 注册：各模块 `*PageLoader` → `RouteModuleConfig.register`
+- Domain 禁止 `new XxxFragment` 硬依赖 UI 模块
+
+## 域 → 模块
+
+| 域 | UI | Domain |
+|----|----|--------|
+| home | component-home | core-app / global-data |
+| setting | component-setting | core-app |
+| work | component-work | （扩展 core-work） |
+| device | component-device | device-common |
+| 跨域公共 | component-common | — |

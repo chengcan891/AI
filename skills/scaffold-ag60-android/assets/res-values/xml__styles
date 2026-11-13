@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <style name="style_text">
+        <item name="android:maxLines">6</item>
+        <item name="android:gravity">center</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="style_text_2">
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="style_text_isobus">
+        <item name="android:maxLines">1</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="text_title_big" parent="style_text_isobus">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+    </style>
+
+    <style name="text_title" parent="style_text_isobus">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+    </style>
+
+    <style name="text_subtitle" parent="style_text_isobus">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_xxs</item>
+        <item name="android:textColor">?attr/text_color_3</item>
+    </style>
+
+    <style name="text_button" parent="style_text_isobus">
+        <item name="android:textSize">@dimen/text_size_xxs</item>
+        <item name="android:textColor">?attr/text_color_4</item>
+    </style>
+
+    <style name="text_content_big" parent="style_text_isobus">
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+    </style>
+
+    <style name="text_content" parent="style_text_isobus">
+        <item name="android:textSize">@dimen/text_size_xs</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="style_text_card_label" parent="style_text">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="style_text_card_label_normal" parent="style_text_card_label">
+        <item name="android:textSize">@dimen/text_size_l</item>
+        <item name="android:textColor">@color/new_main_color</item>
+    </style>
+
+    <style name="text_1" parent="style_text">
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_l</item>
+    </style>
+
+    <style name="text_1_label" parent="style_text">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_l</item>
+    </style>
+
+    <style name="text_1_content" parent="style_text">
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+    </style>
+
+    <style name="text_2" parent="style_text">
+        <item name="android:textColor">?attr/text_color_2</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+    </style>
+
+    <style name="text_2_paragraph" parent="text_2">
+        <item name="android:maxLines">9999</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="text_2_label" parent="text_2">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="text_3" parent="style_text">
+        <item name="android:textColor">?attr/text_color_3</item>
+        <item name="android:textSize">@dimen/text_size_s</item>
+    </style>
+
+    <style name="text_4" parent="style_text">
+        <item name="android:textColor">?attr/text_color_3</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+    </style>
+
+    <style name="text_5" parent="style_text_2">
+
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+    </style>
+
+    <style name="text_5_label" parent="style_text_2">
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+    </style>
+
+    <style name="text_5_content" parent="style_text_2">
+        <item name="android:textColor">?attr/text_color_2</item>
+        <item name="android:textSize">@dimen/text_size_xxs</item>
+    </style>
+
+    <style name="page_container">
+        <item name="android:paddingTop">@dimen/page_padding_default</item>
+        <item name="android:paddingBottom">@dimen/page_padding_default</item>
+        <item name="android:paddingStart">@dimen/page_padding_default</item>
+        <item name="android:paddingEnd">@dimen/page_padding_default</item>
+    </style>
+
+    <style name="card_view_container" parent="CardView">
+        <item name="android:padding">@dimen/page_padding_default</item>
+        <item name="cardCornerRadius">@dimen/card_container_radius</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <style name="clickable_view">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+
+    <style name="image_button_default" parent="clickable_view">
+        <item name="android:layout_width">@dimen/icon_size_default</item>
+        <item name="android:layout_height">@dimen/icon_size_default</item>
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="image_button_small" parent="clickable_view">
+        <item name="android:layout_width">@dimen/icon_size_s</item>
+        <item name="android:layout_height">@dimen/icon_size_s</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+
+    <style name="image_view_default">
+        <item name="android:layout_width">@dimen/icon_size_default</item>
+        <item name="android:layout_height">@dimen/icon_size_default</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="image_view_large">
+        <item name="android:layout_width">@dimen/icon_size_l</item>
+        <item name="android:layout_height">@dimen/icon_size_l</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="image_view_large_x">
+        <item name="android:layout_width">@dimen/icon_size_xl</item>
+        <item name="android:layout_height">@dimen/icon_size_xl</item>
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="image_view_large_xxl">
+        <item name="android:layout_width">@dimen/icon_size_xxl</item>
+        <item name="android:layout_height">@dimen/icon_size_xxl</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="image_view_small">
+        <item name="android:layout_width">@dimen/icon_size_s</item>
+        <item name="android:layout_height">@dimen/icon_size_s</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="image_view_ms">
+        <item name="android:layout_width">@dimen/icon_size_ms</item>
+        <item name="android:layout_height">@dimen/icon_size_ms</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="image_button_large" parent="clickable_view">
+        <item name="android:layout_width">@dimen/icon_size_l</item>
+        <item name="android:layout_height">@dimen/icon_size_l</item>
+    </style>
+
+    <style name="image_button_large_x" parent="clickable_view">
+        <item name="android:layout_width">@dimen/icon_size_xl</item>
+        <item name="android:layout_height">@dimen/icon_size_xl</item>
+    </style>
+
+    <style name="switch_button" parent="TextAppearance.AppCompat.Widget.Switch">
+        <item name="android:gravity">center|start</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/text_color_2</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:thumb">@drawable/drawable_switch_thumb</item>
+        <item name="track">@drawable/drawable_switch_track</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="switch_button_dark" parent="TextAppearance.AppCompat.Widget.Switch">
+        <item name="android:gravity">center|start</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/text_color_2</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:thumb">@drawable/drawable_switch_thumb</item>
+        <item name="track">@drawable/drawable_switch_track_dark</item>
+    </style>
+
+    <style name="edit_text">
+        <item name="android:maxLength">64</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:gravity">start|center</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingStart">@dimen/page_padding_default</item>
+        <item name="android:paddingEnd">@dimen/page_padding_default</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:layout_height">@dimen/et_height_default</item>
+        <item name="android:imeOptions">flagNoExtractUi|actionDone</item>
+        <item name="android:textColorHint">?attr/text_color_3</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="edit_text_degree">
+        <item name="android:maxLength">16</item>
+        <item name="android:inputType">numberDecimal</item>
+        <item name="android:digits">0123456789.</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:gravity">start|center</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingStart">@dimen/page_padding_default</item>
+        <item name="android:paddingEnd">@dimen/page_padding_default</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:layout_height">@dimen/et_height_default</item>
+        <item name="android:imeOptions">flagNoExtractUi|actionDone</item>
+        <item name="android:textColorHint">?attr/text_color_3</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="edit_text_dms">
+        <item name="android:inputType">number</item>
+        <item name="android:digits">0123456789</item>
+        <item name="android:textColor">?attr/text_color_1</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:paddingStart">2dp</item>
+        <item name="android:paddingEnd">2dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:layout_height">@dimen/et_height_default</item>
+        <item name="android:imeOptions">flagNoExtractUi|actionDone</item>
+        <item name="android:textColorHint">?attr/text_color_3</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="edit_text_dms.d">
+        <item name="android:maxLength">3</item>
+    </style>
+
+    <style name="edit_text_dms.ms">
+        <item name="android:maxLength">2</item>
+    </style>
+
+    <style name="sub_page_container">
+        <item name="android:paddingStart">@dimen/page_padding_default</item>
+        <item name="android:paddingEnd">@dimen/page_padding_default</item>
+        <item name="android:paddingTop">@dimen/page_padding_default</item>
+        <item name="android:paddingBottom">@dimen/page_padding_default</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+
+    <style name="style_rb_page_switch" parent="clickable_view">
+        <item name="android:layout_height">36dp</item>
+        <item name="android:background">@drawable/selector_page_switch_radio_bg</item>
+        <item name="android:button">@null</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:drawableTint">@drawable/selector_page_switch_radio_color</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@drawable/selector_page_switch_radio_color</item>
+        <item name="android:textSize">@dimen/text_size_m</item>
+        <item name="android:paddingStart">@dimen/page_padding_default</item>
+        <item name="android:paddingEnd">@dimen/page_padding_default</item>
+
+    </style>
+
+
+    <style name="style_rv">
+        <item name="android:scrollbars">none</item>
+        <item name="android:overScrollMode">never</item>
+    </style>
+
+
+    <style name="divide_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">?attr/color_divide</item>
+    </style>
+
+    <!--  用于分割线直接使用在背景色上面  -->
+    <style name="divide_line_high_contrast" parent="divide_line">
+        <item name="android:background">?attr/bg_color_3</item>
+    </style>
+
+    <style name="SettingDisplayPreviewShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/card_container_radius</item>
+        <item name="cornerSizeTopRight">@dimen/card_container_radius</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+</resources>

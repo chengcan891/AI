@@ -1,0 +1,413 @@
+package com.sinognss.ag.common.unit.length
+
+import com.sinognss.ag.common.unit.IUnit
+import com.sinognss.ag.common.unit.IUnit.Companion.LENGTH_CENTIMETRE
+import com.sinognss.ag.common.unit.IUnit.Companion.LENGTH_INCH
+import com.sinognss.ag.common.unit.IUnit.Companion.LENGTH_KILOMETRE
+import com.sinognss.ag.common.unit.UnitType
+
+/**
+ * 长度单位, [unit] 值不可变更，参考[https://www.infocg.cn/twjc/19395.html]
+ * @author Canney
+ * @date 2022/5/17
+ */
+enum class LengthUnit(override val unit: Int) : IUnit {
+
+    /**
+     * 无单位
+     */
+    NONE(IUnit.NONE) {
+
+        override fun toInch(value: Double): Double {
+            return value
+        }
+
+        override fun toFoot(value: Double): Double {
+            return value
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return value
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return value
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return value
+        }
+
+        override fun toMeter(value: Double): Double {
+            return value
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return value
+        }
+
+        override fun toMile(value: Double): Double {
+            return value
+        }
+
+    },
+
+    METER(IUnit.LENGTH_METER) {
+
+        override fun toInch(value: Double): Double {
+            return value * METER_2_FOOT * F1
+        }
+
+        override fun toFoot(value: Double): Double {
+            return value * METER_2_FOOT
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return value * METER_2_USFOOT
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return value * (C3 / C0)
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return value * (C3 / C1)
+        }
+
+        override fun toMeter(value: Double): Double {
+            return value
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return value * (C3 / C4)
+        }
+
+        override fun toMile(value: Double): Double {
+            return value * METER_2_MILE
+        }
+
+    },
+
+    /**
+     * 毫米
+     */
+    MILLIMETRE(IUnit.LENGTH_MILLIMETRE) {
+        override fun toInch(value: Double): Double {
+            return METER.toInch(value * (C0 / C3))
+        }
+
+        override fun toFoot(value: Double): Double {
+            return METER.toFoot(value * (C0 / C3))
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return METER.toUSFoot(value * (C0 / C3))
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return METER.toMillimetre(value * (C0 / C3))
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return METER.toCentimetre(value * (C0 / C3))
+        }
+
+        override fun toMeter(value: Double): Double {
+            return METER.toMeter(value * (C0 / C3))
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return METER.toKilometre(value * (C0 / C3))
+        }
+
+        override fun toMile(value: Double): Double {
+            return METER.toMile(value * (C0 / C3))
+        }
+
+    },
+
+    /**
+     * 厘米
+     */
+    CENTIMETRE(LENGTH_CENTIMETRE) {
+        override fun toInch(value: Double): Double {
+            return METER.toInch(value * (C1 / C3))
+        }
+
+        override fun toFoot(value: Double): Double {
+            return METER.toInch(value * (C1 / C3))
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return METER.toUSFoot(value * (C1 / C3))
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return METER.toMillimetre(value * (C1 / C3))
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return METER.toCentimetre(value * (C1 / C3))
+        }
+
+        override fun toMeter(value: Double): Double {
+            return METER.toMeter(value * (C1 / C3))
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return METER.toKilometre(value * (C1 / C3))
+        }
+
+        override fun toMile(value: Double): Double {
+            return METER.toMile(value * (C1 / C3))
+        }
+
+    },
+
+    KILOMETRE(LENGTH_KILOMETRE) {
+        override fun toInch(value: Double): Double {
+            return METER.toInch(value * (C4 / C3))
+        }
+
+        override fun toFoot(value: Double): Double {
+            return METER.toFoot(value * (C4 / C3))
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return METER.toUSFoot(value * (C4 / C3))
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return METER.toMillimetre(value * (C4 / C3))
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return METER.toCentimetre(value * (C4 / C3))
+        }
+
+        override fun toMeter(value: Double): Double {
+            return METER.toMeter(value * (C4 / C3))
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return METER.toKilometre(value * (C4 / C3))
+        }
+
+        override fun toMile(value: Double): Double {
+            return METER.toMile(value * (C4 / C3))
+        }
+
+    },
+
+    /*
+    * 英寸
+    */
+    INCH(LENGTH_INCH) {
+
+        override fun toInch(value: Double): Double {
+            return value
+        }
+
+        override fun toFoot(value: Double): Double {
+            return value * (F0 / F1)
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return FOOT.toUSFoot(toFoot(value))
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return FOOT.toMillimetre(toFoot(value))
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return FOOT.toCentimetre(toFoot(value))
+        }
+
+        override fun toMeter(value: Double): Double {
+            return FOOT.toMeter(toFoot(value))
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return FOOT.toKilometre(toFoot(value))
+        }
+
+        override fun toMile(value: Double): Double {
+            return FOOT.toMile(toFoot(value))
+        }
+
+    },
+
+    /**
+     * 国际英尺
+     */
+    FOOT(IUnit.LENGTH_FOOT) {
+        override fun toInch(value: Double): Double {
+            return value * F1 / F0
+        }
+
+        override fun toFoot(value: Double): Double {
+            return value
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return METER.toUSFoot(toMeter(value))
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return METER.toMillimetre(toMeter(value))
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return METER.toCentimetre(toMeter(value))
+        }
+
+        override fun toMeter(value: Double): Double {
+            return value * FOOT_2_METER
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return METER.toKilometre(toMeter(value))
+        }
+
+        override fun toMile(value: Double): Double {
+            return METER.toMile(toMeter(value))
+        }
+
+    },
+
+    /**
+     * 美国英尺
+     */
+    USFOOT(IUnit.LENGTH_US_FOOT) {
+        override fun toInch(value: Double): Double {
+            return METER.toInch(toMeter(value))
+        }
+
+        override fun toFoot(value: Double): Double {
+            return METER.toFoot(toMeter(value))
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return value
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return METER.toMillimetre(toMeter(value))
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return METER.toCentimetre(toMeter(value))
+        }
+
+        override fun toMeter(value: Double): Double {
+            return value * USFOOT_2_METER
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return METER.toKilometre(toMeter(value))
+        }
+
+        override fun toMile(value: Double): Double {
+            return METER.toMile(toMeter(value))
+        }
+
+    },
+
+    MILE(IUnit.LENGTH_MILE) {
+        override fun toInch(value: Double): Double {
+            return METER.toInch(toMeter(value))
+        }
+
+        override fun toFoot(value: Double): Double {
+            return METER.toFoot(toMeter(value))
+        }
+
+        override fun toUSFoot(value: Double): Double {
+            return METER.toUSFoot(toMeter(value))
+        }
+
+        override fun toMillimetre(value: Double): Double {
+            return METER.toMillimetre(toMeter(value))
+        }
+
+        override fun toCentimetre(value: Double): Double {
+            return METER.toCentimetre(toMeter(value))
+        }
+
+        override fun toMeter(value: Double): Double {
+            return value * MILE_2_METER
+        }
+
+        override fun toKilometre(value: Double): Double {
+            return METER.toKilometre(toMeter(value))
+        }
+
+        override fun toMile(value: Double): Double {
+            return value
+        }
+
+    }
+    ;
+
+    abstract fun toInch(value: Double): Double
+    abstract fun toFoot(value: Double): Double
+    abstract fun toUSFoot(value: Double): Double
+    abstract fun toMillimetre(value: Double): Double
+    abstract fun toCentimetre(value: Double): Double
+    abstract fun toMeter(value: Double): Double
+    abstract fun toKilometre(value: Double): Double
+    abstract fun toMile(value: Double): Double
+
+    fun convertTo(value: Double, target: LengthUnit): Double {
+        return when (target) {
+            METER -> toMeter(value)
+            MILLIMETRE -> toMillimetre(value)
+            CENTIMETRE -> toCentimetre(value)
+            KILOMETRE -> toKilometre(value)
+            INCH -> toInch(value)
+            FOOT -> toFoot(value)
+            USFOOT -> toUSFoot(value)
+            MILE -> toMile(value)
+            else -> value
+        }
+    }
+
+    override val unitType: UnitType
+        get() = UnitType.LENGTH
+
+    companion object {
+
+        private const val F0: Double = 1.0
+        private const val F1: Double = F0 * 12.0
+
+        private const val C0: Double = 1.0
+        private const val C1: Double = C0 * 10.0
+        private const val C2: Double = C1 * 10.0
+        private const val C3: Double = C2 * 10.0
+        private const val C4: Double = C3 * 1000.0
+
+        const val METER_2_FOOT = 3.2808399
+        const val FOOT_2_METER = 1.0 / METER_2_FOOT
+
+        const val METER_2_USFOOT = 3.2808333
+        const val USFOOT_2_METER = 1.0 / METER_2_USFOOT
+
+        const val MILE_2_METER = 1609.344
+        const val METER_2_MILE = 1.0 / MILE_2_METER
+
+        /**
+         * unit: [LengthUnit.unit]
+         */
+        @JvmStatic
+        fun valueOf(unit: Int): LengthUnit {
+            return values().find { it.unit == unit } ?: NONE
+        }
+
+        @JvmStatic
+        fun convert(value: Double, srcUnit: LengthUnit, targetUnit: LengthUnit): Double {
+            return srcUnit.convertTo(value, targetUnit)
+        }
+    }
+
+}

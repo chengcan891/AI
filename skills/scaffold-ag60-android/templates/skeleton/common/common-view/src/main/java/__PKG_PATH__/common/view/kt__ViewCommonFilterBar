@@ -1,0 +1,166 @@
+package com.sinognss.ag.common.view
+
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.LinearLayout
+import androidx.core.view.isVisible
+import com.sinognss.ag.common.view.databinding.ViewCommonFilterBarBinding
+import com.sinognss.common.res.R as CommonRes
+
+/**
+ * @Author      ZhangHongYu
+ * @Date        2026/04/29
+ * @Description 通用筛选栏，包含两个筛选按钮和一个筛选选项按钮
+ */
+class ViewCommonFilterBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
+
+    enum class FilterType(val id: Int) {
+        CUSTOM(-1),
+        TIME(0),
+        DISTANCE(1),
+        NAME(2),
+    }
+
+    enum class FilterDirection(val id: Int) {
+        DESC(0),
+        ASC(1);
+
+        fun toggle(): FilterDirection {
+            return if (this == DESC) ASC else DESC
+        }
+
+        fun getRes(): Int {
+            return if (this == DESC) {
+                CommonRes.drawable.drawable_icon_filter_desc
+            } else {
+                CommonRes.drawable.drawable_icon_filter_asc
+            }
+        }
+
+    }
+
+    private val binding: ViewCommonFilterBarBinding = ViewCommonFilterBarBinding.inflate(LayoutInflater.from(context), this, true)
+    private val filterDirections = mutableMapOf<FilterType, FilterDirection>()
+    private var currentFilterType: FilterType? = null
+    private var onFilterChangedListener: ((FilterType, FilterDirection) -> Unit)? = null
+
+    private val supportFilterTypes = mutableListOf<FilterType>()
+
+    init {
+        initView()
+    }
+
+    private fun initView() {
+
+        binding.ivFilterCustom.setOnClickListener {
+            onFilterChangedListener?.invoke(FilterType.CUSTOM, currentFilterDirection())
+        }
+
+        binding.btFilterName.setOnClickListener {
+            onFilterButtonClick(FilterType.NAME)
+        }
+        binding.btFilterTime.setOnClickListener {
+            onFilterButtonClick(FilterType.TIME)
+        }
+
+        binding.btFilterDistance.setOnClickListener {
+            onFilterButtonClick(FilterType.DISTANCE)
+        }
+        updateFilterButtons()
+    }
+
+    fun setFilterChangedListener(listener: (FilterType, FilterDirection) -> Unit) {
+        onFilterChangedListener = listener
+    }
+
+    fun setSupportedFilterTypes(filterTypes: List<FilterType>) {
+        supportFilterTypes.clear()
+        supportFilterTypes.addAll(filterTypes.distinct())
+        if (currentFilterType == null || !supportFilterTypes.contains(currentFilterType)) {
+            currentFilterType = supportFilterTypes.firstOrNull { it != FilterType.CUSTOM }
+        }
+        supportFilterTypes.forEach { filterType ->
+            filterDirections.putIfAbsent(filterType, FilterDirection.DESC)
+        }
+        updateFilterButtons()
+    }
+
+    fun setCurrentFilterType(filterType: FilterType) {
+        if (!supportFilterTypes.contains(filterType)) {
+            return
+        }
+        currentFilterType = filterType
+        updateFilterButtons()
+    }
+
+    fun notifyCurrentFilterChanged() {
+        currentFilterType?.let {
+            onFilterChangedListener?.invoke(it, currentFilterDirection())
+        }
+    }
+
+    fun setOptionActivated(isActivated: Boolean) {
+        binding.ivFilterCustom.isActivated = isActivated
+    }
+
+    fun getCustomView(): View {
+        return binding.ivFilterCustom
+    }
+
+    private fun updateFilterButtons() {
+        binding.ivFilterCustom.isVisible = supportFilterTypes.contains(FilterType.CUSTOM)
+        binding.btFilterName.isVisible = supportFilterTypes.contains(FilterType.NAME)
+        binding.btFilterTime.isVisible = supportFilterTypes.contains(FilterType.TIME)
+        binding.btFilterDistance.isVisible = supportFilterTypes.contains(FilterType.DISTANCE)
+
+        updateFilterButton(binding.btFilterName, FilterType.NAME)
+        updateFilterButton(binding.btFilterTime, FilterType.TIME)
+        updateFilterButton(binding.btFilterDistance, FilterType.DISTANCE)
+    }
+
+    private fun onFilterButtonClick(type: FilterType) {
+        if (currentFilterType == type) {
+            filterDirections[type] = currentFilterDirection().toggle()
+        } else {
+            currentFilterType = type
+        }
+        updateFilterButtons()
+        notifyCurrentFilterChanged()
+    }
+
+    private fun updateFilterButton(
+        button: CommonIconButton,
+        type: FilterType,
+    ) {
+        val isSelected = currentFilterType == type
+        val iconRes = if (isSelected) {
+            currentFilterDirection().getRes()
+        } else {
+            CommonIconButton.EMPTY_ICON_RES
+        }
+        updateButton(button, isSelected, iconRes)
+    }
+
+    private fun currentFilterDirection(): FilterDirection {
+        val filterType = currentFilterType
+        return if (filterType == null) {
+            FilterDirection.DESC
+        } else {
+            filterDirections[filterType] ?: FilterDirection.DESC
+        }
+    }
+
+    private fun updateButton(button: CommonIconButton, isSelected: Boolean, iconRes: Int) {
+        if (isSelected) {
+            CommonIconButton.ColorStyle.MAIN
+        } else {
+            CommonIconButton.ColorStyle.NORMAL
+        }.let {
+            button.updateColorStyle(it)
+        }
+
+        button.setButtonIconRes(iconRes)
+    }
+}
