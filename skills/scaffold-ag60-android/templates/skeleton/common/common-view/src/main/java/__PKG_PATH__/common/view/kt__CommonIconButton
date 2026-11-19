@@ -267,18 +267,18 @@ class CommonIconButton @JvmOverloads constructor(
     }
 
     /**
-     * ÉèÖÃ°´Å¥±êÌâÑÕÉ«¡£
+     * è®¾ç½®æŒ‰é’®æ ‡é¢˜é¢œè‰²ã€‚
      *
-     * @param color ±êÌâÑÕÉ«¡£
+     * @param color æ ‡é¢˜é¢œè‰²ã€‚
      */
     fun setButtonTitleColor(@ColorInt color: Int) {
         binding.tvTitle.setTextColor(color)
     }
 
     /**
-     * ÉèÖÃ°´Å¥±³¾°×ÊÔ´¡£
+     * è®¾ç½®æŒ‰é’®èƒŒæ™¯èµ„æºã€‚
      *
-     * @param backgroundRes ±³¾° Drawable ×ÊÔ´¡£
+     * @param backgroundRes èƒŒæ™¯ Drawable èµ„æºã€‚
      */
     fun setButtonBackgroundResource(@DrawableRes backgroundRes: Int) {
         binding.layoutRoot.setBackgroundResource(backgroundRes)
