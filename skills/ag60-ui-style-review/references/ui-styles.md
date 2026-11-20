@@ -7,9 +7,9 @@
 | 角色 | 资源与用法 | 参照 |
 |---|---|---|
 | 普通页面背景 | `?attr/bg_color_2`，可由宿主提供。地图、遮罩和沉浸页按各自容器核对 | `activity_statue_bar_fragment_stack_container.xml` |
-| 页面内边距 | `page_container` 四边默认 10dp；`sub_page_container` 另设宽高填满父容器 | `fragment_field_home_container.xml`、`fragment_material_manager.xml` |
+| 页面内边距 | `page_container` 四边默认 10dp；`sub_page_container` 另设宽高填满父容器。普通页面左右主内容净距为 `page_padding_horizontal`（18dp），核对时合计宿主和子布局 | `fragment_field_home_container.xml`、`fragment_material_manager.xml` |
 | 信息卡片 | `drawable_card_1_with_border`，底色 `bg_color_1`。服务、用户、设备卡片靠留白分组，设置「关于」操作行可用 `divide_line`（1px） | `fragment_home_service_info.xml`、`fragment_setting_about.xml` |
-| 分段导航 | `CommonTabLayout` + `SegmentedTabLayout`，轨道 `bg_color_3`，选中背景 `bg_color_1`，选中文字 `new_main_color`。单选项查 `SegmentedTabRadioButton` 或 `style_rb_page_switch` | `fragment_field_home_container.xml`、`fragment_device_rtk_work_mode_edit.xml` |
+| 分段导航 | `CommonTabLayout` + `SegmentedTabLayout`，轨道 `bg_color_3`，选中背景 `bg_color_1`，选中文字 `new_main_color`。导航线编辑页签沿用该样式提供的轨道、内边距和选中色。单选项查 `SegmentedTabRadioButton` 或 `style_rb_page_switch` | `fragment_field_work_line_edit.xml`、`fragment_harrow_work_line_edit.xml`、`fragment_field_home_container.xml` |
 | 状态列表项、弹窗 | `drawable_bg_active_with_border` 保留选择器；`card_view_container` 用于同类 CardView 弹窗 | `rv_item_field_task_store.xml`、`dialog_field_task_edit.xml` |
 
 ## 文字与图标
